@@ -2,9 +2,12 @@
 
 import { useState } from "react";
 import { Dialog } from "@headlessui/react";
-import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
+import {
+  ArrowUpRightIcon,
+  Bars2Icon,
+  XMarkIcon,
+} from "@heroicons/react/24/outline";
 import Link from "next/link";
-import Image from "next/image";
 
 const navigation = [
   { name: "Trending", href: "/" },
@@ -12,11 +15,17 @@ const navigation = [
   { name: "Upcoming", href: "/" },
 ];
 
+const social = [
+  { name: "Instagram", href: "https://instagram.com/iam__amansingh" },
+  { name: "LinkedIn", href: "https://linkedin.com/in/aman-singh123" },
+  { name: "Github", href: "https://github.com/westernfrog" },
+];
+
 export default function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   return (
-    <header className="fixed inset-x-0 top-0 z-50">
+    <header className="fixed inset-x-0 top-0 z-40">
       <nav
         className="flex items-center justify-between text-white lg:px-16 p-6"
         aria-label="Global"
@@ -36,7 +45,7 @@ export default function Header() {
             onClick={() => setMobileMenuOpen(true)}
           >
             <span className="sr-only">Open main menu</span>
-            <Bars3Icon className="h-6 w-6 text-gray-300" aria-hidden="true" />
+            <Bars2Icon className="h-6 w-6 text-gray-300" aria-hidden="true" />
           </button>
         </div>
         <div className="hidden lg:flex lg:gap-x-20">
@@ -58,18 +67,13 @@ export default function Header() {
         open={mobileMenuOpen}
         onClose={setMobileMenuOpen}
       >
-        <div className="fixed inset-0 z-10" />
-        <Dialog.Panel className="fixed inset-y-0 right-0 z-10 w-full overflow-y-auto bg-[#0e0e0e] px-6 py-6 sm:max-w-sm sm:ring-1 sm:ring-gray-900/10">
+        <Dialog.Panel className="fixed inset-y-0 right-0 z-50 w-full overflow-y-auto bg-black/80 backdrop-blur px-6 py-6 sm:max-w-sm sm:ring-1 sm:ring-gray-900/10">
           <div className="flex items-center justify-between">
-            <Link href="/" className="-m-1.5 p-1.5">
+            <Link href="/" className="-m-1.5 px-1.5 flex items-center gap-2">
               <span className="sr-only">Supawatch</span>
-              <Image
-                className="h-8 w-auto"
-                src="https://cdn-icons-png.flaticon.com/512/5079/5079866.png"
-                alt="Logo"
-                width={50}
-                height={50}
-              />
+              <h1 className="font-medium uppercase tracking-tighter text-gray-300">
+                Supawatch
+              </h1>
             </Link>
             <button
               type="button"
@@ -77,30 +81,38 @@ export default function Header() {
               onClick={() => setMobileMenuOpen(false)}
             >
               <span className="sr-only">Close menu</span>
-              <XMarkIcon className="h-6 w-6" aria-hidden="true" />
+              <XMarkIcon
+                className="h-6 w-6 stroke-gray-300"
+                aria-hidden="true"
+              />
             </button>
           </div>
-          <div className="mt-6 flow-root">
-            <div className="-my-6 divide-y divide-gray-500/10">
-              <div className="space-y-2 py-6">
-                {navigation.map((item, index) => (
-                  <Link
-                    key={index}
-                    href={item.href}
-                    className="block text-sm leading-6"
-                  >
-                    {item.name}
-                  </Link>
-                ))}
-              </div>
-              <div className="py-6">
+          <div className="my-10 flow-root">
+            <div className="space-y-4 text-gray-300 divide-y">
+              {navigation.map((item, index) => (
                 <Link
-                  href="/"
-                  className="block text-sm leading-6 text-gray-900"
+                  key={index}
+                  href={item.href}
+                  className="flex items-center justify-between tracking-tight pt-6"
                 >
-                  Search
+                  {item.name}
+                  <ArrowUpRightIcon className="w-5 h-5" />
                 </Link>
-              </div>
+              ))}
+            </div>
+          </div>
+          <div className="absolute bottom-10 left-0 right-0">
+            <div className="flex items-center justify-center gap-6 text-gray-300">
+              {social.map((item, index) => (
+                <Link
+                  target="_blank"
+                  key={index}
+                  href={item.href}
+                  className="flex"
+                >
+                  {item.name} <ArrowUpRightIcon className="w-3 h-3" />
+                </Link>
+              ))}
             </div>
           </div>
         </Dialog.Panel>
