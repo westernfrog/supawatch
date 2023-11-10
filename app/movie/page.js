@@ -21,12 +21,12 @@ export default function Movie() {
     }
 
     fetchData();
-  }, []);
+  }, [id]);
 
   return (
     <>
       {data ? (
-        <section className="relative grid h-[30em] items-center">
+        <section className="relative grid h-[30em]">
           <div className="h-[30em]">
             <Image
               className="w-full h-full object-cover object-center"
@@ -35,13 +35,13 @@ export default function Movie() {
               height={5000}
               alt="Latest"
             />
-            <div className="absolute top-0 inset-0 backdrop-blur backdrop-opacity-40 bg-black/50 bg-gradient-radial from-black/40 from-10% via-black/70 via-50% to-black/90 to-90%"></div>
+            <div className="absolute top-0 inset-0 bg-black/50 bg-gradient-radial from-black/40 from-10% via-black/70 via-50% to-black/90 to-90%"></div>
           </div>
           <div className="absolute lg:top-20 top-14">
-            <div className="grid lg:grid-cols-12 w-screen items-start justify-center gap-12 text-gray-300 lg:px-16 p-6">
+            <div className="grid lg:grid-cols-12 items-start gap-12 text-gray-300 lg:px-16 p-6">
               <div className="relative lg:col-span-3 col-span-6 rounded-xl ring-1 ring-white/10 shadow-xl">
                 <Image
-                  className="w-full h-full object-cover object-center rounded-xl"
+                  className="object-cover object-center rounded-xl"
                   src={`https://image.tmdb.org/t/p/original/${data.poster_path}`}
                   width={5000}
                   height={5000}
@@ -69,8 +69,8 @@ export default function Movie() {
             height={5000}
             alt="Latest"
           />
-          <div className="absolute top-0 inset-0 backdrop-blur-sm bg-black/50 bg-gradient-to-b lg:bg-gradient-radial from-black/40 from-10% via-black/70 via-50% to-black/90 to-90%"></div>
-          <h1 className="absolute grid items-center justify-center left-0 right-0 text-gray-300 lg:text-2xl text-xl font-semibold">
+          <div className="absolute top-0 inset-0 bg-black/50 bg-gradient-to-b lg:bg-gradient-radial from-black/40 from-10% via-black/70 via-50% to-black/90 to-90%"></div>
+          <h1 className="absolute grid items-center justify-center left-0 right-0 text-gray-300 lg:text-xl text-xl font-semibold">
             Loading...
           </h1>
         </section>
