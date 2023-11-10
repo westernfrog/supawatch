@@ -24,14 +24,14 @@ export default function Card(props) {
             className="w-full lg:h-96 h-52 lg:rounded-xl rounded-lg object-cover object-center"
           />
           <div className="absolute lg:rounded-xl rounded-lg w-full h-full inset-0 bg-gradient-to-b from-black/30 from-20% via-black/70 via-70% to-black/80 to-80%"></div>
-          <div className="absolute lg:bottom-4 bottom-0 lg:p-6 px-2 py-4">
-            <h1 className="lg:text-3xl text-lg leading-5 lg:font-bold font-semibold mb-2 lg:mb-1">
+          <div className="absolute lg:bottom-4 bottom-0 lg:p-6 px-3 py-4">
+            <h1 className="lg:text-3xl leading-5 lg:font-bold font-semibold mb-2 lg:mb-1">
               {props.title}
             </h1>
             <p className="lg:block hidden leading-3 lg:text-sm text-xs text-gray-300 pb-4">
               {props.overview}..
             </p>
-            <p className="leading-3 text-sm">
+            <p className="leading-3 text-xs">
               {props.release_date.slice(0, 4)}
             </p>
           </div>
