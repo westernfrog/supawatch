@@ -47,7 +47,7 @@ export default function Movie() {
     <>
       {data ? (
         <>
-          <section className="relative grid h-[30em]">
+          <section className="relative grid">
             <div className="h-[30em]">
               <Image
                 className="w-full h-full object-cover object-center"
@@ -56,7 +56,7 @@ export default function Movie() {
                 height={5000}
                 alt="Latest"
               />
-              <div className="absolute top-0 inset-0 bg-black/50 bg-gradient-radial from-black/40 from-10% via-black/70 via-50% to-black/90 to-90%"></div>
+              <div className="absolute top-0 inset-0 bg-black/50 backdrop-opacity-100 bg-gradient-to-b from-black/40 from-10% via-black/70 via-40% to-[#010101] to-90%"></div>
             </div>
             <div className="absolute lg:top-20 top-14">
               <div className="grid lg:grid-cols-12 items-start gap-12 text-gray-300 lg:px-16 p-6">
@@ -69,9 +69,9 @@ export default function Movie() {
                     alt="Latest"
                     priority={true}
                   />
-                  <div className="absolute top-0 inset-0 bg-black/20 bg-gradient-to-b lg:bg-gradient-radial from-black/20 from-10% via-black/50 via-50% to-black/60 to-90% rounded-xl"></div>
+                  <div className="absolute top-0 inset-0 bg-black/10 bg-gradient-to-b lg:bg-gradient-radial from-black/20 from-10% via-black/50 via-50% to-black/60 to-90% rounded-xl"></div>
                 </div>
-                <div className="col-span-6 text-white w-full space-y-2 py-6">
+                <div className="col-span-6 text-white w-full space-y-2">
                   <div className="flex flex-wrap items-center gap-x-8 font-semibold text-gray-300 lg:text-base text-sm pb-2">
                     <p className="text-green-500">
                       {Math.floor(data.vote_average * 10)}% Match
@@ -81,10 +81,10 @@ export default function Movie() {
                   <h1 className="text-4xl font-semibold tracking-tight">
                     {data.title}
                   </h1>
-                  <p className="text-gray-300 lg:text-lg text-base">
+                  <p className="text-gray-300 lg:text-base text-base">
                     {data.overview}
                   </p>
-                  <div className="flex flex-wrap items-center gap-x-2 font-medium text-gray-300 lg:text-base text-sm pt-3 pb-6">
+                  <div className="flex flex-wrap items-center gap-2 font-medium text-gray-300 lg:text-base text-sm pt-3 pb-4">
                     {data.genres.map((genre, index) => (
                       <p
                         key={index}
