@@ -9,7 +9,9 @@ export default function Upcoming() {
   useEffect(() => {
     async function fetchData() {
       try {
-        const response = await fetch("/api/getUpcoming", { cache: "reload" });
+        const response = await fetch("/api/getUpcoming", {
+          cache: "force-cache",
+        });
         const fetchedData = await response.json();
         setData(fetchedData.data);
       } catch (error) {

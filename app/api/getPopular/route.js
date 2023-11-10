@@ -11,7 +11,7 @@ export async function GET() {
       },
     };
 
-    const response = await fetch(url, options);
+    const response = await fetch(url, options, { cache: "force-cache" });
     const data = await response.json();
     return Response.json({ data });
   } catch (error) {

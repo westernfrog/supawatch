@@ -12,7 +12,7 @@ export async function GET(request) {
       },
     };
 
-    const response = await fetch(url, options);
+    const response = await fetch(url, options, { cache: "force-cache" });
     const data = await response.json();
 
     return Response.json({ key: data.results[0].key });

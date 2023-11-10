@@ -9,7 +9,9 @@ export default function Trending() {
   useEffect(() => {
     async function fetchData() {
       try {
-        const response = await fetch("/api/getPopular");
+        const response = await fetch("/api/getPopular", {
+          cache: "force-cache",
+        });
         const fetchedData = await response.json();
         setData(fetchedData.data);
       } catch (error) {
