@@ -1,5 +1,7 @@
 export async function GET() {
   try {
+    const { searchParams } = new URL(request.url);
+    const id = searchParams.get("id");
     const url =
       "https://api.themoviedb.org/3/movie/popular?language=en-US&page=1";
     const options = {

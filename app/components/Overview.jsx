@@ -45,8 +45,6 @@ export default function Overview() {
     }
   }, [data]);
 
-  console.log(trailers);
-
   const totalPages = data ? Math.min(Math.ceil(data.results.length / 1), 8) : 0;
 
   useEffect(() => {
@@ -64,6 +62,32 @@ export default function Overview() {
 
   const [open, setOpen] = useState(false);
   const cancelButtonRef = useRef(null);
+
+  const genresById = {
+    28: "Action",
+    12: "Adventure",
+    16: "Animation",
+    35: "Comedy",
+    80: "Crime",
+    99: "Documentary",
+    18: "Drama",
+    10751: "Family",
+    14: "Fantasy",
+    36: "History",
+    27: "Horror",
+    10402: "Music",
+    9648: "Mystery",
+    10749: "Romance",
+    878: "Science Fiction",
+    10770: "TV Movie",
+    53: "Thriller",
+    10752: "War",
+    37: "Western",
+  };
+
+  const getGenres = (genreIds) => {
+    return genreIds.map((id) => genresById[id]);
+  };
 
   return (
     <>
@@ -100,12 +124,14 @@ export default function Overview() {
                     {item.overview.slice(0, 160)}..
                   </p>
                   <div className="flex flex-wrap items-center gap-x-2 font-medium text-gray-300 lg:text-base text-sm pt-2 pb-4">
-                    <p className="bg-white/20 px-3 py-1 rounded-full text-sm">
-                      Action
-                    </p>
-                    <p className="bg-white/20 px-3 py-1 rounded-full text-sm">
-                      Drama
-                    </p>
+                    {getGenres(item.genre_ids).map((genre) => (
+                      <p
+                        key={genre}
+                        className="bg-white/20 px-3 py-1 rounded-full text-sm"
+                      >
+                        {genre}
+                      </p>
+                    ))}
                   </div>
                   <div className="flex items-center text-gray-900 font-semibold text-sm gap-4">
                     <button

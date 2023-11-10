@@ -41,17 +41,13 @@ export default function Header() {
         </div>
         <div className="hidden lg:flex lg:gap-x-20">
           {navigation.map((item, index) => (
-            <Link
-              key={index}
-              href={item.href}
-              className="text-sm font-semibold"
-            >
+            <Link key={index} href={item.href} className="text-sm font-medium">
               {item.name}
             </Link>
           ))}
         </div>
         <div className="hidden lg:flex lg:flex-1 lg:justify-end">
-          <Link href="/" className="text-sm font-semibold">
+          <Link href="/" className="text-sm font-medium">
             Search
           </Link>
         </div>
