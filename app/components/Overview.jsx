@@ -4,8 +4,10 @@ import { InformationCircleIcon, PlayIcon } from "@heroicons/react/24/outline";
 import Image from "next/image";
 import { Fragment, useRef, useState, useEffect } from "react";
 import { Dialog, Transition } from "@headlessui/react";
+import { useRouter } from "next/navigation";
 
 export default function Overview() {
+  const router = useRouter();
   const [data, setData] = useState(null);
   const [trailers, setTrailers] = useState([]);
   const [currentPage, setCurrentPage] = useState(0);
@@ -58,6 +60,10 @@ export default function Overview() {
 
   const changePage = (page) => {
     setCurrentPage(page);
+  };
+
+  const handleInfo = (id) => {
+    router.push(`/movie?id=${id}`);
   };
 
   const [open, setOpen] = useState(false);
@@ -141,8 +147,11 @@ export default function Overview() {
                       <PlayIcon className="w-6 h-6 stroke-0 fill-gray-900" />
                       Watch Trailer
                     </button>
-                    <button className="bg-white lg:px-4 px-3 py-2 rounded-full flex items-center gap-2 tracking-tight">
-                      <InformationCircleIcon className="w-6 h-6 stroke-2" />
+                    <button
+                      onClick={() => handleInfo(item.id)}
+                      className="bg-white lg:px-4 px-3 py-2 rounded-full flex items-center gap-2 tracking-tight"
+                    >
+                      <InformationCircleIcon className="w-6 h-6" />
                       More Info
                     </button>
                   </div>

@@ -1,9 +1,8 @@
-export async function GET() {
+export async function GET(request) {
   try {
     const { searchParams } = new URL(request.url);
     const id = searchParams.get("id");
-    const url =
-      "https://api.themoviedb.org/3/movie/popular?language=en-US&page=1";
+    const url = `https://api.themoviedb.org/3/movie/${id}?language=en-US`;
     const options = {
       method: "GET",
       headers: {
@@ -13,7 +12,7 @@ export async function GET() {
       },
     };
 
-    const response = await fetch(url, options);
+    const response = await fetch(url, options, { cache: "force-cache" });
     const data = await response.json();
     return Response.json({ data });
   } catch (error) {

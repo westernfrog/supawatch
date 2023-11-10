@@ -38,6 +38,7 @@ export default function Upcoming() {
                 .map((item, index) => (
                   <Card
                     key={index}
+                    id={item.id}
                     src={item.poster_path}
                     title={item.title}
                     overview={item.overview.slice(0, 70)}

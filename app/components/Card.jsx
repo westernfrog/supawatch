@@ -1,19 +1,29 @@
+"use client";
+
 import { ArrowUpRightIcon } from "@heroicons/react/24/outline";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 
 export default function Card(props) {
+  const router = useRouter();
+  const handleInfo = (id) => {
+    router.push(`/movie?id=${id}`);
+  };
   return (
     <>
       <div className="lg:col-span-3 col-span-6 text-white">
-        <div className="group relative shadow-inner bg-white/20 rounded-lg lg:h-96 h-52">
+        <div
+          onClick={() => handleInfo(props.id)}
+          className="group relative shadow-inner bg-white/20 lg:rounded-xl rounded-lg lg:h-96 h-52"
+        >
           <Image
             src={`https://image.tmdb.org/t/p/original/${props.src}`}
             width={5000}
             height={5000}
             alt={props.title}
-            className="w-full lg:h-96 h-52 rounded-lg object-cover object-center"
+            className="w-full lg:h-96 h-52 lg:rounded-xl rounded-lg object-cover object-center"
           />
-          <div className="absolute w-full h-full inset-0 bg-gradient-to-b from-black/30 from-20% via-black/70 via-70% to-black/80 to-80%"></div>
+          <div className="absolute lg:rounded-xl rounded-lg w-full h-full inset-0 bg-gradient-to-b from-black/30 from-20% via-black/70 via-70% to-black/80 to-80%"></div>
           <div className="absolute lg:bottom-4 bottom-0 lg:p-6 px-2 py-4">
             <h1 className="lg:text-3xl text-lg leading-5 lg:font-bold font-semibold mb-2 lg:mb-1">
               {props.title}
