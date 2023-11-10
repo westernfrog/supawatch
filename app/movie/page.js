@@ -55,8 +55,6 @@ export default function Movie() {
     fetchCredits();
   }, [id]);
 
-  console.log(credits);
-
   const [open, setOpen] = useState(false);
   const cancelButtonRef = useRef(null);
 
