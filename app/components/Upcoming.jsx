@@ -23,22 +23,23 @@ export default function Upcoming() {
   return (
     <>
       {data && (
-        <section className="px-16 text-white mb-16">
-          <div className="flex items-center justify-between mb-24">
-            <h1 className="text-4xl font-semibold border-l-8 border-green-500 ps-4">
+        <section className="text-white lg:px-16 p-6 lg:my-10 my-6">
+          <div className="flex items-center justify-between lg:mb-20 mb-6">
+            <h1 className="lg:text-4xl text-xl font-semibold border-l-8 rounded border-green-500 ps-2">
               Upcoming
             </h1>
           </div>
-          <div className="grid grid-cols-12 items-center justify-between gap-10">
+          <div className="grid grid-cols-12 items-center justify-between lg:gap-6 gap-4">
             {data &&
               data.results
                 .slice(8, data.results.length)
                 .map((item, index) => (
                   <Card
                     key={index}
-                    backdrop_path={item.backdrop_path}
+                    src={item.poster_path}
                     title={item.title}
-                    overview={item.overview.slice(0, 92)}
+                    overview={item.overview.slice(0, 70)}
+                    release_date={item.release_date}
                     vote_average={Math.floor(item.vote_average * 10)}
                   />
                 ))}

@@ -71,8 +71,11 @@ export default function Overview() {
         data.results
           .slice(currentPage * 1, currentPage * 1 + 1)
           .map((item, index) => (
-            <section className="grid h-screen items-center" key={index}>
-              <div className="relative w-full h-screen sm:aspect-h-1 sm:aspect-w-2 lg:aspect-h-1 lg:aspect-w-1">
+            <section
+              className="relative grid h-screen items-center"
+              key={index}
+            >
+              <div className="relative h-screen">
                 <Image
                   className="w-full h-full object-cover object-center"
                   src={`https://image.tmdb.org/t/p/original/${item.backdrop_path}`}
@@ -80,37 +83,39 @@ export default function Overview() {
                   height={5000}
                   alt="Latest"
                 />
-                <div className="absolute top-0 inset-0 bg-black/20 bg-gradient-radial from-black/30 from-10% via-black/50 via-40% to-black/90 to-90%"></div>
+                <div className="absolute top-0 inset-0 bg-black/20 bg-gradient-to-b lg:bg-gradient-radial from-black/40 from-10% via-black/70 via-50% to-black/90 to-90%"></div>
               </div>
-              <div className="absolute bottom-16 px-16">
+              <div className="absolute bottom-16 lg:px-16 px-6">
                 <div className="text-white max-w-xl space-y-4">
-                  <div className="flex items-center gap-8 font-medium text-gray-300 pb-4">
+                  <div className="flex flex-wrap items-center gap-x-8 font-semibold text-gray-300 lg:text-base text-sm">
                     <p className="text-green-500">
                       {Math.floor(item.vote_average * 10)}% Match
                     </p>
-                    <p className="">{item.release_date.slice(0, 4)}</p>
-                    <div className="flex items-center gap-4">
-                      <p className="bg-white/20 px-3 py-1 rounded-full text-sm">
-                        Action
-                      </p>
-                      <p className="bg-white/20 px-3 py-1 rounded-full text-sm">
-                        Drama
-                      </p>
-                    </div>
+                    <p>{item.release_date.slice(0, 4)}</p>
                   </div>
-                  <h1 className="text-5xl font-bold tracking-tighter">
+                  <h1 className="lg:text-5xl text-3xl font-bold tracking-tighter">
                     {item.title}
                   </h1>
-                  <p className="text-gray-300 text-lg pb-4">{item.overview}</p>
-                  <div className="flex items-center text-gray-900 font-semibold gap-4">
+                  <p className="text-gray-300 lg:text-lg text-base">
+                    {item.overview.slice(0, 160)}..
+                  </p>
+                  <div className="flex flex-wrap items-center gap-x-2 font-medium text-gray-300 lg:text-base text-sm pt-2 pb-4">
+                    <p className="bg-white/20 px-3 py-1 rounded-full text-sm">
+                      Action
+                    </p>
+                    <p className="bg-white/20 px-3 py-1 rounded-full text-sm">
+                      Drama
+                    </p>
+                  </div>
+                  <div className="flex items-center text-gray-900 font-semibold text-sm gap-4">
                     <button
                       onClick={() => setOpen(true)}
-                      className="bg-white px-4 py-2 rounded-full flex items-center gap-2 tracking-tighter"
+                      className="bg-white lg:px-4 px-3 py-2 rounded-full flex items-center gap-2 tracking-tight"
                     >
                       <PlayIcon className="w-6 h-6 stroke-0 fill-gray-900" />
                       Watch Trailer
                     </button>
-                    <button className="bg-white px-4 py-2 rounded-full flex items-center gap-2 tracking-tighter">
+                    <button className="bg-white lg:px-4 px-3 py-2 rounded-full flex items-center gap-2 tracking-tight">
                       <InformationCircleIcon className="w-6 h-6 stroke-2" />
                       More Info
                     </button>
@@ -136,7 +141,7 @@ export default function Overview() {
                     <div className="fixed inset-0 bg-gray-900 bg-opacity-75 transition-opacity" />
                   </Transition.Child>
                   <div className="fixed inset-0 z-50 w-screen overflow-y-auto">
-                    <div className="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
+                    <div className="flex min-h-full items-center justify-center p-4 text-center sm:items-center sm:p-0">
                       <Transition.Child
                         as={Fragment}
                         enter="ease-out duration-300"
@@ -146,7 +151,7 @@ export default function Overview() {
                         leaveFrom="opacity-100 translate-y-0 sm:scale-100"
                         leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
                       >
-                        <Dialog.Panel className="relative transform overflow-hidden rounded-2xl bg-white/20 text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-6xl h-[40em]">
+                        <Dialog.Panel className="relative transform overflow-hidden lg:rounded-2xl rounded-lg bg-white/20 shadow-xl transition-all my-8 w-full max-w-6xl lg:h-[40em] h-64">
                           <iframe
                             className="w-full h-full"
                             src={`https://www.youtube.com/embed/${
@@ -164,7 +169,7 @@ export default function Overview() {
                   </div>
                 </Dialog>
               </Transition.Root>
-              <div className="absolute bottom-6 left-0 right-0 flex justify-center gap-8">
+              <div className="absolute bottom-6 left-0 right-0 grid grid-flow-col justify-center lg:gap-8 gap-4 px-6">
                 {Array.from({ length: totalPages }, (_, index) => (
                   <button
                     key={index}

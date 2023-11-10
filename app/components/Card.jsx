@@ -4,22 +4,29 @@ import Image from "next/image";
 export default function Card(props) {
   return (
     <>
-      <div className="col-span-3 text-white">
-        <div className="group relative shadow-inner bg-white/20 rounded-2xl h-96">
+      <div className="lg:col-span-3 col-span-6 text-white">
+        <div className="group relative shadow-inner bg-white/20 rounded-lg lg:h-96 h-52">
           <Image
-            src={`https://image.tmdb.org/t/p/original/${props.backdrop_path}`}
+            src={`https://image.tmdb.org/t/p/original/${props.src}`}
             width={5000}
             height={5000}
             alt={props.title}
-            className="w-full h-96 rounded-2xl object-cover object-center"
+            className="w-full lg:h-96 h-52 rounded-lg object-cover object-center"
           />
           <div className="absolute w-full h-full inset-0 bg-gradient-to-b from-black/30 from-20% via-black/70 via-70% to-black/80 to-80%"></div>
-          <div className="absolute bottom-4 p-6">
-            <h1 className="text-2xl font-bold mb-2">{props.title}</h1>
-            <p className="text-gray-300">{props.overview}..</p>
+          <div className="absolute lg:bottom-4 bottom-0 lg:p-6 px-2 py-4">
+            <h1 className="lg:text-3xl text-lg leading-5 lg:font-bold font-semibold mb-2 lg:mb-1">
+              {props.title}
+            </h1>
+            <p className="lg:block hidden leading-3 lg:text-sm text-xs text-gray-300 pb-4">
+              {props.overview}..
+            </p>
+            <p className="leading-3 text-sm">
+              {props.release_date.slice(0, 4)}
+            </p>
           </div>
-          <div className="absolute top-2 right-0 px-6 py-3 font-semibold flex items-center gap-6">
-            <h1 className="text-xs bg-black/30 py-1 px-2 rounded-full">
+          <div className="lg:flex hidden absolute top-2 right-0 px-6 py-3 font-semibold items-center gap-6">
+            <h1 className="text-xs lg:bg-black/30 bg-black/60 py-1 px-2 rounded-full">
               {props.vote_average}% Match
             </h1>
           </div>
