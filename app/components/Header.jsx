@@ -33,7 +33,7 @@ export default function Header() {
         <div className="flex lg:flex-1">
           <Link href="/" className="-m-1.5 px-1.5 flex items-center gap-2">
             <span className="sr-only">Supawatch</span>
-            <h1 className="font-medium uppercase tracking-tighter">
+            <h1 className="font-semibold uppercase tracking-tighter">
               Supawatch
             </h1>
           </Link>
@@ -71,7 +71,7 @@ export default function Header() {
           <div className="flex items-center justify-between">
             <Link href="/" className="-m-1.5 px-1.5 flex items-center gap-2">
               <span className="sr-only">Supawatch</span>
-              <h1 className="font-medium uppercase tracking-tighter text-gray-300">
+              <h1 className="font-semibold uppercase tracking-tighter text-gray-300">
                 Supawatch
               </h1>
             </Link>
