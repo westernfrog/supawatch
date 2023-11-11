@@ -67,10 +67,10 @@ export default function Movie() {
               <Image
                 className="w-full h-full object-cover object-center"
                 src={`https://image.tmdb.org/t/p/original${data.backdrop_path}`}
-                width={5000}
-                height={5000}
+                width={2000}
+                height={2000}
                 alt="Latest"
-                priority={true}
+                priority={false}
               />
               <div className="absolute top-0 inset-0 bg-black/30 backdrop-opacity-100 bg-gradient-to-b from-black/40 from-10% via-black/70 via-40% to-[#010101] to-90%"></div>
             </div>
@@ -78,10 +78,10 @@ export default function Movie() {
               <div className="flex flex-col lg:grid grid-cols-12 w-screen items-start gap-12 text-gray-300 lg:px-16 p-6">
                 <div className="relative lg:col-span-3 col-span-4 rounded-xl ring-1 ring-white/20 shadow-xl">
                   <Image
-                    className="object-cover object-center rounded-xl"
+                    className="w-full h-full object-cover object-center rounded-xl"
                     src={`https://image.tmdb.org/t/p/original${data.poster_path}`}
-                    width={5000}
-                    height={5000}
+                    width={600}
+                    height={600}
                     alt="Latest"
                     priority={true}
                   />
@@ -128,12 +128,11 @@ export default function Movie() {
                         >
                           <div className="relative text-gray-300">
                             <Image
-                              className="w-full h-40 shadow shadow-white/30 object-cover object-center rounded-xl"
+                              className="w-full h-40 ring-1 ring-white/10 object-cover object-center rounded-xl"
                               src={`https://image.tmdb.org/t/p/original${item.profile_path}`}
-                              width={5000}
-                              height={5000}
+                              width={100}
+                              height={100}
                               alt="Latest"
-                              priority={true}
                             />
                             <div className="absolute top-0 inset-0 bg-black/40 rounded-xl"></div>
                             <h1 className="lg:absolute relative left-0 right-0 text-sm text-center py-2">
@@ -190,18 +189,21 @@ export default function Movie() {
           </Transition.Root>
         </>
       ) : (
-        <section className="relative h-screen grid items-center">
-          <Image
-            className="w-full h-full object-cover object-center"
-            src="https://images.unsplash.com/photo-1485846234645-a62644f84728?q=80&w=2059&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-            width={5000}
-            height={5000}
-            alt="Latest"
-          />
-          <div className="absolute top-0 inset-0 bg-black/50 bg-gradient-to-b lg:bg-gradient-radial from-black/40 from-10% via-black/70 via-50% to-black/90 to-90%"></div>
-          <h1 className="absolute grid items-center justify-center left-0 right-0 text-gray-300 lg:text-xl text-xl font-semibold">
-            Loading...
-          </h1>
+        <section className="relative grid">
+          <div className="h-[30em] bg-white/80">
+            <div className="absolute top-0 inset-0 bg-black/30 bg-gradient-to-b from-black/40 from-10% via-black/70 via-40% to-[#010101] to-90%"></div>
+          </div>
+          <div className="absolute lg:top-32 top-14">
+            <div className="flex flex-col lg:grid grid-cols-12 w-screen items-start gap-12 lg:px-16 p-6">
+              <div className="relative lg:col-span-3 col-span-4 rounded-xl shadow-xl bg-white/10 h-96 lg:h-full w-full animate-pulse"></div>
+              <div className="col-span-8 w-full h-full space-y-2">
+                <div className="bg-white/10 h-8 lg:w-96 rounded-full shadow-xl animate-pulse"></div>
+                <div className="h-8 w-52 bg-white/10 rounded-full shadow-xl animate-pulse"></div>
+                <div className="h-72 w-full bg-white/10 rounded-xl shadow-xl animate-pulse"></div>
+                <div className="h-8 w-52 bg-white/10 rounded-full shadow-xl animate-pulse"></div>
+              </div>
+            </div>
+          </div>
         </section>
       )}
     </>
