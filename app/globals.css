@@ -8,5 +8,6 @@
     -moz-osx-font-smoothing: grayscale;
     -webkit-font-smoothing: antialiased;
     background-color: #010101;
+    overflow-x: hidden;
   }
 }

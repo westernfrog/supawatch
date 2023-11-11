@@ -134,7 +134,7 @@ export default function Movie() {
                               height={100}
                               alt="Latest"
                             />
-                            <div className="absolute top-0 inset-0 bg-black/40 rounded-xl"></div>
+                            <div className="absolute top-0 inset-0 bg-black/20 rounded-xl"></div>
                             <h1 className="lg:absolute relative left-0 right-0 text-sm text-center py-2">
                               {item.name}
                             </h1>
