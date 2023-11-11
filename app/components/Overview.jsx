@@ -111,6 +111,7 @@ export default function Overview() {
                   src={`https://image.tmdb.org/t/p/original/${item.backdrop_path}`}
                   width={5000}
                   height={5000}
+                  loading="lazy"
                   alt="Latest"
                 />
                 <div className="absolute top-0 inset-0 bg-black/20 bg-gradient-to-b lg:bg-gradient-radial from-black/40 from-10% via-black/70 via-50% to-black/90 to-90%"></div>

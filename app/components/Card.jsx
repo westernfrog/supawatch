@@ -18,9 +18,10 @@ export default function Card(props) {
         >
           <Image
             src={`https://image.tmdb.org/t/p/original/${props.src}`}
-            width={5000}
-            height={5000}
+            width={1000}
+            height={1000}
             alt={props.title}
+            priority={true}
             className="w-full lg:h-96 h-52 lg:rounded-xl rounded-lg object-cover object-center"
           />
           <div className="absolute lg:rounded-xl rounded-lg w-full h-full inset-0 bg-gradient-to-b from-black/30 from-20% via-black/70 via-70% to-black/80 to-80%"></div>
