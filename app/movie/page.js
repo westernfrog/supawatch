@@ -76,7 +76,7 @@ export default function Movie() {
             </div>
             <div className="absolute lg:top-20 top-14">
               <div className="flex flex-col lg:grid grid-cols-12 w-screen items-start gap-12 text-gray-300 lg:px-16 p-6">
-                <div className="relative lg:col-span-3 col-span-4 rounded-xl ring-1 ring-white/20 shadow-xl">
+                <div className="relative lg:col-span-3 col-span-4 rounded-xl ring-1 ring-white/20 bg-white/20 shadow-xl">
                   <Image
                     className="w-full h-full object-cover object-center rounded-xl"
                     src={`https://image.tmdb.org/t/p/original${data.poster_path}`}
