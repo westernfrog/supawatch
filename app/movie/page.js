@@ -4,7 +4,11 @@ import Image from "next/image";
 import { useSearchParams } from "next/navigation";
 import { Fragment, useRef, useState, useEffect } from "react";
 import { Dialog, Transition } from "@headlessui/react";
-import { EllipsisHorizontalIcon, PlayIcon } from "@heroicons/react/24/outline";
+import {
+  EllipsisHorizontalIcon,
+  FilmIcon,
+  PlayIcon,
+} from "@heroicons/react/24/outline";
 
 export default function Movie() {
   const router = useSearchParams();
@@ -56,6 +60,7 @@ export default function Movie() {
   }, [id]);
 
   const [open, setOpen] = useState(false);
+  const [play, setPlay] = useState(false);
   const cancelButtonRef = useRef(null);
 
   return (
@@ -110,10 +115,17 @@ export default function Movie() {
                       </p>
                     ))}
                   </div>
-                  <div className="">
+                  <div className="flex items-center gap-4">
+                    <button
+                      onClick={() => setPlay(true)}
+                      className="bg-white lg:px-4 px-2 py-2 rounded-full flex items-center gap-3 tracking-tight text-gray-900 font-semibold"
+                    >
+                      <FilmIcon className="w-6 h-6 stroke-2 fill-gray-900" />
+                      Play {data.title}
+                    </button>
                     <button
                       onClick={() => setOpen(true)}
-                      className="bg-white lg:px-5 px-3 py-3 rounded-full flex items-center gap-2 tracking-tight text-gray-900 font-semibold"
+                      className="bg-white lg:px-4 px-2 py-2 rounded-full flex items-center gap-2 tracking-tight text-gray-900 font-semibold"
                     >
                       <PlayIcon className="w-6 h-6 stroke-0 fill-gray-900" />
                       Watch Trailer
@@ -146,6 +158,47 @@ export default function Movie() {
               </div>
             </div>
           </section>
+          <Transition.Root show={play} as={Fragment}>
+            <Dialog
+              as="div"
+              className="relative z-50"
+              initialFocus={cancelButtonRef}
+              onClose={setPlay}
+            >
+              <Transition.Child
+                as={Fragment}
+                enter="ease-out duration-300"
+                enterFrom="opacity-0"
+                enterTo="opacity-100"
+                leave="ease-in duration-200"
+                leaveFrom="opacity-100"
+                leaveTo="opacity-0"
+              >
+                <div className="fixed inset-0 bg-gray-900 bg-opacity-75 transition-opacity" />
+              </Transition.Child>
+              <div className="fixed inset-0 z-50 w-screen overflow-y-auto">
+                <div className="flex min-h-full items-center justify-center p-4 text-center sm:items-center sm:p-0">
+                  <Transition.Child
+                    as={Fragment}
+                    enter="ease-out duration-300"
+                    enterFrom="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+                    enterTo="opacity-100 translate-y-0 sm:scale-100"
+                    leave="ease-in duration-200"
+                    leaveFrom="opacity-100 translate-y-0 sm:scale-100"
+                    leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+                  >
+                    <Dialog.Panel className="relative transform overflow-hidden lg:rounded-2xl rounded-lg bg-white/20 shadow-xl transition-all my-8 w-full max-w-6xl lg:h-[40em] h-64">
+                      <iframe
+                        className="w-full h-full"
+                        src={`https://vidsrc.to/embed/movie/${id}`}
+                        allowFullScreen
+                      ></iframe>
+                    </Dialog.Panel>
+                  </Transition.Child>
+                </div>
+              </div>
+            </Dialog>
+          </Transition.Root>
           <Transition.Root show={open} as={Fragment}>
             <Dialog
               as="div"

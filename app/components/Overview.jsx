@@ -124,13 +124,13 @@ export default function Overview() {
                     </p>
                     <p>{item.release_date.slice(0, 4)}</p>
                   </div>
-                  <h1 className="lg:text-5xl text-3xl font-bold tracking-tighter">
+                  <h1 className="lg:text-5xl text-3xl font-bold tracking-tight text-white/90">
                     {item.title}
                   </h1>
-                  <p className="text-gray-300 lg:text-lg text-base">
+                  <p className="text-white lg:text-lg text-base">
                     {item.overview.slice(0, 160)}..
                   </p>
-                  <div className="flex flex-wrap items-center gap-x-2 font-medium text-gray-300 lg:text-base text-sm pt-2 pb-4">
+                  <div className="flex flex-wrap items-center gap-2 font-medium text-gray-300 lg:text-base text-sm pt-2 pb-4">
                     {getGenres(item.genre_ids).map((genre) => (
                       <p
                         key={genre}
@@ -145,14 +145,14 @@ export default function Overview() {
                       onClick={() => setOpen(true)}
                       className="bg-white lg:px-4 px-3 py-2 rounded-full flex items-center gap-2 tracking-tight"
                     >
-                      <PlayIcon className="w-6 h-6 stroke-0 fill-gray-900" />
+                      <PlayIcon className="w-5 h-5 stroke-0 fill-gray-900" />
                       Watch Trailer
                     </button>
                     <button
                       onClick={() => handleInfo(item.id)}
                       className="bg-white lg:px-4 px-3 py-2 rounded-full flex items-center gap-2 tracking-tight"
                     >
-                      <InformationCircleIcon className="w-6 h-6" />
+                      <InformationCircleIcon className="w-5 h-5 stroke-2" />
                       More Info
                     </button>
                   </div>

@@ -31,7 +31,7 @@ export default function Trending() {
               Trending
             </h1>
           </div>
-          <div className="grid grid-cols-12 items-center justify-between lg:gap-6 gap-4">
+          <div className="grid grid-cols-12 items-center justify-between lg:gap-10 gap-6">
             {data &&
               data.results
                 .slice(8, data.results.length)

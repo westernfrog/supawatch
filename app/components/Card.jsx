@@ -24,21 +24,18 @@ export default function Card(props) {
             priority={true}
             className="w-full lg:h-96 h-52 lg:rounded-xl rounded-lg object-cover object-center"
           />
-          <div className="absolute lg:rounded-xl rounded-lg w-full h-full inset-0 bg-gradient-to-b from-black/30 from-20% via-black/70 via-70% to-black/80 to-80%"></div>
+          <div className="absolute lg:rounded-xl rounded-lg w-full h-full inset-0 bg-gradient-to-b from-black/0 from-20% via-black/30 via-50% to-black/50 to-80%"></div>
           <div className="absolute lg:bottom-4 bottom-0 lg:p-6 px-3 py-4">
-            <h1 className="lg:text-3xl leading-5 lg:font-bold font-semibold mb-2 lg:mb-1">
+            <h1 className="lg:text-3xl leading-5 lg:font-bold font-semibold text-white/90 mb-6">
               {props.title}
             </h1>
-            <p className="lg:block hidden leading-3 lg:text-sm text-xs text-gray-300 pb-4">
-              {props.overview}..
-            </p>
-            <p className="leading-3 text-xs">
+            <p className="leading-3 text-sm font-semibold">
               {props.release_date.slice(0, 4)}
             </p>
           </div>
           <div className="lg:flex hidden absolute top-2 right-0 px-6 py-3 font-semibold items-center gap-6">
-            <h1 className="text-xs lg:bg-black/30 bg-black/60 py-1 px-2 rounded-full">
-              {props.vote_average}% Match
+            <h1 className="text-xs bg-black/50 backdrop-blur-sm py-1 px-2 rounded-full">
+              {props.vote_average}% Likes
             </h1>
           </div>
           <div className="group absolute inset-0 flex items-center justify-center group-hover:bg-black/60 transition duration-300 ease-in-out">
