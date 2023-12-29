@@ -120,7 +120,7 @@ export default function Overview() {
                 <div className="text-white max-w-xl space-y-4">
                   <div className="flex flex-wrap items-center gap-x-8 font-semibold text-gray-300 lg:text-base text-sm">
                     <p className="text-green-500">
-                      {Math.floor(item.vote_average * 10)}% Match
+                      {Math.floor(item.vote_average * 10)}% Rating
                     </p>
                     <p>{item.release_date.slice(0, 4)}</p>
                   </div>

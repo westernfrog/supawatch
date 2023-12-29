@@ -35,7 +35,7 @@ export default function Card(props) {
           </div>
           <div className="lg:flex hidden absolute top-2 right-0 px-6 py-3 font-semibold items-center gap-6">
             <h1 className="text-xs bg-black/50 backdrop-blur-sm py-1 px-2 rounded-full">
-              {props.vote_average}% Likes
+              {props.vote_average}% Rating
             </h1>
           </div>
           <div className="group absolute inset-0 flex items-center justify-center group-hover:bg-black/60 transition duration-300 ease-in-out">

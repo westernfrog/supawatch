@@ -95,7 +95,7 @@ export default function Movie() {
                 <div className="col-span-7 text-white w-full space-y-2">
                   <div className="flex flex-wrap items-center gap-x-8 font-semibold text-gray-300 lg:text-base text-sm pb-2">
                     <p className="text-green-500">
-                      {Math.floor(data.vote_average * 10)}% Match
+                      {Math.floor(data.vote_average * 10)}% Rating
                     </p>
                     <p>{data.release_date.slice(0, 4)}</p>
                   </div>
@@ -118,14 +118,14 @@ export default function Movie() {
                   <div className="flex items-center gap-4">
                     <button
                       onClick={() => setPlay(true)}
-                      className="bg-white lg:px-4 px-2 py-2 rounded-full flex items-center gap-3 tracking-tight text-gray-900 font-semibold"
+                      className="bg-white px-4 py-2 rounded-full flex items-center gap-3 tracking-tight text-gray-900 font-semibold"
                     >
                       <FilmIcon className="w-6 h-6 stroke-2 fill-gray-900" />
                       Play {data.title}
                     </button>
                     <button
                       onClick={() => setOpen(true)}
-                      className="bg-white lg:px-4 px-2 py-2 rounded-full flex items-center gap-2 tracking-tight text-gray-900 font-semibold"
+                      className="bg-white px-4 py-2 rounded-full flex items-center gap-2 tracking-tight text-gray-900 font-semibold"
                     >
                       <PlayIcon className="w-6 h-6 stroke-0 fill-gray-900" />
                       Watch Trailer

@@ -28,18 +28,16 @@ export default function Header() {
           </Link>
         </div>
         <div className="flex lg:hidden">
-          <button
-            type="button"
+          <Link
+            href={"/search"}
             className="-m-2.5 inline-flex items-center justify-center rounded-md p-2.5 text-gray-700"
-            onClick={() => setMobileMenuOpen(true)}
           >
-            <span className="sr-only">Open main menu</span>
             <MagnifyingGlassIcon
               className="h-5 w-5 stroke-white/70"
               strokeWidth={3}
               aria-hidden="true"
             />
-          </button>
+          </Link>
         </div>
         <div className="hidden lg:flex lg:flex-1 lg:justify-end">
           <Link
