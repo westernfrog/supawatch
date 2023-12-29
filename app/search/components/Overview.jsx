@@ -89,6 +89,21 @@ export default function Overview() {
                     vote_average={Math.floor(item.vote_average * 10)}
                   />
                 ))}
+              {data && data.results.length == 0 ? (
+                <div className="col-span-12">
+                  <h1 className="text-white/50 italic">
+                    i found no movies for you master.. :sed-emoji:
+                  </h1>
+                </div>
+              ) : (
+                <div className="col-span-12 my-10 px-10">
+                  <h1 className="text-white/50 italic">
+                    Gentlemen, welcome to Fight Club. The first rule of Fight
+                    Club is: you do not talk about Fight Club. The second rule
+                    of Fight Club is: you DO NOT talk about Fight Club!
+                  </h1>
+                </div>
+              )}
             </div>
           )}
         </div>
