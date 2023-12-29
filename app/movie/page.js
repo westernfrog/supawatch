@@ -68,7 +68,7 @@ export default function Movie() {
       {data ? (
         <>
           <section className="relative grid">
-            <div className="h-[30em]">
+            <div className="absolute -z-10 h-[30em] w-screen">
               <Image
                 className="w-full h-full object-cover object-center"
                 src={`https://image.tmdb.org/t/p/original${data.backdrop_path}`}
@@ -79,7 +79,7 @@ export default function Movie() {
               />
               <div className="absolute top-0 inset-0 bg-black/30 backdrop-opacity-100 bg-gradient-to-b from-black/40 from-10% via-black/70 via-40% to-[#010101] to-90%"></div>
             </div>
-            <div className="absolute lg:top-20 top-14">
+            <div className="lg:my-20 my-16">
               <div className="flex flex-col lg:grid grid-cols-12 w-screen items-start gap-12 text-gray-300 lg:px-16 p-6">
                 <div className="relative lg:col-span-3 col-span-4 rounded-xl ring-1 ring-white/20 bg-white/20 shadow-xl">
                   <Image

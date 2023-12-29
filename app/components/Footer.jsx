@@ -8,7 +8,7 @@ export default function Footer(params) {
   ];
   return (
     <>
-      <footer className="lg:flex-row flex-col items-center justify-between lg:px-16 p-6">
+      <footer className="lg:flex items-center justify-between lg:px-16 p-6">
         <div>
           <Link href="/">
             <span className="sr-only">Supawatch</span>
@@ -18,7 +18,7 @@ export default function Footer(params) {
             <p className="text-white/60">Made using TMDB</p>
           </Link>
         </div>
-        <div className="flex items-center justify-between mt-4 lg:mt-0">
+        <div className="flex items-center justify-between gap-6 mt-4 lg:mt-0">
           {socials.map((item, index) => (
             <Link
               key={index}
