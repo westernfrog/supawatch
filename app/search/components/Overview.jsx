@@ -31,7 +31,7 @@ export default function Overview() {
 
   return (
     <>
-      <section className="relative h-screen mb-20">
+      <section className="relative mb-20">
         <div className="absolute -z-20 h-80 w-screen">
           <Image
             className="w-full h-full object-cover object-top"
