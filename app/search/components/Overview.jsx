@@ -46,10 +46,10 @@ export default function Overview() {
               Search any movie!
             </h1>
           </div>
-          <div className="ring-1 ring-white/60 focus:ring-green-500 rounded-full flex items-center justify-between">
+          <div className="ring-1 ring-white/80 focus:ring-green-500 rounded-full flex items-center justify-between">
             <input
               type="text"
-              className="peer bg-transparent border-0 lg:px-10 px-4 lg:py-4 py-2 w-full focus:outline-0 focus:ring-0 rounded-full tracking-normal lg:text-xl placeholder:text-white/50 placeholder:italic lg:placeholder:text-lg placeholder:text-sm"
+              className="peer bg-transparent border-0 lg:px-10 px-4 lg:py-4 py-2 w-full focus:outline-0 focus:ring-0 rounded-full tracking-normal lg:text-xl placeholder:text-white/60 placeholder:italic"
               placeholder="godzilla king of monsters.."
               value={term}
               onChange={handleInputChange}
