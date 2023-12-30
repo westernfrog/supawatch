@@ -63,9 +63,10 @@ export default function Movie() {
   const [play, setPlay] = useState(false);
   const cancelButtonRef = useRef(null);
 
+  const dat = 0;
   return (
     <>
-      {data ? (
+      {dat ? (
         <>
           <section className="relative grid">
             <div className="absolute -z-10 h-[30em] w-screen">
@@ -243,10 +244,10 @@ export default function Movie() {
         </>
       ) : (
         <section className="relative grid">
-          <div className="h-[30em] bg-white/80">
+          <div className="absolute -z-10 h-[30em] h-screen w-screen bg-white/80">
             <div className="absolute top-0 inset-0 bg-black/30 bg-gradient-to-b from-black/40 from-10% via-black/70 via-40% to-[#010101] to-90%"></div>
           </div>
-          <div className="absolute lg:top-32 top-14">
+          <div className="my-20">
             <div className="flex flex-col lg:grid grid-cols-12 w-screen items-start gap-12 lg:px-16 p-6">
               <div className="relative lg:col-span-3 col-span-4 rounded-xl shadow-xl bg-white/10 h-96 lg:h-full w-full animate-pulse"></div>
               <div className="col-span-8 w-full h-full space-y-2">
