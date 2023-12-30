@@ -41,7 +41,7 @@ export default function Overview() {
             alt="Search"
           />
         </div>
-        <div className="absolute inset-0 bg-black/20 bg-gradient-to-b from-[#010101]/40 from-10% via-[#010101]/70 via-60% to-[#010101] to-80% -z-10 h-96 w-full"></div>
+        <div className="absolute inset-0 lg:bg-black/20 bg-black/50 bg-gradient-to-b from-[#010101]/40 from-10% via-[#010101]/70 via-60% to-[#010101] to-80% -z-10 h-96 w-full"></div>
         <div className="text-white/90 lg:px-14 lg:pt-24 px-6 pt-20">
           <div>
             <h1 className="lg:text-9xl text-4xl font-medium tracking-tighter lg:mb-0 mb-4">
@@ -51,19 +51,18 @@ export default function Overview() {
           <div className="ring-1 ring-white/60 focus:ring-green-500 rounded-full flex items-center justify-between">
             <input
               type="text"
-              className="peer bg-transparent border-0 lg:px-10 px-4 py-4 w-full focus:outline-0 focus:ring-0 rounded-full tracking-normal text-xl placeholder:text-white/50 placeholder:italic lg:placeholder:text-lg placeholder:text-sm"
+              className="peer bg-transparent border-0 lg:px-10 px-4 lg:py-4 py-2 w-full focus:outline-0 focus:ring-0 rounded-full tracking-normal text-xl placeholder:text-white/50 placeholder:italic lg:placeholder:text-lg placeholder:text-sm"
               placeholder="godzilla king of monsters.."
               value={term}
               onChange={handleInputChange}
             />
             <button
               onClick={() => handleSearch()}
-              className="lg:p-6 p-3 bg-green-500 rounded-full m-3"
+              className="lg:p-6 p-3 bg-green-500 rounded-full lg:m-2 m-1 active:scale-95 transition duration-300 ease-in-out"
             >
-              <MagnifyingGlassIcon
-                className="w-6 h-6 stroke-black/70"
-                strokeWidth={3}
-              />
+              <h1 className="lg:text-lg text-sm text-black/90 font-bold">
+                Search
+              </h1>
             </button>
           </div>
         </div>
@@ -89,9 +88,10 @@ export default function Overview() {
                   />
                 ))}
               {data && data.results.length == 0 ? (
-                <div className="col-span-12">
+                <div className="col-span-12 my-10">
                   <h1 className="text-white/60 italic text-sm text-center">
-                    i found no movies for you master.. :sed-emoji:
+                    i found no movies for you master.. try searching with better
+                    keywords..
                   </h1>
                 </div>
               ) : (
