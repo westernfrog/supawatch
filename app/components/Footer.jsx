@@ -52,7 +52,7 @@ export default function Footer(params) {
           href="/"
           className="lg:col-span-3 col-span-6 my-4 lg:text-start text-center"
         >
-          <h1 className="uppercase text-2xl font-bold tracking-tighter">
+          <h1 className="uppercase text-xl font-bold tracking-tighter">
             Supawatch
           </h1>
           <p className="text-sm leading-5 text-white/50">Made using TMDB API</p>
