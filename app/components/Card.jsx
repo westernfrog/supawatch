@@ -24,7 +24,7 @@ export default function Card(props) {
             priority={true}
             className="w-full lg:h-96 h-52 lg:rounded-xl rounded-lg object-cover object-center"
           />
-          <div className="absolute lg:rounded-xl rounded-lg w-full h-full inset-0 bg-gradient-to-b from-black/0 from-20% via-black/30 via-50% to-black/50 to-80%"></div>
+          <div className="absolute lg:rounded-xl rounded-lg w-full h-full inset-0 bg-black/50 bg-gradient-to-b from-black/0 from-20% via-black/30 via-50% to-black/50 to-80%"></div>
           <div className="absolute lg:bottom-4 bottom-0 lg:p-6 px-3 py-4">
             <h1 className="lg:text-3xl leading-5 lg:font-bold font-semibold text-white/90 mb-6">
               {props.title}

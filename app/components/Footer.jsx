@@ -12,19 +12,19 @@ export default function Footer(params) {
         <div>
           <Link href="/">
             <span className="sr-only">Supawatch</span>
-            <h1 className="font-bold uppercase tracking-tighter text-xl text-white/90">
+            <h1 className="font-bold uppercase tracking-tighter text-xl text-white/80">
               Supawatch
             </h1>
-            <p className="text-white/60">Made using TMDB</p>
+            <p className="text-white/40 text-sm">Made using TMDB</p>
           </Link>
         </div>
-        <div className="flex items-center justify-between gap-6 mt-4 lg:mt-0">
+        <div className="flex items-center justify-between gap-20 mt-4 lg:mt-0">
           {socials.map((item, index) => (
             <Link
               key={index}
               target="_blank"
               href={item.href}
-              className="text-white/60"
+              className="text-white/80"
             >
               {item.name}
             </Link>

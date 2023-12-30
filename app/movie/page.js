@@ -102,7 +102,7 @@ export default function Movie() {
                   <h1 className="text-4xl font-semibold tracking-tight">
                     {data.title}
                   </h1>
-                  <p className="text-gray-300 lg:text-base text-base">
+                  <p className="text-white/60 lg:text-base text-base">
                     {data.overview}
                   </p>
                   <div className="flex flex-wrap items-center gap-2 font-medium text-gray-300 lg:text-base text-sm pt-3 pb-5">
