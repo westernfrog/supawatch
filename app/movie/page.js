@@ -63,10 +63,9 @@ export default function Movie() {
   const [play, setPlay] = useState(false);
   const cancelButtonRef = useRef(null);
 
-  const dat = 0;
   return (
     <>
-      {dat ? (
+      {data ? (
         <>
           <section className="relative grid">
             <div className="absolute -z-10 h-[30em] w-screen">
