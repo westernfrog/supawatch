@@ -27,8 +27,6 @@ export default function Overview() {
     setTerm(event.target.value);
   };
 
-  console.log(data);
-
   return (
     <>
       <section className="relative mb-20">
@@ -51,7 +49,7 @@ export default function Overview() {
           <div className="ring-1 ring-white/60 focus:ring-green-500 rounded-full flex items-center justify-between">
             <input
               type="text"
-              className="peer bg-transparent border-0 lg:px-10 px-4 lg:py-4 py-2 w-full focus:outline-0 focus:ring-0 rounded-full tracking-normal text-xl placeholder:text-white/50 placeholder:italic lg:placeholder:text-lg placeholder:text-sm"
+              className="peer bg-transparent border-0 lg:px-10 px-4 lg:py-4 py-2 w-full focus:outline-0 focus:ring-0 rounded-full tracking-normal lg:text-xl placeholder:text-white/50 placeholder:italic lg:placeholder:text-lg placeholder:text-sm"
               placeholder="godzilla king of monsters.."
               value={term}
               onChange={handleInputChange}
@@ -68,7 +66,7 @@ export default function Overview() {
         </div>
         <div className="text-white/80 lg:px-16 lg:pt-24 px-6 pt-20 w-full">
           {loading ? (
-            <div className="flex items-center justify-center h-full w-full my-10">
+            <div className="flex items-center justify-center h-full w-full my-10 px-8">
               <h1 className="text-white/60 italic text-sm text-center">
                 searching this movie for you master...
               </h1>
@@ -88,7 +86,7 @@ export default function Overview() {
                   />
                 ))}
               {data && data.results.length == 0 ? (
-                <div className="col-span-12 my-10">
+                <div className="col-span-12 my-10 px-8">
                   <h1 className="text-white/60 italic text-sm text-center">
                     i found no movies for you master.. try searching with better
                     keywords..
