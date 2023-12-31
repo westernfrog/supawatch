@@ -1,7 +1,6 @@
 "use client";
 
 import { InformationCircleIcon, PlayIcon } from "@heroicons/react/24/outline";
-import Image from "next/image";
 import { Fragment, useRef, useState, useEffect } from "react";
 import { Dialog, Transition } from "@headlessui/react";
 import { useRouter } from "next/navigation";
@@ -106,7 +105,7 @@ export default function Overview() {
               key={index}
             >
               <div className="relative h-screen">
-                <Image
+                <img
                   className="w-full h-full object-cover object-center"
                   src={`https://image.tmdb.org/t/p/original/${item.backdrop_path}`}
                   width={5000}

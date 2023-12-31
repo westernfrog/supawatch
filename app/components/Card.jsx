@@ -1,7 +1,6 @@
 "use client";
 
 import { ArrowUpRightIcon } from "@heroicons/react/24/outline";
-import Image from "next/image";
 import { useRouter } from "next/navigation";
 
 export default function Card(props) {
@@ -16,7 +15,7 @@ export default function Card(props) {
           onClick={() => handleInfo(props.id)}
           className="group relative shadow-inner bg-white/20 lg:rounded-xl rounded-lg lg:h-96 h-52"
         >
-          <Image
+          <img
             src={`https://image.tmdb.org/t/p/original/${props.src}`}
             width={1000}
             height={1000}

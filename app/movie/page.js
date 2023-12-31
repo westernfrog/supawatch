@@ -1,14 +1,9 @@
 "use client";
 
-import Image from "next/image";
 import { useSearchParams } from "next/navigation";
 import { Fragment, useRef, useState, useEffect } from "react";
 import { Dialog, Transition } from "@headlessui/react";
-import {
-  EllipsisHorizontalIcon,
-  FilmIcon,
-  PlayIcon,
-} from "@heroicons/react/24/outline";
+import { FilmIcon, PlayIcon } from "@heroicons/react/24/outline";
 
 export default function Movie() {
   const router = useSearchParams();
@@ -69,7 +64,7 @@ export default function Movie() {
         <>
           <section className="relative grid">
             <div className="absolute -z-10 h-[30em] w-screen">
-              <Image
+              <img
                 className="w-full h-full object-cover object-center"
                 src={`https://image.tmdb.org/t/p/original${data.backdrop_path}`}
                 width={2000}
@@ -82,7 +77,7 @@ export default function Movie() {
             <div className="lg:my-20 my-16">
               <div className="flex flex-col lg:grid grid-cols-12 w-screen items-start gap-12 text-gray-300 lg:px-16 p-6">
                 <div className="relative lg:col-span-3 col-span-4 rounded-xl ring-1 ring-white/20 bg-white/20 shadow-xl">
-                  <Image
+                  <img
                     className="w-full h-full object-cover object-center rounded-xl"
                     src={`https://image.tmdb.org/t/p/original${data.poster_path}`}
                     width={600}
@@ -139,7 +134,7 @@ export default function Movie() {
                           className="cursor-pointer lg:col-span-2 col-span-6"
                         >
                           <div className="relative text-gray-300">
-                            <Image
+                            <img
                               className="w-full h-40 ring-1 ring-white/10 object-cover object-center rounded-xl"
                               src={`https://image.tmdb.org/t/p/original${item.profile_path}`}
                               width={100}
