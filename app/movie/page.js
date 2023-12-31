@@ -66,7 +66,11 @@ export default function Movie() {
             <div className="absolute -z-10 h-[30em] w-screen">
               <img
                 className="w-full h-full object-cover object-center"
-                src={`https://image.tmdb.org/t/p/original${data.backdrop_path}`}
+                src={
+                  data.backdrop_path
+                    ? `https://image.tmdb.org/t/p/original${data.backdrop_path}`
+                    : "https://img.freepik.com/free-photo/gray-painted-background_53876-94041.jpg?w=996&t=st=1704003269~exp=1704003869~hmac=ddeff197f70efa603218c7a2f7fc224b40f95cfb3886a2b0ec1ab8007e35b4f5"
+                }
                 width={2000}
                 height={2000}
                 alt="Latest"
@@ -136,10 +140,14 @@ export default function Movie() {
                           <div className="relative text-gray-300">
                             <img
                               className="w-full h-40 ring-1 ring-white/10 object-cover object-center rounded-xl"
-                              src={`https://image.tmdb.org/t/p/original${item.profile_path}`}
+                              src={
+                                item.profile_path
+                                  ? `https://image.tmdb.org/t/p/original${item.profile_path}`
+                                  : "https://img.freepik.com/free-photo/abstract-textured-backgound_1258-30567.jpg?w=740&t=st=1704003442~exp=1704004042~hmac=32bdbbf0643d0b7b3242be0ff8f52df3ed9f4fad0e72df47af0e8d46bb58a751"
+                              }
                               width={100}
                               height={100}
-                              alt="Latest"
+                              alt={item.name}
                             />
                             <div className="absolute top-0 inset-0 bg-black/20 rounded-xl"></div>
                             <h1 className="lg:absolute relative left-0 right-0 text-sm text-center py-2">
