@@ -34,7 +34,7 @@ export default function Upcoming() {
           <div className="grid grid-cols-12 items-center justify-between lg:gap-10 gap-6">
             {data &&
               data.results
-                .slice(8, data.results.length)
+                .slice(0, data.results.length)
                 .map((item, index) => (
                   <Card
                     key={index}
