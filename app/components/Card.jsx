@@ -16,7 +16,11 @@ export default function Card(props) {
           className="group relative shadow-inner bg-white/20 lg:rounded-xl rounded-lg lg:h-96 h-52"
         >
           <img
-            src={`https://image.tmdb.org/t/p/original/${props.src}`}
+            src={
+              props.src
+                ? `https://image.tmdb.org/t/p/original/${props.src}`
+                : "https://img.freepik.com/free-photo/abstract-textured-backgound_1258-30567.jpg?w=740&t=st=1704003442~exp=1704004042~hmac=32bdbbf0643d0b7b3242be0ff8f52df3ed9f4fad0e72df47af0e8d46bb58a751"
+            }
             width={1000}
             height={1000}
             alt={props.title}
