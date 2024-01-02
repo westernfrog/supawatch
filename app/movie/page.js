@@ -65,7 +65,7 @@ export default function Movie() {
           <section className="relative grid">
             <div className="absolute -z-10 h-[30em] w-screen">
               <img
-                className="w-full h-full object-cover object-center"
+                className="w-full h-full object-cover object-top"
                 src={
                   data.backdrop_path
                     ? `https://image.tmdb.org/t/p/original${data.backdrop_path}`
@@ -76,7 +76,7 @@ export default function Movie() {
                 alt="Latest"
                 priority={false}
               />
-              <div className="absolute top-0 inset-0 bg-black/30 backdrop-opacity-100 bg-gradient-to-b from-black/40 from-10% via-black/70 via-40% to-[#010101] to-90%"></div>
+              <div className="absolute top-0 inset-0 backdrop-opacity-100 bg-gradient-to-b from-black/20 from-10% via-black/50 via-40% to-[#010101] to-90%"></div>
             </div>
             <div className="lg:my-20 my-16">
               <div className="flex flex-col lg:grid grid-cols-12 w-screen items-start gap-12 text-gray-300 lg:px-16 p-6">
@@ -101,7 +101,7 @@ export default function Movie() {
                   <h1 className="text-4xl font-semibold tracking-tight">
                     {data.title}
                   </h1>
-                  <p className="text-white/80 lg:text-base text-base">
+                  <p className="text-white/90 lg:text-base text-base">
                     {data.overview}
                   </p>
                   <div className="flex flex-wrap items-center gap-2 font-medium text-gray-300 lg:text-base text-sm pt-3 pb-5">
