@@ -114,19 +114,19 @@ export default function Movie() {
                       </p>
                     ))}
                   </div>
-                  <div className="flex items-center gap-4">
+                  <div className="lg:flex grid items-center gap-4 text-sm">
                     <button
                       onClick={() => setPlay(true)}
-                      className="bg-white px-4 py-2 rounded-full flex items-center gap-3 tracking-tight text-gray-900 font-semibold"
+                      className="bg-white px-5 lg:py-3 py-2 rounded-full flex  items-center justify-center gap-2 tracking-tight text-gray-900 font-semibold"
                     >
-                      <FilmIcon className="w-6 h-6 stroke-2 fill-gray-900" />
-                      Play {data.title}
+                      <FilmIcon className="w-5 h-5 stroke-2 fill-gray-900" />
+                      Play Movie
                     </button>
                     <button
                       onClick={() => setOpen(true)}
-                      className="bg-white px-4 py-2 rounded-full flex items-center gap-2 tracking-tight text-gray-900 font-semibold"
+                      className="bg-white px-5 lg:py-3 py-2 rounded-full flex items-center justify-center gap-2 tracking-tight text-gray-900 font-semibold"
                     >
-                      <PlayIcon className="w-6 h-6 stroke-0 fill-gray-900" />
+                      <PlayIcon className="w-5 h-5 stroke-0 fill-gray-900" />
                       Watch Trailer
                     </button>
                   </div>
