@@ -112,7 +112,7 @@ export default function Overview() {
                 </div>
                 <div className="absolute bottom-0 lg:p-10 p-6 flex items-end justify-between">
                   <div className="lg:space-y-6 space-y-4 lg:w-[550px]">
-                    <h1 className="lg:text-6xl text-3xl font-semibold text-dm tracking-wide">
+                    <h1 className="lg:text-6xl text-4xl font-semibold text-dm tracking-wide">
                       {item.title}
                     </h1>
                     <div className="flex flex-wrap items-center lg:gap-4 gap-2">
