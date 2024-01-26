@@ -45,25 +45,59 @@ export default function Footer(params) {
       ),
     },
   ];
+
+  const navigation = [
+    { name: "Popular", href: "/popular" },
+    { name: "Upcoming", href: "/upcoming" },
+    { name: "Top Rated", href: "/top-rated" },
+    { name: "TV Series", href: "/tv" },
+    { name: "Search", href: "/search" },
+  ];
+
   return (
     <>
-      <footer className="grid grid-cols-6 items-center justify-between text-white/90 lg:px-16 p-6">
-        <Link
-          href="/"
-          className="lg:col-span-3 col-span-6 my-4 lg:text-start text-center"
-        >
-          <h1 className="uppercase text-xl font-bold tracking-tighter">
+      <footer className="flex lg:flex-row flex-col items-end justify-between lg:gap-28 gap-6 lg:p-10 p-6">
+        <div className="basis-1/3 space-y-2">
+          <Link
+            href="/"
+            className="relative lg:text-4xl text-2xl font-black tracking-tighter text-transparent uppercase bg-clip-text bg-gradient-to-br from-yellow-400 to-yellow-700 text-dm"
+          >
             Supawatch
-          </h1>
-          <p className="text-sm leading-5 text-white/50">Made using TMDB API</p>
-        </Link>
-        <div className="lg:col-span-3 col-span-6 flex items-center lg:justify-end justify-center gap-16 lg:pt-0 pt-4">
-          {socials.map((item, index) => (
-            <Link key={index} href={item.href}>
-              <span className="sr-only">{item.name}</span>
-              {item.icon}
-            </Link>
-          ))}
+          </Link>
+          <p className="text-neutral-400 font-medium">
+            Explore a cinematic universe like never before with our movie site
+            powered by the TMDB API.
+          </p>
+        </div>
+        <div className="basis-1/6 flex items-start justify-between lg:gap-32 w-full">
+          <div className="">
+            <ul className="space-y-2 font-medium">
+              {navigation.map((item, index) => (
+                <li
+                  key={index}
+                  className="text-neutral-400 hover:text-neutral-200"
+                >
+                  <Link key={index} href={item.href}>
+                    {item.name}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+          <div className="">
+            <ul className="space-y-2 font-medium">
+              {socials.map((item, index) => (
+                <li
+                  key={index}
+                  className="text-neutral-400 hover:text-neutral-200"
+                >
+                  <Link key={index} href={item.href}>
+                    {item.name}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
         </div>
       </footer>
     </>

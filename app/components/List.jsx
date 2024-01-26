@@ -6,12 +6,12 @@ import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 
-export default function TopRated(params) {
+export default function List(props) {
   const [data, setData] = useState(null);
   useEffect(() => {
     async function fetchData() {
       try {
-        const response = await fetch(`/api/getMovieList?list=top_rated`);
+        const response = await fetch(`/api/getMovieList?list=${props.list}`);
         const fetchedData = await response.json();
         setData(fetchedData.data);
       } catch (error) {
@@ -27,38 +27,34 @@ export default function TopRated(params) {
         <section className="relative">
           <div className="lg:px-10 px-6 pt-10 flex items-center justify-between">
             <h1 className="text-lg tracking-tight font-medium text-neutral-200">
-              Top Rated Movies
+              {props.title}
             </h1>
             <Link
-              href="/"
-              className="flex items-center gap-2 text-neutral-200 lg:text-base"
+              href={"/" + props.list}
+              className="flex items-center gap-2 text-neutral-200"
             >
               <ArrowLongLeftIcon className="w-6 h-6 stroke-neutral-200" />
               See More
             </Link>
           </div>
-          <div className="lg:px-10 px-6 py-4">
-            <div className="grid grid-cols-12 gap-4">
-              {data.results.slice(0, 18).map((item, index) => (
+          <div className="lg:px-10 px-6">
+            <div className="flex items-center gap-4 overflow-x-auto py-3 pb-10 ps-1 snap-x">
+              {data.results.map((item, index) => (
                 <Link
                   key={index}
-                  href={"/movie/" + item.id}
-                  className="group lg:col-span-2 col-span-6"
+                  href={`/movie/${item.id}`}
+                  className="relative group flex-shrink-0 lg:w-64 w-48 snap-start h-full"
                 >
-                  <div className="relative h-full">
+                  <div className="relative rounded-lg bg-white/20">
                     <Image
-                      src={
-                        item.poster_path
-                          ? `https://image.tmdb.org/t/p/w500/${item.poster_path}`
-                          : "https://images.unsplash.com/photo-1601925662822-510b76665bd9?q=80&w=1780&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-                      }
+                      src={`https://image.tmdb.org/t/p/w500/${item.poster_path}`}
                       width={500}
                       height={500}
-                      alt="Backdrop"
-                      className="h-full object-cover object-center rounded-lg"
+                      alt={item.title}
+                      className="lg:h-96 h-72 object-cover object-center rounded-lg"
                     />
-                    <div className="absolute top-0 inset-0 bg-black/40 group-hover:bg-black/80 transition duration-300 ease-in-out rounded-lg"></div>
-                    <div className="hidden group-hover:flex transition duration-300 ease-in-out absolute z-40 inset-0 items-center justify-center rounded-lg">
+                    <div className="absolute top-0 inset-0 bg-black/40 group-hover:bg-black/80 transition duration-300 ease-in-out"></div>
+                    <div className="hidden group-hover:flex transition duration-300 ease-in-out absolute z-40 inset-0 items-center justify-center">
                       <div className="bg-white/10 px-4 py-3 flex items-center justify-center gap-1 rounded-full backdrop-blur-xl backdrop-opacity-60">
                         <h1 className="tracking-tight font-medium text-sm">
                           Watch Now

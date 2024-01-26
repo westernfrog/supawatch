@@ -1,8 +1,10 @@
 export async function GET(request) {
   try {
     const { searchParams } = new URL(request.url);
-    const id = searchParams.get("id");
-    const url = `https://api.themoviedb.org/3/movie/${id}/credits?language=en-US`;
+    const page = searchParams.get("page");
+    const genre = searchParams.get("genre");
+    const category = searchParams.get("category");
+    const url = `https://api.themoviedb.org/3/discover/${category}?include_adult=true&include_video=false&language=en-US&page=${page}&sort_by=vote_count.desc&with_genres=${genre}'`;
     const options = {
       method: "GET",
       headers: {
@@ -14,7 +16,6 @@ export async function GET(request) {
 
     const response = await fetch(url, options, { cache: "force-cache" });
     const data = await response.json();
-
     return Response.json({ data });
   } catch (error) {
     return Response.json({ message: "Internal server error" }, { status: 500 });

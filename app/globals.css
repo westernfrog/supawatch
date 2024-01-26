@@ -4,10 +4,26 @@
 
 @layer base {
   body {
-    letter-spacing: 0px;
+    letter-spacing: -0.2px;
     -moz-osx-font-smoothing: grayscale;
     -webkit-font-smoothing: antialiased;
     background-color: #010101;
+    color: #d4d4d4;
     overflow-x: hidden;
+    font-family: var(--font-inter);
+  }
+  .text-dm {
+    font-family: var(--font-dm);
+  }
+  ::-webkit-scrollbar {
+    width: 5px;
+    height: 5px;
+  }
+  ::-webkit-scrollbar-track {
+    background-color: inherit;
+  }
+  ::-webkit-scrollbar-thumb {
+    background-color: #181818;
+    border-radius: 120px;
   }
 }

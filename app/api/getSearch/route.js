@@ -2,7 +2,7 @@ export async function GET(request) {
   try {
     const { searchParams } = new URL(request.url);
     const query = searchParams.get("query");
-    const url = `https://api.themoviedb.org/3/search/movie?query=${query}&include_adult=true&language=en-US&page=1`;
+    const url = `https://api.themoviedb.org/3/search/multi?query=${query}&include_adult=true&language=en-US&page=1`;
     const options = {
       method: "GET",
       headers: {
