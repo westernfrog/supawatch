@@ -18,7 +18,7 @@ const dm = DM_Serif_Display({
 });
 
 export const metadata = {
-  title: "Supawatch - Explore a text-dmtic universe like never before",
+  title: "Supawatch - Explore a cinematic universe like never before",
   description:
     "Explore a cinematic universe like never before with our movie site powered by the TMDB API. Immerse yourself in a vast collection of films and discover hidden gems. With seamless integration, watch your favorite movies instantly. Your go-to destination for endless entertainment awaits discover, stream, and experience the magic of cinema today!",
 };
