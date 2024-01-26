@@ -53,7 +53,7 @@ export default function Movie() {
               </p>
             </div>
           </div>
-          <div className="absolute inset-10 flex flex-row items-end justify-center">
+          <div className="absolute inset-20 flex flex-row items-end justify-center">
             <div className="flex items-center lg:gap-4 gap-2">
               <button
                 type="button"
