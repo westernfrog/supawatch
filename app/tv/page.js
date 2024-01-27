@@ -1,4 +1,4 @@
-export default function TV() {
+export default function TVSeries() {
   return (
     <>
       <section className="h-screen flex items-center justify-center">
