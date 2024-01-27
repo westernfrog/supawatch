@@ -30,7 +30,7 @@ export default function MovieList(props) {
             </h1>
             <Link
               href={"/" + props.list}
-              className="flex items-center gap-2 text-neutral-200 text-lg"
+              className="flex items-center gap-2 text-neutral-200 lg:text-lg"
             >
               <ArrowLongLeftIcon className="w-6 h-6 stroke-neutral-200" />
               See More
