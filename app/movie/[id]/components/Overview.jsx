@@ -114,14 +114,14 @@ export default function Overview(props) {
               </Transition.Root>
             </div>
           </div>
-          <div className="lg:col-span-8 space-y-6">
+          <div className="lg:col-span-8 space-y-2">
             <div className="space-y-2">
               <h1 className="lg:text-4xl text-3xl font-semibold text-dm text-transparent bg-clip-text bg-gradient-to-br from-yellow-400 to-yellow-700">
                 Storyline
               </h1>
               <p className="lg:text-lg text-base">{props.overview}</p>
             </div>
-            <div className="flex items-center font-medium lg:gap-16 gap-8 lg:text-lg text-base">
+            <div className="flex items-center font-medium lg:gap-16 gap-8 lg:text-lg text-base py-4">
               <p className="text-green-500">
                 {Math.floor(props.vote_average * 10)}% Rating
               </p>
@@ -141,7 +141,7 @@ export default function Overview(props) {
                 </Link>
               ))}
             </div>
-            <div className="space-y-4 lg:py-0 py-4">
+            <div className="lg:py-0 py-4 space-y-4">
               <h1 className="lg:text-2xl text-xl font-semibold">Casts</h1>
               <div className="flex flex-row items-start gap-4 overflow-x-auto pb-6 ps-1 snap-x">
                 {credits &&
