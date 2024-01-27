@@ -41,7 +41,7 @@ export default function Overview(props) {
 
   return (
     <>
-      <section className="max-w-7xl mx-auto lg:h-screen flex items-center justify-center">
+      <section className="max-w-7xl mx-auto lg:h-screen flex items-center justify-center lg:my-40">
         <div className="lg:grid lg:grid-cols-12 items-start lg:p-10 p-6 gap-x-20 gap-6 w-full">
           <div className="lg:col-span-4">
             <div className="relative bg-gradient-to-b from-white/20 to-white/80 rounded-lg lg:w-full h-full">

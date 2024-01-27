@@ -111,7 +111,7 @@ export default function Movie() {
             runtime={data.runtime}
             production_companies={data.production_companies}
           />
-          <section className="max-w-7xl mx-auto">
+          <section className="">
             <div className="lg:p-10 p-6">
               <h1 className="lg:text-4xl text-2xl font-semibold tracking-tight">
                 Similar Movies
