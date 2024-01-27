@@ -119,7 +119,7 @@ export default function Overview(props) {
               <h1 className="lg:text-4xl text-3xl font-semibold text-dm text-transparent bg-clip-text bg-gradient-to-br from-yellow-400 to-yellow-700">
                 Storyline
               </h1>
-              <p className="lg:text-xl text-lg">{props.overview}</p>
+              <p className="lg:text-lg text-base">{props.overview}</p>
             </div>
             <div className="flex items-center font-medium lg:gap-16 gap-8 lg:text-lg text-base">
               <p className="text-green-500">
