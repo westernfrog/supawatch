@@ -50,10 +50,12 @@ export default function Movie() {
                   onClick={() => setPlay(true)}
                   className="flex-shrink-0 flex items-center gap-3"
                 >
-                  <div className="backdrop-blur-xl bg-white/10 lg:p-4 p-3 rounded-full active:scale-95 transition duration-300 ease-in-out">
-                    <PlayIcon className="lg:w-10 lg:h-10 w-8 h-8 ps-1" />
+                  <div className="backdrop-blur-xl bg-white/10 lg:p-4 p-2 rounded-full active:scale-95 transition duration-300 ease-in-out">
+                    <PlayIcon className="lg:w-10 lg:h-10 w-7 h-7 ps-1" />
                   </div>
-                  <h1 className="font-medium text-lg">Play Movie</h1>
+                  <h1 className="font-medium lg:text-lg tracking-tight">
+                    Play Movie
+                  </h1>
                 </button>
                 <Transition.Root show={play} as={Fragment}>
                   <Dialog
