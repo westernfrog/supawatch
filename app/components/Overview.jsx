@@ -1,6 +1,5 @@
 "use client";
 
-import Image from "next/image";
 import { PlayIcon, RectangleGroupIcon } from "@heroicons/react/24/solid";
 import Link from "next/link";
 import { Fragment, useRef, useState, useEffect } from "react";

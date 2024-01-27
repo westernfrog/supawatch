@@ -26,12 +26,12 @@ export default function TVList(props) {
       {data ? (
         <section className="relative">
           <div className="lg:px-10 px-6 pt-10 flex items-center justify-between">
-            <h1 className="text-lg tracking-tight font-medium text-neutral-200">
+            <h1 className="lg:text-2xl text-lg font-bold tracking-tighter text-transparent bg-clip-text bg-gradient-to-br from-yellow-400 to-yellow-700">
               {props.title}
             </h1>
             <Link
               href={"/" + props.list}
-              className="flex items-center gap-2 text-neutral-200"
+              className="flex items-center gap-2 text-neutral-200 text-lg"
             >
               <ArrowLongLeftIcon className="w-6 h-6 stroke-neutral-200" />
               See More
