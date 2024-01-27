@@ -39,8 +39,6 @@ export default function Overview(props) {
     fetchCredits();
   }, []);
 
-  console.log(credits);
-
   return (
     <>
       <section className="max-w-7xl mx-auto lg:h-screen flex items-center justify-center my-20">
