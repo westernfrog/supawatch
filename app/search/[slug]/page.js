@@ -72,7 +72,7 @@ export default function Slug() {
                 className="group lg:col-span-2 col-span-6"
               >
                 <div className="relative h-full bg-white/10 rounded-lg">
-                  <Image
+                  <img
                     src={
                       item.poster_path
                         ? `https://image.tmdb.org/t/p/w500/${item.poster_path}`
@@ -80,8 +80,6 @@ export default function Slug() {
                         ? `https://image.tmdb.org/t/p/w500/${item.profile_path}`
                         : "https://images.unsplash.com/photo-1464639351491-a172c2aa2911?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MjB8fGJsYWNrJTIwYmFja2dyb3VuZHxlbnwwfHwwfHx8MA%3D%3D"
                     }
-                    width={500}
-                    height={500}
                     alt={item.id}
                     className="h-full object-cover object-center rounded-lg"
                   />

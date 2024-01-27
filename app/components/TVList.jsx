@@ -46,10 +46,8 @@ export default function TVList(props) {
                   className="relative group flex-shrink-0 lg:w-64 w-48 snap-start"
                 >
                   <div className="relative rounded-lg bg-white/20 h-full">
-                    <Image
+                    <img
                       src={`https://image.tmdb.org/t/p/w500/${item.poster_path}`}
-                      width={500}
-                      height={500}
                       alt={item.title}
                       className="lg:h-96 h-72 object-cover object-center rounded-lg"
                     />

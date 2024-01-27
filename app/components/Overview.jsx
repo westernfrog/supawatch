@@ -100,12 +100,9 @@ export default function Overview() {
             <main key={index} className="h-screen">
               <div className="w-full h-full">
                 <div className="relative w-full h-full bg-gradient-to-b from-white/20 to-white/80">
-                  <Image
+                  <img
                     src={`https://image.tmdb.org/t/p/original/${item.backdrop_path}`}
-                    width={2000}
-                    height={2000}
                     alt="Backdrop"
-                    priority
                     className="w-full h-full object-cover object-top"
                   />
                   <div className="absolute top-0 bg-black/30 inset-0 bg-gradient-to-b from-black/60 from-20% via-black/50 via-40% to-[#010101] to-98%"></div>

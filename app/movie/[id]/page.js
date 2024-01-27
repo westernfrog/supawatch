@@ -34,11 +34,9 @@ export default function Movie() {
       {data ? (
         <section className="relative h-screen">
           <div className="relative w-full h-full bg-gradient-to-b from-white/20 to-neutral-900/80">
-            <Image
+            <img
               src={`https://image.tmdb.org/t/p/original${data.backdrop_path}}`}
               alt="Backdrop"
-              width={2000}
-              height={2000}
               className="w-full h-full object-cover object-top"
             />
             <div className="absolute top-0 inset-0 bg-black/40 bg-gradient-to-b from-black/60 from-20% via-black/50 via-40% to-[#010101] to-98%"></div>
@@ -58,7 +56,6 @@ export default function Movie() {
                 </div>
                 <h1 className="font-medium text-lg">Play Movie</h1>
               </button>
-
               <Transition.Root show={play} as={Fragment}>
                 <Dialog
                   as="div"

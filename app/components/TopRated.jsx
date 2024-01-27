@@ -46,14 +46,12 @@ export default function TopRated(params) {
                   className="group lg:col-span-2 col-span-6"
                 >
                   <div className="relative h-full">
-                    <Image
+                    <img
                       src={
                         item.poster_path
                           ? `https://image.tmdb.org/t/p/w500/${item.poster_path}`
                           : "https://images.unsplash.com/photo-1601925662822-510b76665bd9?q=80&w=1780&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
                       }
-                      width={500}
-                      height={500}
                       alt="Backdrop"
                       className="h-full object-cover object-center rounded-lg"
                     />
