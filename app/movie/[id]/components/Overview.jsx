@@ -121,18 +121,7 @@ export default function Overview(props) {
               </h1>
               <p className="lg:text-xl text-lg">{props.overview}</p>
             </div>
-            <div className="flex items-center gap-4">
-              {props.genres.map((item) => (
-                <Link
-                  key={item.id}
-                  href={`/item/${item.id}`}
-                  className="lg:px-4 px-3 py-2 bg-white/10 font-medium backdrop-blur rounded-full"
-                >
-                  {item.name}
-                </Link>
-              ))}
-            </div>
-            <div className="flex flex-wrap items-center font-medium lg:gap-16 gap-8 lg:text-lg text-base">
+            <div className="flex items-center font-medium lg:gap-16 gap-8 lg:text-lg text-base">
               <p className="text-green-500">
                 {Math.floor(props.vote_average * 10)}% Rating
               </p>
@@ -141,7 +130,18 @@ export default function Overview(props) {
                 {Math.floor(props.runtime / 60)}h {props.runtime % 60}min
               </p>
             </div>
-            <div className="space-y-4">
+            <div className="flex flex-wrap items-center lg:gap-4 gap-3">
+              {props.genres.map((item) => (
+                <Link
+                  key={item.id}
+                  href={`/item/${item.id}`}
+                  className="lg:px-4 px-3 py-2 bg-white/10 font-medium backdrop-blur rounded-full text-sm lg:text-base"
+                >
+                  {item.name}
+                </Link>
+              ))}
+            </div>
+            <div className="space-y-4 lg:py-0 py-4">
               <h1 className="lg:text-2xl text-xl font-semibold">Casts</h1>
               <div className="flex flex-row items-start gap-4 overflow-x-auto pb-6 ps-1 snap-x">
                 {credits &&
