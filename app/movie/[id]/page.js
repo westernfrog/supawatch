@@ -5,6 +5,7 @@ import { useParams } from "next/navigation";
 import { Fragment, useRef, useState, useEffect } from "react";
 import { Dialog, Transition } from "@headlessui/react";
 import Overview from "./components/Overview";
+import Similar from "./components/Similar";
 
 export default function Movie() {
   const { id } = useParams();
@@ -110,6 +111,15 @@ export default function Movie() {
             runtime={data.runtime}
             production_companies={data.production_companies}
           />
+          <section className="max-w-7xl mx-auto">
+            <div className="lg:p-10 p-6">
+              <h1 className="lg:text-4xl text-2xl font-semibold tracking-tight">
+                Similar Movies
+              </h1>
+            </div>
+            <Similar page={1} />
+            <Similar page={2} />
+          </section>
         </>
       ) : (
         <section className="relative h-screen animate-pulse">
