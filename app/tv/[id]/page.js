@@ -46,7 +46,7 @@ export default function TVSeries() {
                 <h1 className="lg:text-8xl text-4xl font-bold text-dm opacity-80">
                   {data.name}
                 </h1>
-                <div className="flex items-center text-base lg:divide-x font-medium lg:gap-0 gap-6">
+                <div className="flex items-center lg:text-base text-sm lg:divide-x font-medium lg:gap-0 gap-6">
                   <p className="text-green-500 lg:pe-8">
                     {Math.floor(data.vote_average * 10)}% Rating
                   </p>
