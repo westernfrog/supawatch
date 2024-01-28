@@ -8,24 +8,9 @@ import Link from "next/link";
 
 export default function Seasons(props) {
   const { id } = useParams();
-  const [data, setData] = useState(null);
   const [season, setSeason] = useState(null);
   const [play, setPlay] = useState(false);
   const cancelButtonRef = useRef(null);
-
-  useEffect(() => {
-    async function fetchData() {
-      try {
-        const response = await fetch(`/api/getTVSeriesDetails?id=${id}`);
-        const fetchedData = await response.json();
-        setData(fetchedData.data);
-      } catch (error) {
-        console.error("Error fetching data:", error);
-      }
-    }
-
-    fetchData();
-  }, []);
 
   useEffect(() => {
     async function fetchSeason() {
@@ -54,33 +39,77 @@ export default function Seasons(props) {
         <div className="flex flex-row items-start gap-4 overflow-x-auto snap-x pb-3">
           {season &&
             season.episodes.map((item, index) => (
-              <button
-                key={index}
-                className="relative group flex-shrink-0 snap-start p-1 lg:w-96 w-64 h-full"
-              >
-                <div className="relative flex flex-col">
-                  <img
-                    src={
-                      item.still_path
-                        ? `https://image.tmdb.org/t/p/w500/${item.still_path}`
-                        : "https://images.unsplash.com/photo-1464639351491-a172c2aa2911?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MjB8fGJsYWNrJTIwYmFja2dyb3VuZHxlbnwwfHwwfHx8MA%3D%3D"
-                    }
-                    alt={item.name}
-                    className="w-full lg:h-64 h-40 object-cover object-center rounded-lg"
-                  />
-                  <div className="absolute top-2 left-2 z-10 bg-white/10 backdrop-blur-xl font-semibold px-3 py-1 rounded-full lg:text-sm text-xs">
-                    #{item.episode_number} episode
-                  </div>
-                  <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/60 group-hover:bg-black/80 transition duration-300 ease-in-out rounded-lg">
-                    <div className="backdrop-blur-xl bg-white/10 lg:p-2 p-2 rounded-full active:scale-95 transition duration-300 ease-in-out">
-                      <PlayIcon className="lg:w-8 lg:h-8 w-6 h-6 ps-1" />
+              <>
+                <button
+                  key={index}
+                  onClick={() => setPlay(true)}
+                  className="relative group flex-shrink-0 snap-start p-1 lg:w-96 w-64 h-full"
+                >
+                  <div className="relative flex flex-col">
+                    <img
+                      src={
+                        item.still_path
+                          ? `https://image.tmdb.org/t/p/w500/${item.still_path}`
+                          : "https://images.unsplash.com/photo-1464639351491-a172c2aa2911?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MjB8fGJsYWNrJTIwYmFja2dyb3VuZHxlbnwwfHwwfHx8MA%3D%3D"
+                      }
+                      alt={item.name}
+                      className="w-full lg:h-64 h-40 object-cover object-center rounded-lg"
+                    />
+                    <div className="absolute top-2 left-2 z-10 bg-white/10 backdrop-blur-xl font-semibold px-3 py-1 rounded-full lg:text-sm text-xs">
+                      #{item.episode_number} episode
+                    </div>
+                    <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/60 group-hover:bg-black/80 transition duration-300 ease-in-out rounded-lg">
+                      <div className="backdrop-blur-xl bg-white/10 lg:p-2 p-2 rounded-full active:scale-95 transition duration-300 ease-in-out">
+                        <PlayIcon className="lg:w-8 lg:h-8 w-6 h-6 ps-1" />
+                      </div>
                     </div>
                   </div>
-                </div>
-                <h1 className="lg:text-lg text-sm lg:font-semibold font-medium text-center py-3">
-                  {item.name}
-                </h1>
-              </button>
+                  <h1 className="lg:text-lg text-sm lg:font-semibold font-medium text-center py-3">
+                    {item.name}
+                  </h1>
+                </button>
+                <Transition.Root show={play} as={Fragment}>
+                  <Dialog
+                    as="div"
+                    className="relative z-50"
+                    initialFocus={cancelButtonRef}
+                    onClose={setPlay}
+                  >
+                    <Transition.Child
+                      as={Fragment}
+                      enter="ease-out duration-300"
+                      enterFrom="opacity-0"
+                      enterTo="opacity-100"
+                      leave="ease-in duration-200"
+                      leaveFrom="opacity-100"
+                      leaveTo="opacity-0"
+                    >
+                      <div className="fixed inset-0 bg-gray-900 bg-opacity-75 transition-opacity" />
+                    </Transition.Child>
+                    <div className="fixed inset-0 z-50 w-screen overflow-y-auto">
+                      <div className="flex min-h-full items-center justify-center p-4 text-center sm:items-center sm:p-0">
+                        <Transition.Child
+                          as={Fragment}
+                          enter="ease-out duration-300"
+                          enterFrom="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+                          enterTo="opacity-100 translate-y-0 sm:scale-100"
+                          leave="ease-in duration-200"
+                          leaveFrom="opacity-100 translate-y-0 sm:scale-100"
+                          leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+                        >
+                          <Dialog.Panel className="relative transform overflow-hidden lg:rounded-2xl rounded-lg bg-white/20 shadow-xl transition-all my-8 w-full max-w-6xl lg:h-[40em] h-64">
+                            <iframe
+                              className="w-full h-full"
+                              src={`https://multiembed.mov/?video_id=${id}&tmdb=1&s=${item.season_number}&e=${item.episode_number}`}
+                              allowFullScreen
+                            ></iframe>
+                          </Dialog.Panel>
+                        </Transition.Child>
+                      </div>
+                    </div>
+                  </Dialog>
+                </Transition.Root>
+              </>
             ))}
         </div>
       </div>
