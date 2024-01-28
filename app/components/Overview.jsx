@@ -104,11 +104,11 @@ export default function Overview() {
                     alt="Backdrop"
                     className="w-full h-full object-cover object-top"
                   />
-                  <div className="absolute top-0 bg-black/30 inset-0 bg-gradient-to-b from-black/60 from-20% via-black/50 via-40% to-[#010101] to-98%"></div>
+                  <div className="absolute top-0 lg:bg-black/30 inset-0 bg-gradient-to-b from-black/60 from-20% via-black/50 via-40% to-[#010101] to-98%"></div>
                 </div>
                 <div className="absolute bottom-0 lg:p-10 p-6 flex items-end justify-between">
                   <div className="lg:space-y-6 space-y-4 lg:w-[550px]">
-                    <h1 className="lg:text-6xl text-4xl font-semibold text-dm tracking-wide">
+                    <h1 className="lg:text-6xl text-3xl font-semibold text-dm tracking-wide">
                       {item.title}
                     </h1>
                     <div className="flex flex-wrap items-center lg:gap-4 gap-2">
