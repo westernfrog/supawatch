@@ -41,8 +41,6 @@ export default function TVSeries() {
     fetchSeason();
   }, []);
 
-  console.log(season);
-
   return (
     <>
       {data ? (
@@ -58,7 +56,7 @@ export default function TVSeries() {
             </div>
             <div className="lg:absolute inset-10 flex lg:flex-row  flex-col lg:items-end justify-between gap-6 lg:p-0 p-6">
               <div className="space-y-4 lg:w-[40%]">
-                <h1 className="lg:text-8xl text-5xl font-bold text-dm opacity-80">
+                <h1 className="lg:text-8xl text-4xl font-bold text-dm opacity-80">
                   {data.name}
                 </h1>
                 <div className="flex items-center lg:text-base text-sm lg:divide-x font-medium lg:gap-0 gap-6">
@@ -117,7 +115,7 @@ export default function TVSeries() {
                             </div>
                           </div>
                         </div>
-                        <h1 className="lg:text-lg font-semibold text-center py-3">
+                        <h1 className="lg:text-lg text-sm lg:font-semibold font-medium text-center py-3">
                           {item.name}
                         </h1>
                       </button>

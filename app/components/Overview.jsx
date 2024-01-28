@@ -106,7 +106,7 @@ export default function Overview() {
                   />
                   <div className="absolute top-0 inset-0 lg:bg-black/30 bg-gradient-to-b from-black/60 from-20% via-black/50 via-40% to-[#010101] to-100%"></div>
                 </div>
-                <div className="absolute bottom-0 lg:p-10 p-6 flex items-end justify-between mb-6">
+                <div className="absolute bottom-0 lg:p-10 p-6 flex items-end justify-between lg:mb-0 mb-6">
                   <div className="lg:space-y-6 space-y-4 lg:w-[550px]">
                     <h1 className="lg:text-6xl text-4xl font-semibold text-dm tracking-wide">
                       {item.title}
