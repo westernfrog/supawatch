@@ -38,7 +38,7 @@ export default function Movie() {
                 alt="Backdrop"
                 className="w-full h-full object-cover object-top"
               />
-              <div className="absolute top-0 inset-0 bg-black/40 bg-gradient-to-b from-black/60 from-20% via-black/50 via-40% to-[#010101] to-98%"></div>
+              <div className="absolute top-0 inset-0 lg:bg-black/30 bg-gradient-to-b from-black/60 from-20% via-black/50 via-40% to-[#010101] to-98%"></div>
             </div>
             <div className="absolute inset-10 lg:inset-52 flex items-center justify-center">
               <div className="flex-wrap flex flex-col items-center lg:gap-6 gap-4">
