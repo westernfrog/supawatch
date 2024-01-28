@@ -42,7 +42,7 @@ export default function TVSeries() {
               <div className="absolute top-0 inset-0 lg:bg-black/30 bg-gradient-to-b from-black/60 from-20% via-black/50 via-40% to-[#010101] to-98%"></div>
             </div>
             <div className="lg:absolute inset-x-10 inset-y-16 flex lg:flex-row lg:items-end justify-between gap-6 lg:p-0 p-6">
-              <div className="lg:space-y-6 space-y-4 lg:w-[40%]">
+              <div className="lg:space-y-6 space-y-4 lg:w-[60%]">
                 <h1 className="lg:text-8xl text-4xl font-bold text-dm opacity-80">
                   {data.name}
                 </h1>
