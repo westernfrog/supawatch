@@ -148,7 +148,7 @@ export default function Overview(props) {
                   credits.data.cast.map((item, index) => (
                     <Link
                       key={index}
-                      href={`/people/${item.id}`}
+                      href={`/person/${item.id}`}
                       className="relative group flex-shrink-0 snap-start"
                     >
                       <div className="relative rounded-lg bg-white/10 flex flex-col">
