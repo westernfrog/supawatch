@@ -112,9 +112,9 @@ export default function Seasons(props) {
                           <Dialog.Panel className="relative transform overflow-hidden lg:rounded-2xl rounded-lg bg-white/20 shadow-xl transition-all my-8 w-full max-w-6xl lg:h-[40em] h-64">
                             <button
                               onClick={closeModal}
-                              className="absolute lg:top-4 lg:right-6 top-2 right-2 flex items-center gap-1 font-bold tracking-tighter bg-white/80 backdrop-blur-3xl backdrop-opacity-20 px-3 py-1 rounded-full text-neutral-800 text-lg"
+                              className="absolute lg:top-4 lg:right-6 top-2 right-2 flex items-center gap-1 font-bold tracking-tighter bg-white/80 backdrop-blur-xl px-3 py-1 rounded-full text-neutral-800 text-lg"
                             >
-                              Close
+                              <span className="lg:block hidden">Close</span>
                               <XMarkIcon
                                 className="w-5 h-5"
                                 strokeWidth={2.5}
