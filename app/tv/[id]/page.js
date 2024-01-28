@@ -5,6 +5,7 @@ import { useParams } from "next/navigation";
 import { Fragment, useRef, useState, useEffect } from "react";
 import { Dialog, Transition } from "@headlessui/react";
 import Link from "next/link";
+import Seasons from "./components/Seasons";
 
 export default function TVSeries() {
   const { id } = useParams();
@@ -27,20 +28,6 @@ export default function TVSeries() {
     fetchData();
   }, []);
 
-  useEffect(() => {
-    async function fetchSeason() {
-      try {
-        const response = await fetch(`/api/getEpisodes?id=${id}&season=1`);
-        const fetchedSeasonData = await response.json();
-        setSeason(fetchedSeasonData.data);
-      } catch (error) {
-        console.error("Error fetching data:", error);
-      }
-    }
-
-    fetchSeason();
-  }, []);
-
   return (
     <>
       {data ? (
@@ -54,12 +41,12 @@ export default function TVSeries() {
               />
               <div className="absolute top-0 inset-0 lg:bg-black/30 bg-gradient-to-b from-black/60 from-20% via-black/50 via-40% to-[#010101] to-98%"></div>
             </div>
-            <div className="lg:absolute inset-10 flex lg:flex-row  flex-col lg:items-end justify-between gap-6 lg:p-0 p-6">
-              <div className="space-y-4 lg:w-[40%]">
+            <div className="lg:absolute inset-x-10 inset-y-16 flex lg:flex-row lg:items-end justify-between gap-6 lg:p-0 p-6">
+              <div className="lg:space-y-6 space-y-4 lg:w-[40%]">
                 <h1 className="lg:text-8xl text-4xl font-bold text-dm opacity-80">
                   {data.name}
                 </h1>
-                <div className="flex items-center lg:text-base text-sm lg:divide-x font-medium lg:gap-0 gap-6">
+                <div className="flex items-center text-base lg:divide-x font-medium lg:gap-0 gap-6">
                   <p className="text-green-500 lg:pe-8">
                     {Math.floor(data.vote_average * 10)}% Rating
                   </p>
@@ -87,43 +74,14 @@ export default function TVSeries() {
               </div>
               <div className="space-y-2 lg:w-[50%]">
                 <h1 className="font-semibold tracking-tighter text-xl lg:text-3xl">
-                  {season && season.name} episodes
+                  {season && season.name}
                 </h1>
-                <div className="flex flex-row items-start gap-4 overflow-x-auto snap-x pb-3">
-                  {season &&
-                    season.episodes.map((item, index) => (
-                      <button
-                        key={index}
-                        className="relative group flex-shrink-0 snap-start p-1 lg:w-80 w-52 h-full"
-                      >
-                        <div className="relative flex flex-col">
-                          <img
-                            src={
-                              item.still_path
-                                ? `https://image.tmdb.org/t/p/w500/${item.still_path}`
-                                : "https://images.unsplash.com/photo-1464639351491-a172c2aa2911?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MjB8fGJsYWNrJTIwYmFja2dyb3VuZHxlbnwwfHwwfHx8MA%3D%3D"
-                            }
-                            alt={item.name}
-                            className="w-full h-full object-cover object-center rounded-2xl"
-                          />
-                          <div className="absolute top-2 left-2 z-10 bg-white/10 backdrop-blur-xl font-semibold px-3 py-1 rounded-full lg:text-sm text-xs">
-                            #{item.episode_number} episode
-                          </div>
-                          <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/60 group-hover:bg-black/80 transition duration-300 ease-in-out rounded-2xl">
-                            <div className="backdrop-blur-xl bg-white/10 lg:p-2 p-2 rounded-full active:scale-95 transition duration-300 ease-in-out">
-                              <PlayIcon className="lg:w-8 lg:h-8 w-6 h-6 ps-1" />
-                            </div>
-                          </div>
-                        </div>
-                        <h1 className="lg:text-lg text-sm lg:font-semibold font-medium text-center py-3">
-                          {item.name}
-                        </h1>
-                      </button>
-                    ))}
-                </div>
               </div>
             </div>
           </section>
+          {data.seasons.map((item, index) => (
+            <Seasons key={index} season={item.season_number} />
+          ))}
         </>
       ) : (
         <section className="relative h-screen animate-pulse">
