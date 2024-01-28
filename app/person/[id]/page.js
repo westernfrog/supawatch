@@ -42,7 +42,7 @@ export default function Person(props) {
   return (
     <>
       {person ? (
-        <section className="max-w-7xl mx-auto flex items-center justify-center lg:my-20">
+        <section className="max-w-7xl mx-auto flex items-center justify-center lg:mt-20 mt-14">
           <div className="lg:grid lg:grid-cols-12 items-start lg:p-10 p-6 gap-x-20 gap-6 w-full">
             <div className="lg:col-span-4">
               <div className="relative bg-gradient-to-b from-white/20 to-white/80 rounded-lg lg:w-full h-full">
@@ -54,7 +54,7 @@ export default function Person(props) {
                 <div className="absolute top-0 bg-black/50 inset-0"></div>
               </div>
             </div>
-            <div className="lg:col-span-8 space-y-4">
+            <div className="lg:col-span-8 space-y-4 lg:mt-0 mt-6">
               <div className="space-y-2">
                 <h1 className="lg:text-4xl text-3xl font-semibold text-dm text-transparent bg-clip-text bg-gradient-to-br from-yellow-400 to-yellow-700">
                   Overview
