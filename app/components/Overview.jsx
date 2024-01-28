@@ -13,7 +13,7 @@ export default function Overview() {
   useEffect(() => {
     async function fetchData() {
       try {
-        const response = await fetch("/api/getMovieList?list=now_playing");
+        const response = await fetch("/api/getMovieList?list=popular");
         const fetchedData = await response.json();
         setData(fetchedData.data);
       } catch (error) {
@@ -97,7 +97,7 @@ export default function Overview() {
           .slice(currentPage * 1, currentPage * 1 + 1)
           .map((item, index) => (
             <>
-              <main className="relative h-screen">
+              <main key={index} className="relative h-screen">
                 <div className="relative lg:h-full">
                   <img
                     src={`https://image.tmdb.org/t/p/original/${item.backdrop_path}`}
