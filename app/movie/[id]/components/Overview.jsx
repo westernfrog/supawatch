@@ -134,7 +134,7 @@ export default function Overview(props) {
               {props.genres.map((item) => (
                 <Link
                   key={item.id}
-                  href={`/item/${item.id}`}
+                  href={`/genre/${item.id}`}
                   className="lg:px-4 px-3 py-2 bg-white/10 font-medium backdrop-blur rounded-full text-sm lg:text-base"
                 >
                   {item.name}
