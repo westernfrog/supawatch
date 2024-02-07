@@ -48,9 +48,9 @@ export default function Footer(params) {
 
   const navigation = [
     { name: "Popular", href: "/popular" },
-    { name: "Upcoming", href: "/upcoming" },
     { name: "Top Rated", href: "/top-rated" },
     { name: "TV Series", href: "/tv" },
+    { name: "Genre", href: "/genre" },
     { name: "Search", href: "/search" },
   ];
 
@@ -69,7 +69,7 @@ export default function Footer(params) {
             powered by the TMDB API.
           </p>
         </div>
-        <div className="basis-1/6 flex items-start justify-between lg:gap-32 w-full">
+        <div className="basis-1/5 flex items-start justify-between lg:gap-32 w-full">
           <div className="">
             <ul className="space-y-2 font-medium">
               {navigation.map((item, index) => (

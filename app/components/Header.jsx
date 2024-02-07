@@ -8,9 +8,9 @@ import Image from "next/image";
 
 const navigation = [
   { name: "Popular", href: "/popular" },
-  { name: "Upcoming", href: "/upcoming" },
   { name: "Top Rated", href: "/top-rated" },
   { name: "TV Series", href: "/tv" },
+  { name: "Genre", href: "/genre" },
   { name: "Search", href: "/search" },
 ];
 
