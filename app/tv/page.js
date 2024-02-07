@@ -43,8 +43,8 @@ export default function TV() {
             className="w-full h-full object-cover object-center"
           />
           <div className="absolute top-0 bg-black/30 inset-0 bg-gradient-to-b from-black/60 from-20% via-black/50 via-40% to-[#010101] to-80%"></div>
-          <div className="absolute lg:inset-x-8 lg:inset-y-32 inset-x-6 inset-y-20">
-            <h1 className="font-semibold lg:text-9xl text-3xl tracking-tighter lg:mb-0 mb-2">
+          <div className="absolute lg:inset-x-8 lg:inset-y-32 inset-x-6 inset-y-24">
+            <h1 className="font-semibold lg:text-9xl text-2xl tracking-tighter lg:mb-0 mb-2">
               TV Series
             </h1>
           </div>
