@@ -11,7 +11,9 @@ export default function TVList(props) {
   useEffect(() => {
     async function fetchData() {
       try {
-        const response = await fetch(`/api/getTVList?list=${props.list}`);
+        const response = await fetch(
+          `/api/getTVList?list=${props.list}&page=1`
+        );
         const fetchedData = await response.json();
         setData(fetchedData.data);
       } catch (error) {
@@ -29,13 +31,17 @@ export default function TVList(props) {
             <h1 className="lg:text-2xl text-lg font-bold tracking-tighter text-transparent bg-clip-text bg-gradient-to-br from-yellow-400 to-yellow-700">
               {props.title}
             </h1>
-            <Link
-              href={"/" + props.list}
-              className="flex items-center gap-2 text-neutral-200 lg:text-lg"
-            >
-              <ArrowLongLeftIcon className="w-6 h-6 stroke-neutral-200" />
-              See More
-            </Link>
+            {props.list == "popular" ? (
+              <></>
+            ) : (
+              <Link
+                href={"/tv"}
+                className="flex items-center gap-2 text-neutral-200 lg:text-lg"
+              >
+                <ArrowLongLeftIcon className="w-6 h-6 stroke-neutral-200" />
+                See More
+              </Link>
+            )}
           </div>
           <div className="lg:px-10 px-6">
             <div className="flex items-center gap-4 overflow-x-auto py-3 pb-10 ps-1 snap-x">

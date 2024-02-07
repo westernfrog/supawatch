@@ -13,7 +13,7 @@ export default function Overview() {
   useEffect(() => {
     async function fetchData() {
       try {
-        const response = await fetch("/api/getMovieList?list=popular");
+        const response = await fetch("/api/getMovieList?list=popular&page=1");
         const fetchedData = await response.json();
         setData(fetchedData.data);
       } catch (error) {
@@ -45,7 +45,9 @@ export default function Overview() {
     }
   }, [data]);
 
-  const totalPages = data ? Math.min(Math.ceil(data.results.length / 1), 8) : 0;
+  const totalPages = data
+    ? Math.min(Math.ceil(data.results?.length / 1), 8)
+    : 0;
 
   useEffect(() => {
     const interval = setInterval(() => {
