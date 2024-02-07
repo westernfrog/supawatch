@@ -51,8 +51,8 @@ export default function TVSeries() {
                     {Math.floor(data.vote_average * 10)}% Rating
                   </p>
                   <h1 className="lg:px-8">
-                    {data.seasons.length - 1}
-                    {data.seasons.length - 1 > 1 ? " Seasons" : " Season"}
+                    {data.seasons.length}
+                    {data.seasons.length > 1 ? " Seasons" : " Season"}
                   </h1>
                   <h1 className="lg:px-8">
                     {data.first_air_date.slice(0, 4)}-

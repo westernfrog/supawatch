@@ -1,31 +1,31 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Image from "next/image";
 import Link from "next/link";
 import { PlayIcon } from "@heroicons/react/24/solid";
 import { useParams } from "next/navigation";
 
 export default function Slug() {
   const { slug } = useParams();
-  const [data, setData] = useState(null);
+  const [data, setData] = useState([]);
   const [term, setTerm] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [page, setPage] = useState(1);
 
   const fetchData = async () => {
     setLoading(true);
     setError(null);
 
     try {
-      const response = await fetch(`/api/getSearch?query=${slug}`);
+      const response = await fetch(`/api/getSearch?query=${slug}&page=${page}`);
       const fetchedData = await response.json();
 
       if (!response.ok) {
         throw new Error(fetchedData.message || "Failed to fetch data");
       }
-
-      setData(fetchedData.data);
+      setData((prevData) => [...prevData, ...fetchedData.data.results]);
+      setPage(page + 1);
     } catch (error) {
       console.error("Error fetching data:", error);
       setError(error.message || "An error occurred while fetching data");
@@ -48,6 +48,8 @@ export default function Slug() {
     return () => clearTimeout(debounceFetchData);
   }, [term]);
 
+  console.log(data);
+
   return (
     <>
       <section className="lg:px-10 lg:py-32 px-6 py-28">
@@ -64,8 +66,8 @@ export default function Slug() {
                 {error}
               </h1>
             </div>
-          ) : data && data.results.length > 0 ? (
-            data.results.map((item, index) => (
+          ) : data && data?.length > 0 ? (
+            data.map((item, index) => (
               <Link
                 key={index}
                 href={"/" + item.media_type + "/" + item.id}
@@ -90,7 +92,9 @@ export default function Slug() {
                   <div className="hidden group-hover:flex transition duration-300 ease-in-out absolute z-40 inset-0 items-center justify-center rounded-lg">
                     <div className="bg-white/10 px-4 py-3 flex items-center justify-center gap-1 rounded-full backdrop-blur-xl backdrop-opacity-60">
                       <h1 className="tracking-tight font-medium text-sm">
-                        Watch Now
+                        {item.media_type == "movie" || item.media_type == "tv"
+                          ? "Watch Now"
+                          : "Know More"}
                       </h1>
                       <PlayIcon className="flex-shrink-0 w-4 h-4" />
                     </div>
@@ -109,6 +113,16 @@ export default function Slug() {
           )}
         </div>
       </section>
+      {data && data.length > 0 && (
+        <div className="flex justify-center mt-4">
+          <button
+            className="lg:px-8 px-3 py-3 bg-white/10 backdrop-blur rounded-full text-sm lg:text-base"
+            onClick={fetchData}
+          >
+            More
+          </button>
+        </div>
+      )}
     </>
   );
 }
