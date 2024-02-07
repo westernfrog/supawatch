@@ -3,8 +3,7 @@ export async function GET(request) {
     const { searchParams } = new URL(request.url);
     const page = searchParams.get("page");
     const genre = searchParams.get("genre");
-    const category = searchParams.get("category");
-    const url = `https://api.themoviedb.org/3/discover/${category}?include_adult=true&include_video=false&language=en-US&page=${page}&sort_by=vote_count.desc&with_genres=${genre}'`;
+    const url = `https://api.themoviedb.org/3/discover/movie?include_adult=true&include_video=false&language=en-US&page=${page}&sort_by=vote_count.desc&with_genres=${genre}'`;
     const options = {
       method: "GET",
       headers: {

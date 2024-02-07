@@ -200,7 +200,7 @@ export default function Overview() {
                     </div>
                   </div>
                 </div>
-                <div className="absolute inset-x-0 lg:bottom-10 bottom-6 grid grid-flow-col justify-center lg:gap-6 gap-4 px-6">
+                <div className="absolute z-30 inset-x-0 lg:bottom-10 bottom-6 grid grid-flow-col justify-center lg:gap-6 gap-4 px-6">
                   {Array.from({ length: totalPages }, (_, index) => (
                     <button
                       key={index}
