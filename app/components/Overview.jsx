@@ -110,7 +110,7 @@ export default function Overview() {
                 </div>
               </section>
               <section className="h-screen">
-                <div className="absolute z-30 lg:inset-10 inset-6 flex items-end py-6">
+                <div className="absolute z-30 lg:inset-10 inset-6 flex items-end lg:py-6 py-10">
                   <div className="lg:space-y-6 space-y-4 lg:w-[550px]">
                     <h1 className="lg:text-6xl text-4xl font-semibold text-dm tracking-wide">
                       {item.title}
