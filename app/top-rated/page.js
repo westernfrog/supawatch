@@ -43,8 +43,8 @@ export default function TopRated() {
             className="w-full h-full object-cover object-center"
           />
           <div className="absolute top-0 bg-black/30 inset-0 bg-gradient-to-b from-black/60 from-20% via-black/50 via-40% to-[#010101] to-80%"></div>
-          <div className="absolute lg:inset-x-8 lg:inset-y-32 inset-x-6 inset-y-20">
-            <h1 className="font-semibold lg:text-9xl text-3xl tracking-tighter lg:mb-0 mb-2">
+          <div className="absolute lg:inset-x-8 lg:inset-y-32 inset-x-6 inset-y-24">
+            <h1 className="font-semibold lg:text-9xl text-2xl tracking-tighter lg:mb-0 mb-2">
               Top Rated Movies
             </h1>
           </div>
@@ -55,13 +55,13 @@ export default function TopRated() {
           <Link
             key={index}
             href={`/movie/${item.id}`}
-            className="relative group lg:col-span-2 col-span-6 flex-shrink-0 snap-start h-full"
+            className="relative group lg:col-span-2 col-span-6 flex-shrink-0 snap-start max-h-80 lg:max-h-96"
           >
             <div className="relative rounded-lg bg-white/20">
               <img
                 src={`https://image.tmdb.org/t/p/w500/${item.poster_path}`}
                 alt={item.title}
-                className="lg:h-96 h-72 object-cover object-center rounded-lg"
+                className="h-full object-cover object-center rounded-lg"
               />
               <div className="absolute top-0 inset-0 bg-black/50 group-hover:bg-black/80 transition duration-300 ease-in-out"></div>
               <div className="hidden group-hover:flex transition duration-300 ease-in-out absolute z-40 inset-0 items-center justify-center">

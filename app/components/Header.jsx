@@ -5,16 +5,18 @@ import { Dialog } from "@headlessui/react";
 import Link from "next/link";
 import { ArrowLongLeftIcon } from "@heroicons/react/24/outline";
 import Image from "next/image";
-
-const navigation = [
-  { name: "Popular", href: "/popular" },
-  { name: "Top Rated", href: "/top-rated" },
-  { name: "TV Series", href: "/tv" },
-  { name: "Genre", href: "/genre" },
-  { name: "Search", href: "/search" },
-];
+import { useParams } from "next/navigation";
 
 export default function Header() {
+  const { id } = useParams();
+  console.log(id);
+  const navigation = [
+    { name: "Popular", href: "/popular" },
+    { name: "Top Rated", href: "/top-rated" },
+    { name: "TV Series", href: "/tv" },
+    { name: "Genre", href: "/genre" },
+    { name: "Search", href: "/search" },
+  ];
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   return (
     <>
@@ -22,7 +24,7 @@ export default function Header() {
         <nav className="flex items-center lg:item-start justify-between gap-x-6">
           <Link
             href="/"
-            className="relative lg:text-4xl text-2xl font-black tracking-tighter text-transparent uppercase bg-clip-text bg-gradient-to-br from-yellow-400 to-yellow-700"
+            className="relative lg:text-4xl text-3xl font-black tracking-tighter text-transparent uppercase bg-clip-text bg-gradient-to-br from-yellow-400 to-yellow-700"
           >
             <h1 className="text-dm">Supawatch</h1>
           </Link>
@@ -37,7 +39,11 @@ export default function Header() {
               <Link
                 key={index}
                 href={item.href}
-                className="font-semibold text-lg text-neutral-400 hover:text-neutral-200 transition duration-300 ease-in-out"
+                className={`font-semibold text-lg ${
+                  "/" + id == item.href
+                    ? "text-neutral-200"
+                    : "text-neutral-400"
+                } hover:text-neutral-200 transition duration-300 ease-in-out`}
               >
                 {item.name}
               </Link>

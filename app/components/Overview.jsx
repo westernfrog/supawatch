@@ -98,8 +98,8 @@ export default function Overview() {
         data.results
           .slice(currentPage * 1, currentPage * 1 + 1)
           .map((item, index) => (
-            <>
-              <main key={index} className="relative h-screen">
+            <main key={index} className="relative">
+              <section className="absolute top-0 inset-0">
                 <div className="relative lg:h-full">
                   <img
                     src={`https://image.tmdb.org/t/p/original/${item.backdrop_path}`}
@@ -108,7 +108,9 @@ export default function Overview() {
                   />
                   <div className="absolute top-0 inset-0 lg:bg-black/30 bg-gradient-to-b from-black/60 from-20% via-black/50 via-40% to-[#010101] to-100%"></div>
                 </div>
-                <div className="absolute bottom-0 lg:p-10 p-6 flex items-end justify-between lg:mb-0 mb-6">
+              </section>
+              <section className="h-screen">
+                <div className="absolute z-30 lg:inset-10 inset-6 flex items-end py-10">
                   <div className="lg:space-y-6 space-y-4 lg:w-[550px]">
                     <h1 className="lg:text-6xl text-4xl font-semibold text-dm tracking-wide">
                       {item.title}
@@ -133,7 +135,7 @@ export default function Overview() {
                     <p className="text-neutral-300 text-base lg:text-lg">
                       {item.overview.slice(0, 150)}..
                     </p>
-                    <div className="flex lg:flex-row flex-col items-center lg:gap-4 gap-3 pb-10">
+                    <div className="flex lg:flex-row flex-col items-center lg:gap-4 gap-3 pb-4">
                       <button
                         onClick={() => setOpen(true)}
                         className="lg:px-6 p-4 lg:text-base text-sm bg-neutral-300 rounded-full text-neutral-900 tracking-tight font-semibold flex items-center justify-center gap-2 w-full"
@@ -198,7 +200,7 @@ export default function Overview() {
                     </div>
                   </div>
                 </div>
-                <div className="absolute bottom-6 left-0 right-0 grid grid-flow-col justify-center lg:gap-6 gap-4 px-6">
+                <div className="absolute inset-x-0 bottom-10 grid grid-flow-col justify-center lg:gap-6 gap-4 px-6">
                   {Array.from({ length: totalPages }, (_, index) => (
                     <button
                       key={index}
@@ -211,8 +213,8 @@ export default function Overview() {
                     </button>
                   ))}
                 </div>
-              </main>
-            </>
+              </section>
+            </main>
           ))
       ) : (
         <main className="relative h-screen animate-pulse">

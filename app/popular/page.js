@@ -55,13 +55,13 @@ export default function Popular() {
           <Link
             key={index}
             href={`/movie/${item.id}`}
-            className="relative group lg:col-span-2 col-span-6 flex-shrink-0 snap-start h-full"
+            className="relative group lg:col-span-2 col-span-6 flex-shrink-0 snap-start max-h-80 lg:max-h-96"
           >
             <div className="relative rounded-lg bg-white/20">
               <img
                 src={`https://image.tmdb.org/t/p/w500/${item.poster_path}`}
                 alt={item.title}
-                className="lg:h-96 h-72 object-cover object-center rounded-lg"
+                className="h-full object-cover object-center rounded-lg"
               />
               <div className="absolute top-0 inset-0 bg-black/50 group-hover:bg-black/80 transition duration-300 ease-in-out"></div>
               <div className="hidden group-hover:flex transition duration-300 ease-in-out absolute z-40 inset-0 items-center justify-center">
