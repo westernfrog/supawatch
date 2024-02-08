@@ -41,7 +41,7 @@ export default function Genres(props) {
               alt={props.name}
               className="h-full object-cover object-center rounded-lg"
             />
-            <div className="absolute top-0 inset-0 bg-black/80 group-hover:bg-black/60 transition duration-300 ease-in-out"></div>
+            <div className="absolute top-0 inset-0 bg-black/60 group-hover:bg-black/80 transition duration-300 ease-in-out"></div>
             <div className="flex transition duration-300 ease-in-out absolute z-40 inset-0 items-center justify-center">
               <div className="flex items-center justify-center gap-1 rounded-full">
                 <h1 className="font-semibold lg:text-3xl text-xl tracking-tight">
