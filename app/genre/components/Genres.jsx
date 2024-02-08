@@ -18,7 +18,7 @@ export default function Genres(props) {
         );
         const fetchedData = await response.json();
 
-        setData(fetchedData.data.results[0]);
+        setData(fetchedData.data.results[18]);
       } catch (error) {
         console.error("Error fetching data:", error);
       } finally {
