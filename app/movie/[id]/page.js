@@ -27,6 +27,8 @@ export default function Movie() {
     fetchData();
   }, []);
 
+  console.log(data);
+
   return (
     <>
       {data ? (
@@ -101,18 +103,22 @@ export default function Movie() {
               </div>
             </div>
           </section>
-          <Overview
-            poster_path={data.poster_path}
-            overview={data.overview}
-            genres={data.genres}
-            data={data}
-            id={id}
-            setPlay={() => setPlay(true)}
-            vote_average={data.vote_average}
-            release_date={data.release_date}
-            runtime={data.runtime}
-            production_companies={data.production_companies}
-          />
+          {data || data.success ? (
+            <Overview
+              poster_path={data.poster_path}
+              overview={data.overview}
+              genres={data.genres}
+              data={data}
+              id={id}
+              setPlay={() => setPlay(true)}
+              vote_average={data.vote_average}
+              release_date={data.release_date}
+              runtime={data.runtime}
+              production_companies={data.production_companies}
+            />
+          ) : (
+            <></>
+          )}
           <section className="">
             <div className="lg:p-10 p-6">
               <h1 className="lg:text-4xl text-2xl font-semibold tracking-tight">
@@ -125,7 +131,14 @@ export default function Movie() {
         </>
       ) : (
         <section className="relative h-screen animate-pulse">
-          <div className="absolute inset-0 bg-gradient-to-b from-white/10 from-10% via-black/10 via-80% to-black/20 to-90%"></div>
+          <div className="bg-gradient-to-b from-white/10 from-10% via-black/10 via-80% to-black/20 to-90% h-full w-full flex flex-col items-center justify-center">
+            <h1 className="text-6xl font-semibold tracking-tight text-dm text-yellow-500">
+              404
+            </h1>
+            <p className="lg:text-2xl text-xl tracking-tighter">
+              Page not found!
+            </p>
+          </div>
         </section>
       )}
     </>

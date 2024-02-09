@@ -8,8 +8,6 @@ import Image from "next/image";
 import { useParams } from "next/navigation";
 
 export default function Header() {
-  const { id } = useParams();
-  console.log(id);
   const navigation = [
     { name: "Popular", href: "/popular" },
     { name: "Top Rated", href: "/top-rated" },
@@ -39,11 +37,7 @@ export default function Header() {
               <Link
                 key={index}
                 href={item.href}
-                className={`font-semibold text-lg ${
-                  "/" + id == item.href
-                    ? "text-neutral-200"
-                    : "text-neutral-400"
-                } hover:text-neutral-200 transition duration-300 ease-in-out`}
+                className={`font-semibold text-lg text-neutral-400 hover:text-neutral-200 transition duration-300 ease-in-out`}
               >
                 {item.name}
               </Link>
