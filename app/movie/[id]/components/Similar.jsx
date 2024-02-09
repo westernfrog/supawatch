@@ -29,7 +29,7 @@ export default function Similar(props) {
         <section className="relative">
           <div className="lg:px-10 px-6">
             <div className="flex items-center gap-4 overflow-x-auto py-3 pb-10 ps-1 snap-x">
-              {similar.results.map((item, index) => (
+              {similar?.results?.map((item, index) => (
                 <Link
                   key={index}
                   href={`/movie/${item.id}`}

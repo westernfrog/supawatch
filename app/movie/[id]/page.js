@@ -31,7 +31,7 @@ export default function Movie() {
 
   return (
     <>
-      {data ? (
+      {data && data.id ? (
         <>
           <section className="relative h-screen">
             <div className="relative w-full h-full bg-gradient-to-b from-white/20 to-neutral-900/80">
@@ -103,18 +103,18 @@ export default function Movie() {
               </div>
             </div>
           </section>
-          {data || data.success ? (
+          {data || data?.success ? (
             <Overview
-              poster_path={data.poster_path}
-              overview={data.overview}
-              genres={data.genres}
+              poster_path={data?.poster_path}
+              overview={data?.overview}
+              genres={data?.genres}
               data={data}
               id={id}
               setPlay={() => setPlay(true)}
-              vote_average={data.vote_average}
-              release_date={data.release_date}
-              runtime={data.runtime}
-              production_companies={data.production_companies}
+              vote_average={data?.vote_average}
+              release_date={data?.release_date}
+              runtime={data?.runtime}
+              production_companies={data?.production_companies}
             />
           ) : (
             <></>
@@ -131,14 +131,7 @@ export default function Movie() {
         </>
       ) : (
         <section className="relative h-screen animate-pulse">
-          <div className="bg-gradient-to-b from-white/10 from-10% via-black/10 via-80% to-black/20 to-90% h-full w-full flex flex-col items-center justify-center">
-            <h1 className="text-6xl font-semibold tracking-tight text-dm text-yellow-500">
-              404
-            </h1>
-            <p className="text-lg tracking-tight">
-              No movie was found with this id!
-            </p>
-          </div>
+          <div className="bg-gradient-to-b from-white/20 from-10% via-black/10 via-80% to-black/20 to-90% h-full w-full flex flex-col items-center justify-center"></div>
         </section>
       )}
     </>

@@ -102,7 +102,7 @@ export default function Overview(props) {
                           <iframe
                             className="w-full h-full"
                             src={`https://www.youtube.com/embed/${
-                              trailer && trailer.key
+                              trailer && trailer?.key
                             }`}
                             allowFullScreen
                           ></iframe>
@@ -125,13 +125,13 @@ export default function Overview(props) {
               <p className="text-green-500">
                 {Math.floor(props.vote_average * 10)}% Rating
               </p>
-              <p>{props.release_date.slice(0, 4)}</p>
+              <p>{props.release_date?.slice(0, 4)}</p>
               <p>
                 {Math.floor(props.runtime / 60)}h {props.runtime % 60}min
               </p>
             </div>
             <div className="flex flex-wrap items-center lg:gap-4 gap-3">
-              {props.genres.map((item) => (
+              {props.genres?.map((item) => (
                 <Link
                   key={item.id}
                   href={`/genre/${item.id}`}
@@ -145,7 +145,7 @@ export default function Overview(props) {
               <h1 className="lg:text-2xl text-xl font-semibold">Casts</h1>
               <div className="flex flex-row items-start gap-4 overflow-x-auto pb-6 ps-1 snap-x">
                 {credits &&
-                  credits.data.cast.map((item, index) => (
+                  credits?.data?.cast?.map((item, index) => (
                     <Link
                       key={index}
                       href={`/person/${item.id}`}
