@@ -135,8 +135,8 @@ export default function Movie() {
             <h1 className="text-6xl font-semibold tracking-tight text-dm text-yellow-500">
               404
             </h1>
-            <p className="lg:text-2xl text-xl tracking-tighter">
-              Page not found!
+            <p className="text-lg tracking-tight">
+              No movie was found with this id!
             </p>
           </div>
         </section>
