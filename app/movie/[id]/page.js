@@ -27,8 +27,6 @@ export default function Movie() {
     fetchData();
   }, []);
 
-  console.log(data);
-
   return (
     <>
       {data && data.id ? (
