@@ -50,7 +50,7 @@ export default function Movie() {
                 </p>
               </div>
             </div>
-            <div className="absolute bottom-24 inset-x-0 flex items-center justify-center">
+            <div className="absolute lg:bottom-10 bottom-24 inset-x-0 flex items-center justify-center">
               <button
                 type="button"
                 onClick={() => setPlay(true)}
