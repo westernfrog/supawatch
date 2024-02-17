@@ -13,7 +13,9 @@ export default function Overview() {
   useEffect(() => {
     async function fetchData() {
       try {
-        const response = await fetch("/api/getMovieList?list=popular&page=1");
+        const response = await fetch(
+          "/api/getMovieList?list=now_playing&page=1"
+        );
         const fetchedData = await response.json();
         setData(fetchedData.data);
       } catch (error) {
@@ -104,7 +106,7 @@ export default function Overview() {
                   <img
                     src={`https://image.tmdb.org/t/p/original/${item.backdrop_path}`}
                     alt="Backdrop"
-                    className="w-full h-full lg:object-cover object-contain object-top"
+                    className="w-full h-full object-cover object-top"
                   />
                   <div className="absolute top-0 inset-0 lg:bg-black/30 bg-gradient-to-b from-black/30 from-0% via-black/60 via-50% to-[#010101] to-100%"></div>
                 </div>
@@ -138,7 +140,7 @@ export default function Overview() {
                     <div className="flex lg:flex-row flex-col items-center lg:gap-4 gap-3 pb-4">
                       <button
                         onClick={() => setOpen(true)}
-                        className="lg:px-6 lg:p-4 p-3 lg:text-base text-sm bg-neutral-300 rounded-full text-neutral-900 tracking-tight font-semibold flex items-center justify-center gap-2 w-full"
+                        className="lg:px-6 lg:p-4 p-3 lg:text-base text-sm bg-neutral-300 rounded-full text-neutral-900 tracking-tight font-bold flex items-center justify-center gap-2 w-full"
                       >
                         <span>Watch Trailer</span>
                         <PlayIcon className="w-5 h-5" />
@@ -192,7 +194,7 @@ export default function Overview() {
                       </Transition.Root>
                       <Link
                         href={`/movie/${item.id}`}
-                        className="lg:px-6 lg:p-4 p-3 lg:text-base text-sm backdrop-blur bg-white/10 font-semibold rounded-full tracking-tight flex items-center justify-center gap-2 w-full"
+                        className="lg:px-6 lg:p-4 p-3 lg:text-base text-sm backdrop-blur bg-white/10 font-bold rounded-full tracking-tight flex items-center justify-center gap-2 w-full"
                       >
                         <span>More Details</span>
                         <RectangleGroupIcon className="w-5 h-5" />
