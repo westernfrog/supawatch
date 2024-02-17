@@ -45,7 +45,7 @@ export default function Movie() {
                 <h1 className="lg:text-8xl text-5xl font-black text-center opacity-60 tracking-tighter">
                   {data.title}
                 </h1>
-                <p className="lg:text-2xl text-lg font-medium text-center opacity-80 tracking-tight">
+                <p className="lg:text-xl text-lg font-medium text-center opacity-60 tracking-tight">
                   {data.tagline}
                 </p>
               </div>
@@ -59,9 +59,9 @@ export default function Movie() {
                 <div className="backdrop-blur-xl bg-white/10 lg:p-4 p-2 rounded-full active:scale-95 transition duration-300 ease-in-out">
                   <PlayIcon className="lg:w-10 lg:h-10 w-7 h-7 ps-1" />
                 </div>
-                <h1 className="font-medium lg:text-lg tracking-tight">
+                <p className="font-semibold lg:text-lg tracking-tight opacity-70">
                   Play Movie
-                </h1>
+                </p>
               </button>
               <Transition.Root show={play} as={Fragment}>
                 <Dialog

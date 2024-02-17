@@ -106,7 +106,7 @@ export default function Overview() {
                     alt="Backdrop"
                     className="w-full h-full lg:object-cover object-contain object-top"
                   />
-                  <div className="absolute top-0 inset-0 lg:bg-black/30 bg-gradient-to-b from-black/60 from-20% via-black/50 via-40% to-[#010101] to-100%"></div>
+                  <div className="absolute top-0 inset-0 lg:bg-black/30 bg-gradient-to-b from-black/30 from-0% via-black/60 via-50% to-[#010101] to-100%"></div>
                 </div>
               </section>
               <section className="h-screen">
