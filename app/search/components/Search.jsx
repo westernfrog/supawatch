@@ -24,10 +24,6 @@ export default function Search() {
     setTerm(newTerm);
   };
 
-  const handleSearch = () => {
-    fetchData();
-  };
-
   return (
     <>
       <section className="relative">
@@ -52,7 +48,6 @@ export default function Search() {
               />
               <button
                 type="button"
-                onClick={() => handleSearch()}
                 className="lg:p-6 p-3 bg-green-500 rounded-full lg:m-2 m-1 active:scale-95 transition duration-300 ease-in-out"
               >
                 <h1 className="lg:text-lg text-sm text-black/90 font-bold">

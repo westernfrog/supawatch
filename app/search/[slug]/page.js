@@ -48,8 +48,6 @@ export default function Slug() {
     return () => clearTimeout(debounceFetchData);
   }, [term]);
 
-  console.log(data);
-
   return (
     <>
       <section className="lg:px-10 lg:py-32 px-6 py-28">
