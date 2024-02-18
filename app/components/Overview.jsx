@@ -114,7 +114,7 @@ export default function Overview() {
               <section className="h-screen">
                 <div className="absolute z-30 lg:inset-10 inset-6 flex items-end lg:py-6 py-10">
                   <div className="lg:space-y-6 space-y-4 lg:w-[550px]">
-                    <h1 className="lg:text-6xl text-4xl font-bold tracking-tighter opacity-70">
+                    <h1 className="lg:text-6xl text-4xl font-bold tracking-tighter">
                       {item.title}
                     </h1>
                     <div className="flex flex-wrap items-center lg:gap-4 gap-2">
@@ -140,7 +140,7 @@ export default function Overview() {
                     <div className="flex lg:flex-row flex-col items-center lg:gap-4 gap-3 pb-4">
                       <button
                         onClick={() => setOpen(true)}
-                        className="lg:px-6 p-4 lg:text-base text-sm bg-neutral-300 rounded-full text-neutral-900 tracking-tight font-bold flex items-center justify-center gap-2 w-full"
+                        className="lg:px-6 p-4 lg:text-base text-sm bg-neutral-300 rounded-full text-neutral-900 tracking-tight font-semibold flex items-center justify-center gap-2 w-full"
                       >
                         <span>Watch Trailer</span>
                         <PlayIcon className="w-5 h-5" />
@@ -194,7 +194,7 @@ export default function Overview() {
                       </Transition.Root>
                       <Link
                         href={`/movie/${item.id}`}
-                        className="lg:px-6 p-4 lg:text-base text-sm backdrop-blur bg-white/10 font-bold rounded-full tracking-tight flex items-center justify-center gap-2 w-full"
+                        className="lg:px-6 p-4 lg:text-base text-sm backdrop-blur bg-white/10 font-semibold rounded-full tracking-tight flex items-center justify-center gap-2 w-full"
                       >
                         <span>More Details</span>
                         <RectangleGroupIcon className="w-5 h-5" />

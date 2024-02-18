@@ -43,7 +43,7 @@ export default function TVSeries() {
             </div>
             <div className="lg:absolute inset-x-10 inset-y-16 flex lg:flex-row lg:items-end justify-between gap-6 lg:p-0 p-6">
               <div className="lg:space-y-6 space-y-4 lg:w-[60%]">
-                <h1 className="lg:text-8xl text-4xl font-bold opacity-60 tracking-tighter">
+                <h1 className="lg:text-8xl text-4xl font-bold tracking-tighter">
                   {data.name}
                 </h1>
                 <div className="flex items-center lg:text-base text-sm lg:divide-x font-medium lg:gap-0 gap-6">

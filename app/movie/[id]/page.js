@@ -42,7 +42,7 @@ export default function Movie() {
             </div>
             <div className="absolute inset-10 lg:inset-52 flex items-center justify-center">
               <div className="flex-wrap flex flex-col items-center gap-2">
-                <h1 className="lg:text-8xl text-5xl font-black text-center opacity-60 tracking-tighter">
+                <h1 className="lg:text-8xl text-5xl font-black text-center tracking-tighter">
                   {data.title}
                 </h1>
                 <p className="lg:text-xl text-lg font-medium text-center opacity-60 tracking-tight">
