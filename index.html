@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IPTV Player</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+    <style>
+        .dynamic-bg {
+            background: linear-gradient(135deg, #0d0e0e 0%, #212122 100%);
+            transition: background 4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .color-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            opacity: 0;
+            transition: opacity 3s ease-in-out;
+            pointer-events: none;
+            z-index: -1;
+        }
+        
+        .color-overlay.active {
+            opacity: 0.7;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 3px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 3px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.5);
+        }
+
+        .dropdown-enter {
+            opacity: 0;
+            transform: translateY(-4px);
+        }
+        .dropdown-enter-active {
+            opacity: 1;
+            transform: translateY(0);
+            transition: opacity 150ms ease-out, transform 150ms ease-out;
+        }
+        .dropdown-exit {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .dropdown-exit-active {
+            opacity: 0;
+            transform: translateY(-4px);
+            transition: opacity 150ms ease-in, transform 150ms ease-in;
+        }
+    </style>
+</head>
+<body class="text-white h-full overflow-hidden dynamic-bg" id="dynamic-body">
+    <!-- Color overlay for smooth transitions -->
+    <div class="color-overlay" id="color-overlay-1"></div>
+    <div class="color-overlay" id="color-overlay-2"></div>
+    
+    <div class="flex h-full relative z-10">
+        <!-- Video Player - Full viewport -->
+        <div class="flex-1 flex flex-col min-h-0">
+            <div class="flex-1 p-2 md:p-4 min-h-0">
+                <div class="relative h-full">
+                    <video id="video" controls autoplay muted
+                           class="w-full h-full bg-black rounded-lg md:rounded-xl shadow-2xl">
+                    </video>
+                </div>
+                <canvas id="color-canvas" class="hidden"></canvas>
+            </div>
+            <div id="current-channel" class="px-2 md:px-4 pb-2 md:pb-4 flex-shrink-0 hidden">
+                <div class="bg-black/20 backdrop-blur-2xl rounded-xl md:rounded-2xl p-3 md:p-4 shadow-2xl border border-white/10">
+                    <div class="flex items-center gap-3 md:gap-4">
+                        <img id="current-logo" class="w-10 h-10 md:w-12 md:h-12 rounded-lg md:rounded-xl shadow-lg object-contain bg-white/10 border border-white/20" alt="">
+                        <div>
+                            <div class="text-xs text-white/70 uppercase tracking-wide font-medium">Now Playing</div>
+                            <div id="current-name" class="font-semibold text-white text-base md:text-lg"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Controls & Channels - Fixed width sidebar -->
+        <div class="hidden md:flex w-80 lg:w-96 bg-white/5 backdrop-blur-2xl flex-col shadow-2xl min-h-0 border-l border-white/10">
+            <!-- Controls -->
+            <div class="p-4 flex-shrink-0 border-b border-white/10">
+                <div class="space-y-4">
+                    <!-- Playlist Select -->
+                    <div class="space-y-2">
+                        <label class="text-sm font-medium text-white/80 uppercase tracking-wide">Playlist</label>
+                        <div class="relative">
+                            <button id="playlist-button" class="w-full p-3 bg-white/10 backdrop-blur-md rounded-xl text-white text-left focus:outline-none focus:bg-white/15 hover:bg-white/12 transition-all duration-200 shadow-lg border border-white/20 flex items-center justify-between group">
+                                <span id="playlist-selected" class="truncate">Loading playlists...</span>
+                                <svg class="w-5 h-5 text-white/60 group-hover:text-white/80 transition-colors transform group-focus:rotate-180 duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                                </svg>
+                            </button>
+                            <div id="playlist-options" class="absolute top-full left-0 right-0 mt-2 bg-black/90 backdrop-blur-2xl rounded-xl shadow-2xl z-50 hidden max-h-80 overflow-y-auto border border-white/20">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Category Select -->
+                    <div class="space-y-2">
+                        <label class="text-sm font-medium text-white/80 uppercase tracking-wide">Category</label>
+                        <div class="relative">
+                            <button id="category-button" class="w-full p-3 bg-white/10 backdrop-blur-md rounded-xl text-white text-left focus:outline-none focus:bg-white/15 hover:bg-white/12 transition-all duration-200 shadow-lg border border-white/20 flex items-center justify-between group">
+                                <span id="category-selected" class="truncate">All Categories</span>
+                                <svg class="w-5 h-5 text-white/60 group-hover:text-white/80 transition-colors transform group-focus:rotate-180 duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                                </svg>
+                            </button>
+                            <div id="category-options" class="absolute top-full left-0 right-0 mt-2 bg-black/90 backdrop-blur-2xl rounded-xl shadow-2xl z-50 hidden max-h-80 overflow-y-auto border border-white/20">
+                                <div class="p-3 hover:bg-white/20 cursor-pointer text-white transition-colors duration-150 first:rounded-t-xl last:rounded-b-xl" data-value="">All Categories</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Search Input -->
+                    <div class="space-y-2">
+                        <label class="text-sm font-medium text-white/80 uppercase tracking-wide">Search</label>
+                        <div class="relative">
+                            <input type="text" id="search" placeholder="Search channels..." 
+                                   class="w-full p-3 pl-10 bg-white/10 backdrop-blur-md rounded-xl text-white placeholder-white/50 focus:outline-none focus:bg-white/15 hover:bg-white/12 transition-all duration-200 shadow-lg border border-white/20">
+                            <svg class="w-5 h-5 text-white/60 absolute left-3 top-1/2 transform -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Channels List -->
+            <div class="flex-1 p-4 overflow-hidden flex flex-col min-h-0">
+                <h3 class="font-semibold text-lg mb-4 text-white/90 uppercase tracking-wide flex-shrink-0">Channels</h3>
+                <div id="channels-list" class="space-y-2 flex-1 overflow-y-auto custom-scrollbar min-h-0">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Mobile responsive overlay -->
+    <div class="md:hidden fixed inset-0 bg-black/30 backdrop-blur-2xl z-50 hidden" id="mobile-sidebar">
+        <div class="flex flex-col h-full">
+            <div class="flex justify-between items-center p-4 flex-shrink-0 border-b border-white/20">
+                <h3 class="font-semibold text-lg text-white">Channels</h3>
+                <button id="close-sidebar" class="text-white p-2 hover:bg-white/10 rounded-xl transition-colors border border-white/20">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+            <div class="p-4 flex-shrink-0 border-b border-white/20">
+                <div class="space-y-3">
+                    <div class="relative">
+                        <button id="mobile-playlist-button" class="w-full p-3 bg-white/10 backdrop-blur-md rounded-xl text-white text-left flex items-center justify-between hover:bg-white/15 transition-colors border border-white/20">
+                            <span id="mobile-playlist-selected" class="truncate">Loading playlists...</span>
+                            <svg class="w-5 h-5 text-white/60" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                            </svg>
+                        </button>
+                        <div id="mobile-playlist-options" class="absolute top-full left-0 right-0 mt-2 bg-black/90 backdrop-blur-2xl rounded-xl shadow-2xl z-50 hidden max-h-80 overflow-y-auto border border-white/20">
+                        </div>
+                    </div>
+                    
+                    <div class="relative">
+                        <button id="mobile-category-button" class="w-full p-3 bg-white/10 backdrop-blur-md rounded-xl text-white text-left flex items-center justify-between hover:bg-white/15 transition-colors border border-white/20">
+                            <span id="mobile-category-selected" class="truncate">All Categories</span>
+                            <svg class="w-5 h-5 text-white/60" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                            </svg>
+                        </button>
+                        <div id="mobile-category-options" class="absolute top-full left-0 right-0 mt-2 bg-black/90 backdrop-blur-2xl rounded-xl shadow-2xl z-50 hidden max-h-80 overflow-y-auto border border-white/20">
+                            <div class="p-3 hover:bg-white/20 cursor-pointer text-white transition-colors first:rounded-t-xl last:rounded-b-xl" data-value="">All Categories</div>
+                        </div>
+                    </div>
+
+                    <div class="relative">
+                        <input type="text" id="mobile-search" placeholder="Search channels..." 
+                               class="w-full p-3 pl-10 bg-white/10 backdrop-blur-md rounded-xl text-white placeholder-white/50 hover:bg-white/15 transition-colors border border-white/20">
+                        <svg class="w-5 h-5 text-white/60 absolute left-3 top-1/2 transform -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+            <div class="flex-1 p-4 overflow-y-auto custom-scrollbar min-h-0" id="mobile-channels-list">
+            </div>
+        </div>
+    </div>
+
+    <!-- Mobile menu button -->
+    <button id="mobile-menu" class="md:hidden fixed top-4 right-4 z-40 bg-white/10 backdrop-blur-md text-white p-3 rounded-2xl shadow-2xl hover:bg-white/15 transition-all border border-white/20">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+        </svg>
+    </button>
+
+    <script src="script.js"></script>
+</body>
+</html>
