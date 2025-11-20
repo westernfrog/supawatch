@@ -95,7 +95,7 @@ export default function Movie() {
                         <Dialog.Panel className="relative transform overflow-hidden lg:rounded-2xl rounded-lg bg-white/20 shadow-xl transition-all my-8 w-full max-w-6xl lg:h-[40em] h-64">
                           <iframe
                             className="w-full h-full"
-                            src={`https://vidsrcme.ru/v2/embed/movie/${id}?autoPlay=false`}
+                            src={`https://vidsrcme.ru/embed/movie?tmdb=${id}?autoPlay=false`}
                             allowFullScreen
                           ></iframe>
                         </Dialog.Panel>
