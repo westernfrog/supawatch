@@ -123,7 +123,7 @@ export default function Seasons(props) {
 
                             <iframe
                               className="w-full h-full"
-                              src={`https://vidsrc.cc/v2/embed/tv/${id}/${item.season_number}/${item.episode_number}?autoPlay=false`}
+                              src={`https://vidsrcme.ru/embed/tv?tmdb=${id}&season=${item.season_number}&episode=${item.episode_number}?autoPlay=false`}
                               allowFullScreen
                             ></iframe>
                           </Dialog.Panel>
