@@ -11,10 +11,8 @@ export async function GET(request) {
     const genre = searchParams.get("genre");
     const page = searchParams.get("page") || "1";
 
-    // Validate required parameters
     validateParams({ genre }, ["genre"]);
 
-    // Fetch from TMDB
     const data = await tmdbFetch(
       `/discover/movie`,
       { 

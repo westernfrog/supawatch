@@ -1,25 +1,14 @@
 import localFont from "next/font/local";
-import {
-  Inter,
-  DM_Serif_Display,
-  Mona_Sans,
-  Open_Sans,
-} from "next/font/google";
+import { Open_Sans } from "next/font/google";
 import "./globals.css";
 import { Analytics } from "@vercel/analytics/react";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
-import SmoothScroll from "./components/SmoothScroll";
+import LenisScroll from "./components/Lenis";
 
-const inter = Open_Sans({
+const open_sans = Open_Sans({
   subsets: ["latin"],
-  variable: "--font-inter",
-});
-
-const dm = DM_Serif_Display({
-  weight: ["400"],
-  subsets: ["latin"],
-  variable: "--font-dm",
+  variable: "--font-open-sans",
 });
 
 const mdnichrome = localFont({
@@ -47,15 +36,13 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en" suppressHydrationWarning={true}>
-      <body
-        className={`${inter.variable} ${dm.variable} ${mdnichrome.variable}`}
-      >
-        <SmoothScroll>
+      <body className={`${open_sans.variable} ${mdnichrome.variable}`}>
+        <LenisScroll>
           <Header />
           {children}
           <Footer />
           <Analytics />
-        </SmoothScroll>
+        </LenisScroll>
       </body>
     </html>
   );

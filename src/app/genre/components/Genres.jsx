@@ -48,10 +48,11 @@ export default function Genres(props) {
       href={`/genre/${props.genre}`}
       className="relative group lg:col-span-2 col-span-4 cursor-pointer"
     >
-      <div className="relative rounded-lg overflow-hidden bg-white/5 transition-all duration-300 ease-out group-hover:scale-105 group-hover:shadow-2xl group-hover:shadow-white/10">
+      <div className="relative rounded-lg overflow-hidden bg-white/5 transition-all duration-300 ease-out group-hover:scale-105 group-hover:shadow-2xl">
         <img
           src={`https://image.tmdb.org/t/p/w500/${data.poster_path}`}
           alt={props.name}
+          loading="lazy"
           className="w-full aspect-2/3 object-cover object-center"
         />
         <div className="absolute inset-0 bg-linear-to-t from-black via-black/80 to-black/40 opacity-70 group-hover:opacity-90 transition-opacity duration-300"></div>

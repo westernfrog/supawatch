@@ -28,7 +28,6 @@ export default function TVSeries() {
   const [showMoreInfo, setShowMoreInfo] = useState(false);
   const [recommendations, setRecommendations] = useState(null);
 
-  // Recommendation dialog states
   const [recOpen, setRecOpen] = useState(false);
   const [selectedRec, setSelectedRec] = useState(null);
   const [recTrailer, setRecTrailer] = useState(null);
@@ -50,36 +49,16 @@ export default function TVSeries() {
           setLogo(fetchedData.logo);
         }
 
-        // Fetch credits, videos, and recommendations in single optimized call
-        const detailsResponse = await fetch(
-          `https://api.themoviedb.org/3/tv/${id}?append_to_response=videos,credits,recommendations&language=en-US`,
-          {
-            headers: {
-              Authorization: `Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJmODliYjhlMjAxZTM0ZWUzNGI2MDMxNzViNTEwNWNmNCIsIm5iZiI6MTY5Nzk3MTc1NC4yMDYsInN1YiI6IjY1MzRmZTJhMmIyMTA4MDExZGRmYTUyZCIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.IzeMMitXzLhgfLpo4OVhb7zZK-U8ZpCb43U4tHQsEko`,
-              accept: "application/json",
-            },
-          }
-        );
-        const detailsData = await detailsResponse.json();
-
-        // Set trailer from videos
-        const seriesTrailer = detailsData.videos?.results?.find(
-          (video) => video.type === "Trailer" && video.site === "YouTube"
-        );
-        if (seriesTrailer) {
-          setTrailer(seriesTrailer.key);
-        } else if (fetchedData.trailer?.key) {
+        if (fetchedData.trailer?.key) {
           setTrailer(fetchedData.trailer.key);
         }
 
-        // Set credits
-        if (detailsData.credits) {
-          setCredits({ data: detailsData.credits });
+        if (fetchedData.credits) {
+          setCredits({ data: fetchedData.credits });
         }
 
-        // Set recommendations
-        if (detailsData.recommendations) {
-          setRecommendations(detailsData.recommendations);
+        if (fetchedData.recommendations) {
+          setRecommendations(fetchedData.recommendations);
         }
       } catch (error) {
         console.error("Error fetching TV series data:", error);
@@ -91,7 +70,6 @@ export default function TVSeries() {
     }
   }, [id]);
 
-  // Fetch episodes when season changes
   useEffect(() => {
     async function fetchEpisodes() {
       try {
@@ -110,7 +88,6 @@ export default function TVSeries() {
     }
   }, [id, selectedSeason]);
 
-  // Load YouTube IFrame API
   useEffect(() => {
     if (!window.YT) {
       const tag = document.createElement("script");
@@ -120,13 +97,11 @@ export default function TVSeries() {
     }
   }, []);
 
-  // Delay trailer start by 3 seconds and set HD quality
   useEffect(() => {
     if (trailer) {
       const timer = setTimeout(() => {
         setShowTrailer(true);
 
-        // Set HD quality for main trailer
         const checkPlayer = setInterval(() => {
           const iframe = document.getElementById("tv-detail-trailer");
           if (iframe && window.YT && window.YT.Player) {
@@ -134,9 +109,7 @@ export default function TVSeries() {
               const player = new window.YT.Player(iframe);
               player.setPlaybackQuality("hd1080");
               clearInterval(checkPlayer);
-            } catch (e) {
-              // Not ready yet
-            }
+            } catch (e) {}
           }
         }, 500);
 
@@ -147,7 +120,6 @@ export default function TVSeries() {
     }
   }, [trailer]);
 
-  // Handle mute toggle
   const handleMuteToggle = () => {
     const iframe = document.querySelector('iframe[src*="youtube"]');
     if (iframe && iframe.contentWindow) {
@@ -159,31 +131,18 @@ export default function TVSeries() {
     }
   };
 
-  // Fetch recommendation details when dialog opens
   useEffect(() => {
     async function fetchRecDetails() {
       if (selectedRec) {
         try {
-          const trailerResponse = await fetch(
-            `/api/getTVTrailer?id=${selectedRec.id}`
+          const response = await fetch(
+            `/api/getTVSeriesDetailsEnhanced?id=${selectedRec.id}`
           );
-          const trailerData = await trailerResponse.json();
-          setRecTrailer(trailerData.key);
+          const data = await response.json();
 
-          const creditsResponse = await fetch(
-            `/api/getTVCredits?id=${selectedRec.id}`
-          );
-          const creditsData = await creditsResponse.json();
-          setRecCredits(creditsData);
-
-          const logoResponse = await fetch(
-            `/api/getTVImages?id=${selectedRec.id}`
-          );
-          const logoData = await logoResponse.json();
-          const englishLogo = logoData.data?.logos?.find(
-            (logo) => logo.iso_639_1 === "en"
-          );
-          setRecLogo(englishLogo?.file_path);
+          setRecTrailer(data.trailer?.key);
+          setRecCredits({ data: data.credits });
+          setRecLogo(data.logo);
         } catch (error) {
           console.error("Error fetching recommendation details:", error);
         }
@@ -195,7 +154,6 @@ export default function TVSeries() {
     }
   }, [recOpen, selectedRec]);
 
-  // Start recommendation trailer after 3 seconds
   useEffect(() => {
     if (recOpen) {
       setShowRecTrailer(false);
@@ -253,7 +211,6 @@ export default function TVSeries() {
     <>
       {data && data.id ? (
         <>
-          {/* Desktop Layout - Original full-screen hero */}
           <section className="relative min-h-screen hidden lg:block">
             <div className="absolute inset-0">
               {showTrailer && trailer ? (
@@ -347,7 +304,6 @@ export default function TVSeries() {
                     )}
                   </div>
 
-                  {/* Cast Carousel - Desktop only */}
                   {credits?.data?.cast && credits.data.cast.length > 0 && (
                     <div className="flex gap-3 overflow-x-auto scrollbar-hide max-w-[60%]">
                       {credits.data.cast.slice(0, 12).map((actor) => (
@@ -383,9 +339,7 @@ export default function TVSeries() {
             </div>
           </section>
 
-          {/* Mobile Layout - Stacked like dialogs */}
           <section className="lg:hidden">
-            {/* Backdrop/Trailer */}
             <div className="relative h-64">
               {showTrailer && trailer ? (
                 <div className="absolute inset-0 overflow-hidden">
@@ -425,9 +379,7 @@ export default function TVSeries() {
               )}
             </div>
 
-            {/* Content Section */}
             <div className="px-4 py-5 space-y-4 bg-[#010101]">
-              {/* Logo */}
               {logo && (
                 <img
                   src={`https://image.tmdb.org/t/p/w500${logo}`}
@@ -436,7 +388,6 @@ export default function TVSeries() {
                 />
               )}
 
-              {/* Watch Button */}
               <button
                 onClick={() => setPlay(true)}
                 className="flex gap-2 items-center px-6 py-2.5 bg-white text-black rounded font-semibold text-sm"
@@ -445,7 +396,6 @@ export default function TVSeries() {
                 Watch Now
               </button>
 
-              {/* Rating & Info */}
               <div className="flex flex-wrap items-center gap-3 text-sm">
                 <span className="text-green-500 font-semibold">
                   {Math.floor(data.vote_average * 10)}% Match
@@ -461,7 +411,6 @@ export default function TVSeries() {
                 </span>
               </div>
 
-              {/* Genres */}
               <div className="flex flex-wrap gap-2">
                 {data.genres?.slice(0, 4).map((item) => (
                   <Link
@@ -474,12 +423,10 @@ export default function TVSeries() {
                 ))}
               </div>
 
-              {/* Overview */}
               <p className="text-sm opacity-90 leading-relaxed">
                 {data.overview}
               </p>
 
-              {/* Cast */}
               {credits?.data?.cast && credits.data.cast.length > 0 && (
                 <div className="pt-2">
                   <h3 className="text-sm font-semibold mb-3 opacity-70">
@@ -518,7 +465,6 @@ export default function TVSeries() {
             </div>
           </section>
 
-          {/* Episodes Section */}
           <section className="lg:px-12 px-4 py-8 lg:py-12">
             <div className="flex items-center justify-between mb-4 lg:mb-6">
               <h2 className="text-xl lg:text-3xl font-bold text-mdnichrome">
@@ -592,7 +538,6 @@ export default function TVSeries() {
             </div>
           </section>
 
-          {/* Recommendations Section */}
           {recommendations?.results && recommendations.results.length > 0 && (
             <section className="relative">
               <div className="lg:px-12 px-6 pt-10 flex items-center justify-between">
@@ -608,7 +553,7 @@ export default function TVSeries() {
                       onClick={() => handleOpenRecDialog(show)}
                       className="relative group shrink-0 lg:w-72 w-56 snap-start h-full cursor-pointer"
                     >
-                      <div className="relative rounded-lg overflow-hidden bg-white/5 transition-all duration-300 ease-out group-hover:scale-105 group-hover:shadow-2xl group-hover:shadow-white/10">
+                      <div className="relative rounded-lg overflow-hidden bg-white/5 transition-all duration-300 ease-out group-hover:scale-105 group-hover:shadow-2xl">
                         <img
                           src={
                             show.poster_path
@@ -627,7 +572,6 @@ export default function TVSeries() {
             </section>
           )}
 
-          {/* Recommendation Details Dialog */}
           {selectedRec && (
             <Dialog open={recOpen} onOpenChange={setRecOpen}>
               <DialogContent className="lg:max-w-6xl max-w-[90vw] p-0 border-none bg-[#010101] overflow-hidden">
@@ -635,7 +579,7 @@ export default function TVSeries() {
                   {selectedRec.name} - Details
                 </DialogTitle>
                 <div className="max-h-[95vh] overflow-y-auto overscroll-contain">
-                  <div className="relative h-56 lg:h-[500px]">
+                  <div className="relative h-56 lg:h-125">
                     {showRecTrailer && recTrailer ? (
                       <div className="absolute inset-0 overflow-hidden">
                         <iframe
@@ -659,7 +603,6 @@ export default function TVSeries() {
                     )}
                     <div className="absolute inset-0 bg-linear-to-t from-[#010101] from-5% to-transparent"></div>
 
-                    {/* Desktop: Logo and Watch Button overlay */}
                     <div className="hidden lg:block absolute bottom-6 left-6 right-6 z-10 space-y-4">
                       {recLogo && (
                         <img
@@ -691,7 +634,6 @@ export default function TVSeries() {
                     )}
                   </div>
 
-                  {/* Mobile: Logo and Watch Button below backdrop */}
                   <div className="lg:hidden px-4 py-4 space-y-3 bg-[#010101]">
                     {recLogo && (
                       <img

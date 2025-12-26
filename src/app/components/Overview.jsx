@@ -34,46 +34,38 @@ export default function Overview() {
   }, []);
 
   useEffect(() => {
-    async function fetchTrailers(movieId) {
+    async function fetchMovieData(movieId) {
       try {
-        const response = await fetch(`/api/getTrailer?id=${movieId}`);
-        const fetchedTrailer = await response.json();
-        setTrailers((prevTrailers) => [
-          ...prevTrailers,
-          { id: movieId, key: fetchedTrailer.key },
-        ]);
-      } catch (error) {
-        console.error("Error fetching trailers:", error);
-      }
-    }
-
-    async function fetchLogo(movieId) {
-      try {
-        const response = await fetch(`/api/getMovieImages?id=${movieId}`);
-        const fetchedImages = await response.json();
-        const englishLogo = fetchedImages.data.logos?.find(
-          (logo) => logo.iso_639_1 === "en"
+        const response = await fetch(
+          `/api/getMovieDetailsEnhanced?id=${movieId}`
         );
-        if (englishLogo) {
-          setLogos((prevLogos) => ({
-            ...prevLogos,
-            [movieId]: englishLogo.file_path,
-          }));
+        const data = await response.json();
+
+        // Extract trailer
+        if (data.trailer?.key) {
+          setTrailers((prev) => [
+            ...prev,
+            { id: movieId, key: data.trailer.key },
+          ]);
+        }
+
+        // Extract logo
+        if (data.logo) {
+          setLogos((prev) => ({ ...prev, [movieId]: data.logo }));
         }
       } catch (error) {
-        console.error("Error fetching logo:", error);
+        console.error("Error fetching movie data:", error);
       }
     }
 
     if (data) {
-      data.results.slice(0, 8).forEach((item) => {
-        fetchTrailers(item.id);
-        fetchLogo(item.id);
-      });
+      // Fetch all movies in parallel using Promise.allSettled
+      Promise.allSettled(
+        data.results.slice(0, 8).map((item) => fetchMovieData(item.id))
+      );
     }
   }, [data]);
 
-  // Fetch movie details and credits when dialog opens
   useEffect(() => {
     async function fetchMovieDetails() {
       if (currentMovieId) {
@@ -100,7 +92,6 @@ export default function Overview() {
     }
   }, [open, currentMovieId]);
 
-  // Load YouTube IFrame API
   useEffect(() => {
     if (!window.YT) {
       const tag = document.createElement("script");
@@ -110,7 +101,6 @@ export default function Overview() {
     }
   }, []);
 
-  // Start trailer after 3 seconds when dialog opens and set HD quality
   useEffect(() => {
     if (open) {
       setShowTrailer(false);
@@ -118,7 +108,6 @@ export default function Overview() {
       const timer = setTimeout(() => {
         setShowTrailer(true);
 
-        // Set HD quality when player is ready
         const checkPlayer = setInterval(() => {
           const iframe = document.getElementById("overview-trailer-player");
           if (iframe && window.YT && window.YT.Player) {
@@ -126,9 +115,7 @@ export default function Overview() {
               const player = new window.YT.Player(iframe);
               player.setPlaybackQuality("hd1080");
               clearInterval(checkPlayer);
-            } catch (e) {
-              // Not ready yet
-            }
+            } catch (e) {}
           }
         }, 500);
 
@@ -146,7 +133,6 @@ export default function Overview() {
     : 0;
 
   useEffect(() => {
-    // Don't auto-rotate if dialog is open
     if (open) return;
 
     const interval = setInterval(() => {
@@ -161,7 +147,6 @@ export default function Overview() {
     setCurrentPage(page);
   };
 
-  // Handle mute toggle using YouTube Player API
   const handleMuteToggle = () => {
     const iframe = document.querySelector('iframe[src*="youtube"]');
     if (iframe && iframe.contentWindow) {

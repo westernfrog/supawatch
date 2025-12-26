@@ -17,14 +17,11 @@ export async function GET(request) {
     const id = searchParams.get("id");
     const type = searchParams.get("type"); // "tv" or "movie" (default)
 
-    // Validate required parameters
     validateParams({ id }, ["id"]);
 
-    // Determine endpoint based on type
     const endpoint =
       type === "tv" ? `/tv/${id}/credits` : `/movie/${id}/credits`;
 
-    // Fetch from TMDB
     const data = await tmdbFetch(endpoint, {}, CacheConfig.DETAILS);
 
     return createResponse({ data });

@@ -11,10 +11,8 @@ export async function GET(request) {
     const id = searchParams.get("id");
     const season = searchParams.get("season");
 
-    // Validate required parameters
     validateParams({ id, season }, ["id", "season"]);
 
-    // Fetch from TMDB
     const data = await tmdbFetch(
       `/tv/${id}/season/${season}`,
       {},

@@ -6,29 +6,31 @@ import {
   createErrorResponse,
 } from "@/lib/tmdb";
 
-/**
- * GET /api/getTVImages
- * Fetches TV series images including logos
- * Query params: id (required)
- */
 export async function GET(request) {
   try {
     const { searchParams } = new URL(request.url);
     const id = searchParams.get("id");
 
-    // Validate required parameters
     validateParams({ id }, ["id"]);
 
-    // Fetch from TMDB
     const data = await tmdbFetch(
-      `/tv/${id}/images`,
-      { include_image_language: "en,null" },
+      `/person/${id}`,
+      {
+        append_to_response: "movie_credits,tv_credits,images",
+      },
       CacheConfig.DETAILS
     );
 
-    return createResponse({ data });
+    const { movie_credits, tv_credits, images, ...personDetails } = data;
+
+    return createResponse({
+      data: personDetails,
+      movieCredits: movie_credits,
+      tvCredits: tv_credits,
+      images,
+    });
   } catch (error) {
-    console.error("Error fetching TV images:", error);
+    console.error("Error fetching enhanced person details:", error);
     return createErrorResponse(
       error.message,
       error.message.includes("Missing") ? 400 : 500

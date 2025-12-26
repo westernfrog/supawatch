@@ -2,17 +2,10 @@
 
 import { useEffect, useState, useRef, useCallback } from "react";
 import MediaCarousel from "../components/MediaCarousel";
+import MediaDetailDialog from "../components/MediaDetailDialog";
 import Link from "next/link";
-import {
-  Play,
-  LayoutGrid,
-  Volume2,
-  VolumeX,
-  SlidersHorizontal,
-  SearchIcon,
-} from "lucide-react";
+import { SlidersHorizontal, SearchIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import {
   Select,
   SelectContent,
@@ -51,7 +44,6 @@ export default function SearchPage() {
   const [debouncedTerm, setDebouncedTerm] = useState("");
   const observerTarget = useRef(null);
 
-  // Data states
   const [data, setData] = useState([]);
   const [filteredData, setFilteredData] = useState([]);
   const [page, setPage] = useState(1);
@@ -59,7 +51,6 @@ export default function SearchPage() {
   const [hasMore, setHasMore] = useState(true);
   const [error, setError] = useState(null);
 
-  // Filter states
   const [filters, setFilters] = useState({
     includeAdult: true,
     mediaType: "all",
@@ -67,22 +58,14 @@ export default function SearchPage() {
     sortBy: "popularity",
   });
 
-  // Dialog states
   const [open, setOpen] = useState(false);
   const [selectedItem, setSelectedItem] = useState(null);
-  const [trailer, setTrailer] = useState(null);
-  const [credits, setCredits] = useState(null);
-  const [logo, setLogo] = useState(null);
-  const [showTrailer, setShowTrailer] = useState(false);
-  const [isMuted, setIsMuted] = useState(true);
 
-  // Debounce search input
   useEffect(() => {
     const timer = setTimeout(() => setDebouncedTerm(searchTerm), 800);
     return () => clearTimeout(timer);
   }, [searchTerm]);
 
-  // Update URL when search term changes (to /search/something format)
   useEffect(() => {
     if (debouncedTerm.trim()) {
       router.replace(`/search/${encodeURIComponent(debouncedTerm)}`, {
@@ -91,7 +74,6 @@ export default function SearchPage() {
     }
   }, [debouncedTerm, router]);
 
-  // Fetch search results
   const fetchData = useCallback(async () => {
     if (loading || !hasMore || !debouncedTerm.trim()) return;
 
@@ -115,7 +97,6 @@ export default function SearchPage() {
         return;
       }
 
-      // Deduplicate results
       setData((prevData) => {
         const existingIds = new Set(prevData.map((item) => item.id));
         const newItems = fetchedData.data.results.filter(
@@ -132,21 +113,18 @@ export default function SearchPage() {
     }
   }, [debouncedTerm, page, loading, hasMore, filters.includeAdult]);
 
-  // Reset when search term or filters change
   useEffect(() => {
     setData([]);
     setPage(1);
     setHasMore(true);
   }, [debouncedTerm, filters.includeAdult]);
 
-  // Initial fetch when search term is ready
   useEffect(() => {
     if (debouncedTerm.trim() && data.length === 0 && !loading) {
       fetchData();
     }
   }, [debouncedTerm, data.length, loading, fetchData]);
 
-  // Infinite scroll
   useEffect(() => {
     const observer = new IntersectionObserver(
       (entries) => {
@@ -170,7 +148,6 @@ export default function SearchPage() {
     };
   }, [fetchData, loading, hasMore, debouncedTerm]);
 
-  // Apply filters
   useEffect(() => {
     let filtered = [...data];
 
@@ -210,90 +187,12 @@ export default function SearchPage() {
     setFilteredData(filtered);
   }, [data, filters]);
 
-  // Fetch media details for dialog
-  useEffect(() => {
-    async function fetchDetails() {
-      if (
-        !selectedItem ||
-        (selectedItem.media_type !== "movie" &&
-          selectedItem.media_type !== "tv")
-      )
-        return;
-
-      try {
-        const isTV = selectedItem.media_type === "tv";
-        const [trailerRes, creditsRes, logoRes] = await Promise.all([
-          fetch(
-            isTV
-              ? `/api/getTVTrailer?id=${selectedItem.id}`
-              : `/api/getTrailer?id=${selectedItem.id}`
-          ),
-          fetch(
-            isTV
-              ? `/api/getTVCredits?id=${selectedItem.id}`
-              : `/api/getCredits?id=${selectedItem.id}`
-          ),
-          fetch(
-            isTV
-              ? `/api/getTVImages?id=${selectedItem.id}`
-              : `/api/getMovieImages?id=${selectedItem.id}`
-          ),
-        ]);
-
-        const [trailerData, creditsData, logoData] = await Promise.all([
-          trailerRes.json(),
-          creditsRes.json(),
-          logoRes.json(),
-        ]);
-
-        setTrailer(trailerData.key);
-        setCredits(creditsData);
-        setLogo(
-          logoData.data.logos?.find((logo) => logo.iso_639_1 === "en")
-            ?.file_path
-        );
-      } catch (error) {
-        console.error("Error fetching details:", error);
-      }
-    }
-
-    if (open && selectedItem) {
-      fetchDetails();
-    }
-  }, [open, selectedItem]);
-
-  // Trailer playback
-  useEffect(() => {
-    if (open) {
-      setShowTrailer(false);
-      setIsMuted(true);
-      const timer = setTimeout(() => setShowTrailer(true), 3000);
-      return () => clearTimeout(timer);
-    } else {
-      setShowTrailer(false);
-      setTrailer(null);
-      setCredits(null);
-      setLogo(null);
-    }
-  }, [open]);
-
   const handleOpenDialog = (item) => {
     if (item.media_type === "person") {
       router.push(`/person/${item.id}`);
     } else if (item.media_type === "movie" || item.media_type === "tv") {
       setSelectedItem(item);
       setOpen(true);
-    }
-  };
-
-  const handleMuteToggle = () => {
-    const iframe = document.querySelector('iframe[src*="youtube"]');
-    if (iframe?.contentWindow) {
-      const command = isMuted
-        ? '{"event":"command","func":"unMute","args":""}'
-        : '{"event":"command","func":"mute","args":""}';
-      iframe.contentWindow.postMessage(command, "*");
-      setIsMuted(!isMuted);
     }
   };
 
@@ -320,7 +219,6 @@ export default function SearchPage() {
 
   return (
     <>
-      {/* Hero Section with Search */}
       <section className="relative overflow-hidden">
         <div className="relative lg:h-80 h-48">
           <img
@@ -366,7 +264,6 @@ export default function SearchPage() {
         </div>
       </div>
 
-      {/* Filters Section - Only show when there's a search query */}
       {debouncedTerm.trim() && (
         <section className="bg-[#010101]/95 backdrop-blur border-b border-white/10">
           <div className="lg:px-12 px-4 py-3 lg:py-4">
@@ -382,7 +279,6 @@ export default function SearchPage() {
               </div>
 
               <div className="flex items-center gap-2 lg:gap-3 flex-wrap overflow-x-auto scrollbar-hide">
-                {/* Media Type */}
                 <RadioGroup
                   value={filters.mediaType}
                   onValueChange={(value) =>
@@ -415,7 +311,6 @@ export default function SearchPage() {
                   ))}
                 </RadioGroup>
 
-                {/* Sort */}
                 <Select
                   value={filters.sortBy}
                   onValueChange={(value) =>
@@ -433,7 +328,6 @@ export default function SearchPage() {
                   </SelectContent>
                 </Select>
 
-                {/* Include Adult */}
                 <label className="flex items-center gap-2 px-4 py-2 bg-white/10 rounded-full cursor-pointer hover:bg-white/15 transition-colors">
                   <input
                     type="checkbox"
@@ -457,7 +351,6 @@ export default function SearchPage() {
               </div>
             </div>
 
-            {/* Genres */}
             <div className="mt-3 lg:mt-4 pt-3 lg:pt-4 border-t border-white/10">
               <div className="flex items-center gap-2 lg:gap-3">
                 <h3 className="font-semibold text-xs lg:text-sm uppercase tracking-wide text-white/70 shrink-0">
@@ -486,9 +379,7 @@ export default function SearchPage() {
         </section>
       )}
 
-      {/* Results Grid or Carousels */}
       {!debouncedTerm.trim() ? (
-        // Show carousels when no search query
         <section className="">
           <MediaCarousel
             title="Now Playing"
@@ -506,7 +397,6 @@ export default function SearchPage() {
           />
         </section>
       ) : (
-        // Show search results when there's a query
         <>
           <section className="grid grid-cols-12 gap-4 lg:p-10 p-6 min-h-screen">
             {error ? (
@@ -520,7 +410,7 @@ export default function SearchPage() {
                   className="relative group lg:col-span-2 col-span-6 cursor-pointer"
                   onClick={() => handleOpenDialog(item)}
                 >
-                  <div className="relative rounded-lg overflow-hidden bg-white/5 transition-all duration-300 ease-out group-hover:scale-105 group-hover:shadow-2xl group-hover:shadow-white/10">
+                  <div className="relative rounded-lg overflow-hidden bg-white/5 transition-all duration-300 ease-out group-hover:scale-105 group-hover:shadow-2xl">
                     <img
                       src={
                         item.poster_path
@@ -565,7 +455,6 @@ export default function SearchPage() {
               ))}
           </section>
 
-          {/* Observer target */}
           <div ref={observerTarget} className="flex justify-center py-12">
             {!hasMore && filteredData.length > 0 && (
               <div className="px-8 py-3 bg-white/5 backdrop-blur rounded-full text-sm text-neutral-400 border border-white/10">
@@ -575,173 +464,13 @@ export default function SearchPage() {
           </div>
         </>
       )}
-
-      {/* Dialog */}
-      {selectedItem &&
-        (selectedItem.media_type === "movie" ||
-          selectedItem.media_type === "tv") && (
-          <Dialog open={open} onOpenChange={setOpen}>
-            <DialogContent className="lg:max-w-6xl max-w-[90vw] p-0 border-none bg-[#010101] overflow-hidden">
-              <DialogTitle className="sr-only">
-                {selectedItem.title || selectedItem.name} - Details
-              </DialogTitle>
-              <div className="relative max-h-[90vh] overflow-y-auto overscroll-contain">
-                <div className="relative lg:h-125 h-48">
-                  {showTrailer && trailer ? (
-                    <div className="absolute inset-0 overflow-hidden">
-                      <iframe
-                        src={`https://www.youtube.com/embed/${trailer}?autoplay=1&mute=1&loop=1&playlist=${trailer}&controls=0&showinfo=0&rel=0&iv_load_policy=3&modestbranding=1&playsinline=1&disablekb=1&fs=0&cc_load_policy=0&autohide=1&enablejsapi=1`}
-                        className="absolute inset-0 w-full h-full"
-                        allow="autoplay; encrypted-media"
-                        style={{
-                          border: "none",
-                          pointerEvents: "none",
-                          transform: "scale(1.2)",
-                          objectFit: "cover",
-                        }}
-                      ></iframe>
-                    </div>
-                  ) : (
-                    <img
-                      src={`https://image.tmdb.org/t/p/original/${selectedItem.backdrop_path}`}
-                      alt="Backdrop"
-                      className="w-full h-full object-cover"
-                    />
-                  )}
-                  <div className="absolute inset-0 bg-linear-to-t from-[#010101] via-black/40 to-transparent"></div>
-
-                  {/* Desktop: Logo and Watch Button overlay */}
-                  <div className="hidden lg:block absolute bottom-6 left-6 right-6 z-10 space-y-4">
-                    {logo && (
-                      <img
-                        src={`https://image.tmdb.org/t/p/w500${logo}`}
-                        alt={selectedItem.title || selectedItem.name}
-                        className="max-w-md max-h-24 object-contain"
-                      />
-                    )}
-                    <Link
-                      href={`/${selectedItem.media_type}/${selectedItem.id}`}
-                      className="inline-flex gap-2 items-center px-8 py-3 bg-white text-black rounded font-semibold hover:bg-white/90"
-                    >
-                      <Play className="w-5 h-5 fill-black" />
-                      <span>Watch Now</span>
-                    </Link>
-                  </div>
-
-                  {showTrailer && trailer && (
-                    <button
-                      onClick={handleMuteToggle}
-                      className="absolute bottom-4 right-4 z-20 p-3 rounded-full border-2 border-white/60 hover:border-white bg-black/20 hover:bg-black/40 backdrop-blur-sm transition-all"
-                      aria-label={isMuted ? "Unmute" : "Mute"}
-                    >
-                      {isMuted ? (
-                        <VolumeX className="w-5 h-5" />
-                      ) : (
-                        <Volume2 className="w-5 h-5" />
-                      )}
-                    </button>
-                  )}
-                </div>
-
-                {/* Mobile: Logo and Watch Button below backdrop */}
-                <div className="lg:hidden px-4 py-4 space-y-3 bg-[#010101]">
-                  {logo && (
-                    <img
-                      src={`https://image.tmdb.org/t/p/w500${logo}`}
-                      alt={selectedItem.title || selectedItem.name}
-                      className="max-w-50 max-h-16 object-contain"
-                    />
-                  )}
-                  <Link
-                    href={`/${selectedItem.media_type}/${selectedItem.id}`}
-                    className="inline-flex gap-2 items-center px-6 py-2.5 bg-white text-black rounded font-semibold hover:bg-white/90 text-sm"
-                  >
-                    <Play className="w-4 h-4 fill-black" />
-                    <span>Watch Now</span>
-                  </Link>
-                </div>
-
-                <div className="relative lg:p-10 p-4">
-                  <div className="grid lg:grid-cols-3 gap-8">
-                    <div className="lg:col-span-2 space-y-6">
-                      <div className="flex flex-wrap items-center gap-4 text-base">
-                        <div className="flex items-center gap-2">
-                          <span className="text-green-500 font-semibold">
-                            {Math.floor(selectedItem.vote_average * 10)}%
-                          </span>
-                          <span className="opacity-70">Match</span>
-                        </div>
-                        <span className="opacity-80">
-                          {(
-                            selectedItem.release_date ||
-                            selectedItem.first_air_date
-                          )?.slice(0, 4)}
-                        </span>
-                      </div>
-
-                      <p className="text-base leading-relaxed opacity-90">
-                        {selectedItem.overview}
-                      </p>
-
-                      <div className="flex flex-wrap gap-2">
-                        {selectedItem.genre_ids?.map((id) => (
-                          <Link
-                            key={id}
-                            href={`/genre/${id}`}
-                            onClick={() => setOpen(false)}
-                            className="px-4 py-2 bg-white/10 hover:bg-white/15 rounded-full text-sm font-medium"
-                          >
-                            {GENRES[id]}
-                          </Link>
-                        ))}
-                      </div>
-                    </div>
-
-                    <div className="lg:col-span-1 space-y-4">
-                      <h3 className="text-xl font-bold">Cast</h3>
-                      <div
-                        className="space-y-3"
-                        style={{ overscrollBehavior: "contain" }}
-                        onWheel={(e) => e.stopPropagation()}
-                      >
-                        {credits?.data?.cast?.slice(0, 4).map((actor) => (
-                          <Link
-                            key={actor.id}
-                            href={`/person/${actor.id}`}
-                            onClick={() => setOpen(false)}
-                            className="flex items-center gap-3 group"
-                          >
-                            <div className="relative rounded-full overflow-hidden w-10 h-10 shrink-0 bg-white/10">
-                              {actor.profile_path ? (
-                                <img
-                                  src={`https://image.tmdb.org/t/p/w200${actor.profile_path}`}
-                                  alt={actor.name}
-                                  className="w-full h-full object-cover"
-                                />
-                              ) : (
-                                <div className="w-full h-full flex items-center justify-center bg-white/5">
-                                  <span className="text-sm opacity-50">👤</span>
-                                </div>
-                              )}
-                            </div>
-                            <div className="flex-1 min-w-0">
-                              <p className="font-semibold text-sm truncate group-hover:text-white/80">
-                                {actor.name}
-                              </p>
-                              <p className="text-xs opacity-60 truncate">
-                                {actor.character}
-                              </p>
-                            </div>
-                          </Link>
-                        ))}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </DialogContent>
-          </Dialog>
-        )}
+      <MediaDetailDialog
+        open={open}
+        onOpenChange={setOpen}
+        item={selectedItem}
+        mediaType={selectedItem?.media_type}
+        linkPrefix={selectedItem?.media_type === "tv" ? "/tv" : "/movie"}
+      />
     </>
   );
 }

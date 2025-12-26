@@ -10,11 +10,8 @@ import {
   Film,
   ArrowLeft,
   LayoutGrid,
-  Play,
-  Volume2,
-  VolumeX,
 } from "lucide-react";
-import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
+import MediaDetailDialog from "../../components/MediaDetailDialog";
 
 export default function Person() {
   const { id } = useParams();
@@ -23,36 +20,19 @@ export default function Person() {
   const [showFullBio, setShowFullBio] = useState(false);
   const [open, setOpen] = useState(false);
   const [selectedItem, setSelectedItem] = useState(null);
-  const [trailer, setTrailer] = useState(null);
-  const [credits, setCredits] = useState(null);
-  const [logo, setLogo] = useState(null);
-  const [showTrailer, setShowTrailer] = useState(false);
-  const [isMuted, setIsMuted] = useState(true);
 
   useEffect(() => {
-    async function fetchPerson() {
+    async function fetchPersonData() {
       try {
-        const response = await fetch(`/api/getPeople?id=${id}`);
-        const fetchedPerson = await response.json();
-        setPerson(fetchedPerson.data);
+        const response = await fetch(`/api/getPersonEnhanced?id=${id}`);
+        const data = await response.json();
+        setPerson(data.data);
+        setMovieCredits(data.movieCredits);
       } catch (error) {
         console.error("Error fetching person:", error);
       }
     }
-    if (id) fetchPerson();
-  }, [id]);
-
-  useEffect(() => {
-    async function fetchMovieCredits() {
-      try {
-        const response = await fetch(`/api/getMovieCredits?id=${id}`);
-        const fetchedMovieCredits = await response.json();
-        setMovieCredits(fetchedMovieCredits.data);
-      } catch (error) {
-        console.error("Error fetching credits:", error);
-      }
-    }
-    if (id) fetchMovieCredits();
+    if (id) fetchPersonData();
   }, [id]);
 
   const calculateAge = (birthday) => {
@@ -79,77 +59,14 @@ export default function Person() {
     });
   };
 
-  // Sort credits by popularity/vote count
   const sortedCredits = movieCredits?.cast
     ?.filter((item) => item.poster_path)
     ?.sort((a, b) => b.popularity - a.popularity)
     ?.slice(0, 20);
 
-  // Fetch details when dialog opens
-  useEffect(() => {
-    async function fetchDetails() {
-      if (selectedItem) {
-        try {
-          const trailerResponse = await fetch(
-            `/api/getTrailer?id=${selectedItem.id}`
-          );
-          const trailerData = await trailerResponse.json();
-          setTrailer(trailerData.key);
-
-          const creditsResponse = await fetch(
-            `/api/getCredits?id=${selectedItem.id}`
-          );
-          const creditsData = await creditsResponse.json();
-          setCredits(creditsData);
-
-          const logoResponse = await fetch(
-            `/api/getMovieImages?id=${selectedItem.id}`
-          );
-          const logoData = await logoResponse.json();
-          const englishLogo = logoData.data?.logos?.find(
-            (logo) => logo.iso_639_1 === "en"
-          );
-          setLogo(englishLogo?.file_path);
-        } catch (error) {
-          console.error("Error fetching details:", error);
-        }
-      }
-    }
-
-    if (open && selectedItem) {
-      fetchDetails();
-    }
-  }, [open, selectedItem]);
-
-  // Start trailer after 3 seconds
-  useEffect(() => {
-    if (open) {
-      setShowTrailer(false);
-      setIsMuted(true);
-      const timer = setTimeout(() => setShowTrailer(true), 3000);
-      return () => clearTimeout(timer);
-    } else {
-      setShowTrailer(false);
-      setTrailer(null);
-      setCredits(null);
-      setLogo(null);
-    }
-  }, [open]);
-
   const handleOpenDialog = (item) => {
     setSelectedItem(item);
     setOpen(true);
-  };
-
-  const handleMuteToggle = () => {
-    const iframe = document.querySelector('iframe[src*="youtube"]');
-    if (iframe && iframe.contentWindow) {
-      const command = isMuted
-        ? '{"event":"command","func":"unMute","args":""}'
-        : '{"event":"command","func":"mute","args":""}';
-      iframe.contentWindow.postMessage(command, "*");
-      setIsMuted(!isMuted);
-    }
   };
 
   const genresById = {
@@ -203,7 +120,6 @@ export default function Person() {
               </button>
 
               <div className="flex flex-col lg:flex-row gap-10">
-                {/* Profile Image */}
                 <div className="shrink-0">
                   <div className="relative w-64 lg:w-80 mx-auto lg:mx-0">
                     {person.profile_path ? (
@@ -263,7 +179,6 @@ export default function Person() {
                     )}
                   </div>
 
-                  {/* Biography */}
                   {person.biography && (
                     <div className="space-y-3">
                       <h2 className="text-xl font-semibold">Biography</h2>
@@ -303,7 +218,7 @@ export default function Person() {
                     onClick={() => handleOpenDialog(item)}
                     className="group shrink-0 w-32 lg:w-48 snap-start cursor-pointer"
                   >
-                    <div className="relative rounded-lg overflow-hidden bg-white/5 transition-all duration-300 group-hover:scale-105 group-hover:shadow-xl group-hover:shadow-white/10">
+                    <div className="relative rounded-lg overflow-hidden bg-white/5 transition-all duration-300 group-hover:scale-105 group-hover:shadow-xl">
                       <img
                         src={`https://image.tmdb.org/t/p/w500${item.poster_path}`}
                         alt={item.title}
@@ -403,159 +318,13 @@ export default function Person() {
           </div>
         </div>
       )}
-
-      {selectedItem && (
-        <Dialog open={open} onOpenChange={setOpen}>
-          <DialogContent className="lg:max-w-6xl max-w-[90vw] p-0 border-none bg-[#010101] overflow-hidden">
-            <DialogTitle className="sr-only">
-              {selectedItem.title} - Details
-            </DialogTitle>
-            <div className="max-h-[90vh] overflow-y-auto overscroll-contain">
-              <div className="relative h-56 lg:h-125">
-                {showTrailer && trailer ? (
-                  <div className="absolute inset-0 overflow-hidden">
-                    <iframe
-                      src={`https://www.youtube.com/embed/${trailer}?autoplay=1&mute=1&loop=1&playlist=${trailer}&controls=0&showinfo=0&rel=0&iv_load_policy=3&modestbranding=1&playsinline=1&disablekb=1&fs=0&cc_load_policy=0&autohide=1&enablejsapi=1&vq=hd1080&hd=1`}
-                      className="absolute inset-0 w-full h-full"
-                      allow="autoplay; encrypted-media"
-                      style={{
-                        border: "none",
-                        pointerEvents: "none",
-                        transform: "scale(1.4)",
-                        objectFit: "cover",
-                      }}
-                    ></iframe>
-                  </div>
-                ) : (
-                  <img
-                    src={`https://image.tmdb.org/t/p/original/${selectedItem.backdrop_path}`}
-                    alt="Backdrop"
-                    className="w-full h-full object-cover object-top"
-                  />
-                )}
-                <div className="absolute inset-0 bg-linear-to-t from-[#010101] from-5% to-transparent"></div>
-
-                {/* Desktop: Logo and Watch Button overlay */}
-                <div className="hidden lg:block absolute bottom-6 left-6 right-6 z-10 space-y-4">
-                  {logo && (
-                    <img
-                      src={`https://image.tmdb.org/t/p/w500${logo}`}
-                      alt={selectedItem.title}
-                      className="max-w-md max-h-24 object-contain"
-                    />
-                  )}
-                  <Link
-                    href={`/movie/${selectedItem.id}`}
-                    className="inline-flex gap-2 items-center px-8 py-3 bg-white text-black rounded font-semibold hover:bg-white/90"
-                  >
-                    <Play className="w-5 h-5 fill-black" />
-                    <span>Watch Now</span>
-                  </Link>
-                </div>
-
-                {showTrailer && trailer && (
-                  <button
-                    onClick={handleMuteToggle}
-                    className="absolute bottom-4 right-4 z-20 p-3 rounded-full border-2 border-white/60 hover:border-white bg-black/20 hover:bg-black/40 backdrop-blur-sm transition-all"
-                  >
-                    {isMuted ? (
-                      <VolumeX className="w-5 h-5" />
-                    ) : (
-                      <Volume2 className="w-5 h-5" />
-                    )}
-                  </button>
-                )}
-              </div>
-
-              {/* Mobile: Logo and Watch Button below backdrop */}
-              <div className="lg:hidden px-4 py-4 space-y-3 bg-[#010101]">
-                {logo && (
-                  <img
-                    src={`https://image.tmdb.org/t/p/w500${logo}`}
-                    alt={selectedItem.title}
-                    className="max-w-50 max-h-16 object-contain"
-                  />
-                )}
-                <Link
-                  href={`/movie/${selectedItem.id}`}
-                  className="inline-flex gap-2 items-center px-6 py-2.5 bg-white text-black rounded font-semibold hover:bg-white/90 text-sm"
-                >
-                  <Play className="w-4 h-4 fill-black" />
-                  <span>Watch Now</span>
-                </Link>
-              </div>
-
-              <div className="relative lg:p-10 p-4">
-                <div className="grid lg:grid-cols-3 gap-8">
-                  <div className="lg:col-span-2 space-y-6">
-                    <div className="flex flex-wrap items-center gap-4 text-base">
-                      <div className="flex items-center gap-2">
-                        <span className="text-green-500 font-semibold">
-                          {Math.floor(selectedItem.vote_average * 10)}% Match
-                        </span>
-                      </div>
-                      <span className="opacity-80">
-                        {selectedItem.release_date?.slice(0, 4)}
-                      </span>
-                    </div>
-                    <p className="text-base leading-relaxed opacity-90">
-                      {selectedItem.overview}
-                    </p>
-                    <div className="flex flex-wrap gap-2">
-                      {getGenres(selectedItem.genre_ids).map((genre) => (
-                        <Link
-                          key={genre.id}
-                          href={`/genre/${genre.id}`}
-                          onClick={() => setOpen(false)}
-                          className="px-4 py-2 bg-white/10 hover:bg-white/15 rounded-full text-sm font-medium"
-                        >
-                          {genre.name}
-                        </Link>
-                      ))}
-                    </div>
-                  </div>
-
-                  <div className="lg:col-span-1 space-y-4">
-                    <h3 className="text-xl font-bold">Cast</h3>
-                    <div className="space-y-3">
-                      {credits?.data?.cast?.slice(0, 4).map((actor) => (
-                        <Link
-                          key={actor.id}
-                          href={`/person/${actor.id}`}
-                          onClick={() => setOpen(false)}
-                          className="flex items-center gap-3 group"
-                        >
-                          <div className="relative rounded-full overflow-hidden w-10 h-10 shrink-0 bg-white/10">
-                            {actor.profile_path ? (
-                              <img
-                                src={`https://image.tmdb.org/t/p/w200${actor.profile_path}`}
-                                alt={actor.name}
-                                className="w-full h-full object-cover"
-                              />
-                            ) : (
-                              <div className="w-full h-full flex items-center justify-center text-xs opacity-50">
-                                👤
-                              </div>
-                            )}
-                          </div>
-                          <div className="flex-1 min-w-0">
-                            <p className="font-semibold text-sm truncate group-hover:text-white/80">
-                              {actor.name}
-                            </p>
-                            <p className="text-xs opacity-60 truncate">
-                              {actor.character}
-                            </p>
-                          </div>
-                        </Link>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </DialogContent>
-        </Dialog>
-      )}
+      <MediaDetailDialog
+        open={open}
+        onOpenChange={setOpen}
+        item={selectedItem}
+        mediaType="movie"
+        linkPrefix="/movie"
+      />
     </>
   );
 }

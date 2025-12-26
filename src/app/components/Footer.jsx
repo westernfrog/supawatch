@@ -6,17 +6,14 @@ export default function Footer() {
   return (
     <footer className="py-16 px-6 lg:px-12">
       <div className="max-w-6xl mx-auto">
-        {/* Main Footer Content */}
         <div className="flex flex-col items-center text-center space-y-8">
-          {/* Logo */}
           <Link
             href="/"
-            className="text-3xl font-black text-red-600 uppercase text-mdnichrome animate-flicker"
+            className="text-3xl font-black uppercase text-mdnichrome neon-logo"
           >
             Supawatch
           </Link>
 
-          {/* Navigation */}
           <nav className="flex flex-wrap justify-center gap-x-8 gap-y-3">
             <Link
               href="/"
@@ -56,7 +53,6 @@ export default function Footer() {
             </Link>
           </nav>
 
-          {/* Social Links */}
           <div className="flex items-center gap-6">
             <Link
               href="https://github.com/westernfrog"
@@ -80,10 +76,8 @@ export default function Footer() {
             </Link>
           </div>
 
-          {/* Divider */}
           <div className="w-full max-w-xs h-px bg-white/10"></div>
 
-          {/* Copyright & TMDB */}
           <div className="space-y-2">
             <p className="text-xs text-neutral-600">Data provided by TMDB</p>
             <p className="text-xs text-neutral-600">

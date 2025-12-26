@@ -11,10 +11,8 @@ export async function GET(request) {
     const id = searchParams.get("id");
     const page = searchParams.get("page") || "1";
 
-    // Validate required parameters
     validateParams({ id }, ["id"]);
 
-    // Fetch from TMDB
     const data = await tmdbFetch(
       `/movie/${id}/similar`,
       { page },

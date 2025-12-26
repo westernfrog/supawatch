@@ -5,7 +5,7 @@ import MediaGrid from "../components/MediaGrid";
 export default function TV() {
   return (
     <MediaGrid
-      title="TV Series"
+      title="Top Rated TV Series"
       subtitle="Top-rated series and shows to binge-watch"
       apiEndpoint="/api/getTVList?list=top_rated"
       linkPrefix="/tv"

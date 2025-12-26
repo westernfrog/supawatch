@@ -27,7 +27,6 @@ export default function Overview(props) {
       <section className="lg:py-20 py-12 bg-[#010101]">
         <div className="max-w-7xl mx-auto lg:px-16 px-6">
           <div className="grid lg:grid-cols-3 gap-12">
-            {/* Left Column - Storyline & Info */}
             <div className="lg:col-span-2 space-y-8">
               <div className="space-y-4">
                 <h2 className="text-3xl font-bold">Storyline</h2>
@@ -38,7 +37,7 @@ export default function Overview(props) {
 
               <div className="flex flex-wrap items-center gap-6 text-base">
                 <div className="flex items-center gap-2">
-                  <span className="text-green-500 font-semibold">
+                  <span className="text-red-500 font-semibold">
                     {Math.floor(props.vote_average * 10)}%
                   </span>
                   <span className="opacity-70">Match</span>

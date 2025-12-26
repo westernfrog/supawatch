@@ -47,11 +47,8 @@ function DialogContent({
       <DialogPrimitive.Content
         data-slot="dialog-content"
         className={cn(
-          // Base styles
           "bg-background data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 fixed z-50 grid border shadow-lg duration-200 outline-none",
-          // Desktop: centered modal (unchanged)
           "lg:top-[50%] lg:left-[50%] lg:translate-x-[-50%] lg:translate-y-[-50%] lg:w-full lg:max-w-5xl lg:rounded-lg lg:data-[state=closed]:zoom-out-95 lg:data-[state=open]:zoom-in-95",
-          // Mobile: full width/height with only top gap - be explicit
           "max-lg:left-0 max-lg:right-0 max-lg:bottom-0 max-lg:top-12 max-lg:w-full max-lg:max-w-full max-lg:rounded-t-xl max-lg:rounded-b-none max-lg:p-0 max-lg:data-[state=closed]:slide-out-to-bottom max-lg:data-[state=open]:slide-in-from-bottom",
           className
         )}

@@ -18,10 +18,8 @@ export async function GET(request) {
     const page = searchParams.get("page") || "1";
     const includeAdult = searchParams.get("include_adult") || "false";
 
-    // Validate required parameters
     validateParams({ query }, ["query"]);
 
-    // Fetch from TMDB
     const data = await tmdbFetch(
       `/search/multi`,
       {

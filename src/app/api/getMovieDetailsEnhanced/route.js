@@ -17,10 +17,8 @@ export async function GET(request) {
     const { searchParams } = new URL(request.url);
     const id = searchParams.get("id");
 
-    // Validate required parameters
     validateParams({ id }, ["id"]);
 
-    // Fetch from TMDB with append_to_response to get everything in one call
     const data = await tmdbFetch(
       `/movie/${id}`,
       {
@@ -30,7 +28,6 @@ export async function GET(request) {
       CacheConfig.DETAILS
     );
 
-    // Extract English logo from images
     let logo = null;
     const englishLogo = data.images?.logos?.find(
       (logo) => logo.iso_639_1 === "en"
@@ -39,8 +36,6 @@ export async function GET(request) {
       logo = englishLogo.file_path;
     }
 
-    // Extract trailer from videos
-    // Find Trailer first, then Teaser (exclude Featurette and other types)
     const trailerVideo =
       data.videos?.results?.find(
         (video) => video.type === "Trailer" && video.site === "YouTube"
@@ -61,7 +56,6 @@ export async function GET(request) {
           type: null,
         };
 
-    // Remove the appended data from the main response to keep it clean
     const { images, videos, credits, recommendations, ...movieDetails } = data;
 
     return createResponse({
