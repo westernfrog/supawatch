@@ -285,7 +285,7 @@ export default function Movie() {
                       className="flex gap-2 items-center px-10 py-4 bg-white text-black rounded font-semibold hover:bg-white/90 shrink-0"
                     >
                       <Play className="w-6 h-6 fill-black" />
-                      Watch Now
+                      Play Movie
                     </button>
 
                     {showTrailer && trailer && (
@@ -392,7 +392,7 @@ export default function Movie() {
                 className="flex gap-2 items-center px-6 py-2.5 bg-white text-black rounded font-semibold text-sm"
               >
                 <Play className="w-4 h-4 fill-black" />
-                Watch Now
+                Play Movie
               </button>
 
               <div className="flex flex-wrap items-center gap-3 text-sm">

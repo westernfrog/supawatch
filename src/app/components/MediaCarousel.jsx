@@ -43,17 +43,9 @@ export default function MediaCarousel({
       {data ? (
         <section className="relative">
           <div className="lg:px-10 px-6 pt-10 flex items-center justify-between">
-            <h2 className="lg:text-2xl text-lg font-bold">{title}</h2>
-            {!hideSeeAll && (
-              <Link
-                href={seeAllLink || linkPrefix}
-                className="flex items-center gap-2 text-sm opacity-70 hover:opacity-100 font-medium"
-              >
-                <LayoutGrid className="w-4 h-4" />
-                <span>See All</span>
-                <ArrowRight className="w-4 h-4" />
-              </Link>
-            )}
+            <h2 className="lg:text-xl text-lg tracking-tight font-bold">
+              {title}
+            </h2>
           </div>
           <div className="lg:px-10 px-6">
             <div className="flex items-center gap-4 py-3 pb-10 overflow-x-auto scrollbar-hide">
@@ -61,9 +53,9 @@ export default function MediaCarousel({
                 <div
                   key={item.id}
                   onClick={() => handleItemClick(item)}
-                  className="shrink-0 lg:w-64 w-48 cursor-pointer group"
+                  className="shrink-0 cursor-pointer group"
                 >
-                  <div className="relative lg:h-96 h-72 bg-white/5 rounded-lg overflow-hidden">
+                  <div className="relative lg:h-110 h-72 bg-white/5 rounded-lg overflow-hidden">
                     <img
                       src={`https://image.tmdb.org/t/p/w500/${item.poster_path}`}
                       alt={getTitle(item)}

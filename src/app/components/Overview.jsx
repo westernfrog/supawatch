@@ -41,7 +41,6 @@ export default function Overview() {
         );
         const data = await response.json();
 
-        // Extract trailer
         if (data.trailer?.key) {
           setTrailers((prev) => [
             ...prev,
@@ -49,7 +48,6 @@ export default function Overview() {
           ]);
         }
 
-        // Extract logo
         if (data.logo) {
           setLogos((prev) => ({ ...prev, [movieId]: data.logo }));
         }
@@ -59,7 +57,6 @@ export default function Overview() {
     }
 
     if (data) {
-      // Fetch all movies in parallel using Promise.allSettled
       Promise.allSettled(
         data.results.slice(0, 8).map((item) => fetchMovieData(item.id))
       );
@@ -378,17 +375,17 @@ export default function Overview() {
                   <div className="flex items-center gap-3">
                     <Link
                       href={`/movie/${item.id}`}
-                      className="flex gap-2 items-center px-6 py-2.5 bg-white text-black rounded font-semibold text-sm"
+                      className="flex gap-2 w-full items-center px-6 py-2.5 bg-white text-black rounded font-semibold text-sm"
                     >
                       <Play className="w-4 h-4 fill-black" />
-                      <span>Watch Now</span>
+                      <span className="text-center w-full">Watch Now</span>
                     </Link>
                     <button
                       onClick={() => handleOpenDialog(item.id)}
-                      className="flex gap-2 items-center px-6 py-2.5 bg-white/10 text-white rounded font-semibold text-sm"
+                      className="flex gap-2 w-full items-center px-6 py-2.5 bg-white/10 text-white rounded font-semibold text-sm"
                     >
                       <LayoutGrid className="w-4 h-4" />
-                      <span>More Info</span>
+                      <span className="text-center w-full">More Info</span>
                     </button>
                   </div>
 
