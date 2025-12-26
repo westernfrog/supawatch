@@ -93,16 +93,13 @@ export default function Header() {
               className="w-full max-w-xs bg-[#0a0a0a]/98 backdrop-blur-xl border-l border-white/5 p-0"
             >
               <div className="flex flex-col h-full">
-                {/* Logo at top */}
-                <div className="px-6 pt-8 pb-6 border-b border-white/5">
+                <div className="px-6 py-4 border-b border-white/5">
                   <Link href="/" onClick={() => setOpen(false)}>
                     <h1 className="text-2xl text-mdnichrome font-black tracking-tight uppercase neon-logo">
                       Supawatch
                     </h1>
                   </Link>
                 </div>
-
-                {/* Navigation items */}
                 <div className="flex-1 px-3 py-4 space-y-1">
                   {navigation.map((item) => {
                     const Icon = item.icon;
@@ -127,8 +124,6 @@ export default function Header() {
                     );
                   })}
                 </div>
-
-                {/* Search at bottom */}
                 <div className="px-3 pb-8">
                   <Link
                     href="/search"

@@ -3,7 +3,6 @@
 import { useEffect, useState, useRef, useCallback } from "react";
 import MediaCarousel from "../../components/MediaCarousel";
 import MediaDetailDialog from "../../components/MediaDetailDialog";
-import Link from "next/link";
 import { SlidersHorizontal, SearchIcon } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
 import {
@@ -420,7 +419,9 @@ export default function SearchResults() {
                           ? `https://image.tmdb.org/t/p/w500/${item.poster_path}`
                           : item.profile_path
                           ? `https://image.tmdb.org/t/p/w500/${item.profile_path}`
-                          : "https://images.unsplash.com/photo-1464639351491-a172c2aa2911?w=600&auto=format&fit=crop&q=60"
+                          : `https://api.dicebear.com/9.x/glass/svg?seed=${
+                              item.title || item.name
+                            }&backgroundColor=0f172a,111827,1f2933,020617,18181b,0b132b,1a1a2e,121212`
                       }
                       alt={item.title || item.name}
                       className="w-full aspect-2/3 object-cover object-center"

@@ -351,7 +351,7 @@ export default function TVSeries() {
                     style={{
                       border: "none",
                       pointerEvents: "none",
-                      transform: "scale(1.4)",
+                      transform: "scale(1.6)",
                       objectFit: "cover",
                     }}
                   ></iframe>
@@ -589,7 +589,7 @@ export default function TVSeries() {
                           style={{
                             border: "none",
                             pointerEvents: "none",
-                            transform: "scale(1.3)",
+                            transform: "scale(1.4)",
                             objectFit: "cover",
                           }}
                         ></iframe>
@@ -725,7 +725,7 @@ export default function TVSeries() {
 
           {play && (
             <Dialog open={play} onOpenChange={setPlay}>
-              <DialogContent className="max-w-[80vw]! w-full p-0 border-none bg-black">
+              <DialogContent className="lg:max-w-[80vw]! w-full p-0 border-none bg-black">
                 <DialogTitle className="sr-only">
                   Watch {selectedEpisode ? selectedEpisode.name : data.name}
                 </DialogTitle>

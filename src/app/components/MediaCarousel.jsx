@@ -70,22 +70,6 @@ export default function MediaCarousel({
                       loading="lazy"
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                     />
-                    <div className="absolute inset-0 bg-linear-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity ease-in-out duration-300"></div>
-                    <div className="absolute bottom-0 left-0 right-0 p-4 translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all ease-in-out duration-300">
-                      <p className="font-semibold line-clamp-2">
-                        {getTitle(item)}
-                      </p>
-                      <div className="flex items-center gap-2 mt-1 text-xs opacity-70">
-                        <span>⭐ {item.vote_average?.toFixed(1)}</span>
-                        <span>•</span>
-                        <span>
-                          {(item.release_date || item.first_air_date)?.slice(
-                            0,
-                            4
-                          )}
-                        </span>
-                      </div>
-                    </div>
                   </div>
                 </div>
               ))}

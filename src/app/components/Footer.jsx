@@ -9,7 +9,7 @@ export default function Footer() {
         <div className="flex flex-col items-center text-center space-y-8">
           <Link
             href="/"
-            className="text-3xl font-black uppercase text-mdnichrome neon-logo"
+            className="lg:text-3xl text-2xl font-black uppercase text-mdnichrome neon-logo"
           >
             Supawatch
           </Link>
