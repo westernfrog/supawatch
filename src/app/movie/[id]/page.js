@@ -470,7 +470,7 @@ export default function Movie() {
               <DialogTitle className="sr-only">Play Movie</DialogTitle>
               <iframe
                 className="w-full h-full rounded-md"
-                src={`https://vidsrc.to/embed/movie/${id}`}
+                src={`https://vidsrcme.ru/embed/movie?tmdb=${id}`}
                 allowFullScreen
               ></iframe>
             </DialogContent>
