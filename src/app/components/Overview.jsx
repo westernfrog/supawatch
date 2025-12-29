@@ -539,7 +539,7 @@ export default function Overview() {
                       </Link>
                     </div>
 
-                    <div className="relative p-4">
+                    <div className="relative lg:p-8 p-4">
                       <div className="grid lg:grid-cols-3 gap-8">
                         <div className="lg:col-span-2 space-y-5">
                           <div className="flex flex-wrap items-center gap-3 text-sm">
