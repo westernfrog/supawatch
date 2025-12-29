@@ -381,15 +381,6 @@ export default function Overview() {
                     </button>
                   </div>
 
-                  <div className="flex items-center gap-3 text-sm">
-                    <span className="text-green-500 font-semibold">
-                      {Math.floor(item.vote_average * 10)}% Match
-                    </span>
-                    <span className="opacity-80">
-                      {item.release_date?.slice(0, 4)}
-                    </span>
-                  </div>
-
                   <p className="text-sm opacity-90 leading-relaxed line-clamp-4">
                     {item.overview}
                   </p>
@@ -548,7 +539,7 @@ export default function Overview() {
                       </Link>
                     </div>
 
-                    <div className="relative p-8">
+                    <div className="relative p-4">
                       <div className="grid lg:grid-cols-3 gap-8">
                         <div className="lg:col-span-2 space-y-5">
                           <div className="flex flex-wrap items-center gap-3 text-sm">
