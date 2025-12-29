@@ -226,14 +226,6 @@ export default function Overview() {
                           "..."}
                       </p>
                       <div className="flex items-center gap-4">
-                        <span className="text-green-500 font-semibold">
-                          {Math.floor(item.vote_average * 10)}% Match
-                        </span>
-                        <span className="opacity-80">
-                          {item.release_date?.slice(0, 4)}
-                        </span>
-                      </div>
-                      <div className="flex items-center gap-4">
                         <Link
                           href={`/movie/${item.id}`}
                           className="flex gap-2 items-center px-10 py-4 bg-white text-black rounded font-semibold hover:bg-white/90"
