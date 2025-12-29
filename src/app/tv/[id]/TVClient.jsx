@@ -11,6 +11,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import posthog from "posthog-js";
 
 export default function TVClient({ id, initialData }) {
   const [data, setData] = useState(initialData || null);
@@ -169,6 +170,57 @@ export default function TVClient({ id, initialData }) {
   const handleOpenRecDialog = (show) => {
     setSelectedRec(show);
     setRecOpen(true);
+
+    // PostHog: Track TV recommendation clicked
+    posthog.capture("tv_recommendation_clicked", {
+      recommendation_id: show.id,
+      recommendation_title: show.name,
+      source_tv_id: id,
+      source_tv_title: data?.name,
+      media_type: "tv",
+    });
+  };
+
+  const handleSeasonChange = (newSeason) => {
+    setSelectedSeason(newSeason);
+
+    // PostHog: Track season changed
+    posthog.capture("season_changed", {
+      tv_id: id,
+      tv_title: data?.name,
+      previous_season: selectedSeason,
+      new_season: newSeason,
+    });
+  };
+
+  const handleEpisodePlay = (episode) => {
+    setSelectedEpisode(episode);
+    setPlay(true);
+
+    // PostHog: Track TV episode play started
+    posthog.capture("tv_episode_play_started", {
+      tv_id: id,
+      tv_title: data?.name,
+      season_number: selectedSeason,
+      episode_number: episode.episode_number,
+      episode_name: episode.name,
+      vote_average: data?.vote_average,
+      genres: data?.genres?.map((g) => g.name),
+    });
+  };
+
+  const handlePlayTV = () => {
+    setPlay(true);
+
+    // PostHog: Track TV play started
+    posthog.capture("tv_episode_play_started", {
+      tv_id: id,
+      tv_title: data?.name,
+      season_number: selectedSeason,
+      episode_number: selectedEpisode?.episode_number || 1,
+      vote_average: data?.vote_average,
+      genres: data?.genres?.map((g) => g.name),
+    });
   };
 
   const handleRecMuteToggle = () => {
@@ -281,11 +333,11 @@ export default function TVClient({ id, initialData }) {
                 <div className="flex items-center justify-between gap-6">
                   <div className="flex items-center gap-4">
                     <button
-                      onClick={() => setPlay(true)}
+                      onClick={handlePlayTV}
                       className="flex gap-2 items-center px-10 py-4 bg-white text-black rounded font-semibold hover:bg-white/90 shrink-0"
                     >
                       <Play className="w-6 h-6 fill-black" />
-                      Play Movie
+                      Play TV
                     </button>
 
                     {showTrailer && trailer && (
@@ -387,11 +439,11 @@ export default function TVClient({ id, initialData }) {
               )}
 
               <button
-                onClick={() => setPlay(true)}
+                onClick={handlePlayTV}
                 className="flex gap-2 items-center px-6 py-2.5 bg-white text-black rounded font-semibold text-sm"
               >
                 <Play className="w-4 h-4 fill-black" />
-                Play Movie
+                Play TV
               </button>
 
               <div className="flex flex-wrap items-center gap-3 text-sm">
@@ -468,7 +520,7 @@ export default function TVClient({ id, initialData }) {
               <h2 className="text-xl lg:text-3xl font-bold text-mdnichrome">
                 Episodes
               </h2>
-              <Select value={selectedSeason} onValueChange={setSelectedSeason}>
+              <Select value={selectedSeason} onValueChange={handleSeasonChange}>
                 <SelectTrigger className="w-45 bg-white/10! border-white/20">
                   <SelectValue placeholder="Select Season" />
                 </SelectTrigger>
@@ -491,10 +543,7 @@ export default function TVClient({ id, initialData }) {
               {episodes?.episodes?.map((episode) => (
                 <button
                   key={episode.id}
-                  onClick={() => {
-                    setSelectedEpisode(episode);
-                    setPlay(true);
-                  }}
+                  onClick={() => handleEpisodePlay(episode)}
                   className="group flex flex-col sm:flex-row gap-4 p-4 bg-white/5 hover:bg-white/10 rounded-lg transition-all"
                 >
                   <div className="relative sm:w-64 shrink-0">

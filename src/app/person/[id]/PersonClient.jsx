@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useState, useEffect } from "react";
 import { Calendar, MapPin, Film, ArrowLeft, LayoutGrid } from "lucide-react";
 import MediaDetailDialog from "../../components/MediaDetailDialog";
+import posthog from "posthog-js";
 
 export default function PersonClient({ id, initialData }) {
   const [person, setPerson] = useState(initialData || null);
@@ -58,6 +59,29 @@ export default function PersonClient({ id, initialData }) {
   const handleOpenDialog = (item) => {
     setSelectedItem(item);
     setOpen(true);
+
+    // PostHog: Track cast member clicked (viewing their filmography)
+    posthog.capture("cast_member_clicked", {
+      person_id: id,
+      person_name: person?.name,
+      movie_id: item.id,
+      movie_title: item.title,
+      character: item.character,
+    });
+  };
+
+  const handleFilmographyClick = (item) => {
+    // PostHog: Track filmography item clicked
+    posthog.capture("filmography_item_clicked", {
+      person_id: id,
+      person_name: person?.name,
+      movie_id: item.id,
+      movie_title: item.title,
+      character: item.character,
+      release_year: item.release_date
+        ? new Date(item.release_date).getFullYear()
+        : null,
+    });
   };
 
   const genresById = {
@@ -248,6 +272,7 @@ export default function PersonClient({ id, initialData }) {
                     <Link
                       key={`${item.id}-${index}`}
                       href={`/movie/${item.id}`}
+                      onClick={() => handleFilmographyClick(item)}
                       className="flex items-center gap-4 p-3 rounded-lg bg-white/5 hover:bg-white/10 transition-colors group"
                     >
                       <div className="shrink-0 w-12 h-16 rounded overflow-hidden bg-white/10">

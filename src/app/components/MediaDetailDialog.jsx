@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { Play, Volume2, VolumeX } from "lucide-react";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
+import posthog from "posthog-js";
 
 const movieGenres = {
   28: "Action",
@@ -147,6 +148,31 @@ export default function MediaDetailDialog({
     }
   };
 
+  const handleWatchNowClick = () => {
+    // PostHog: Track watch now clicked
+    posthog.capture("watch_now_clicked", {
+      item_id: item?.id,
+      item_title: getTitle(item),
+      media_type: mediaType,
+      vote_average: item?.vote_average,
+      release_year: getDate(item)?.slice(0, 4),
+    });
+  };
+
+  const handleDialogOpenChange = (newOpen) => {
+    if (newOpen && item) {
+      // PostHog: Track media detail dialog opened
+      posthog.capture("media_detail_dialog_opened", {
+        item_id: item.id,
+        item_title: getTitle(item),
+        media_type: mediaType,
+        vote_average: item.vote_average,
+        release_year: getDate(item)?.slice(0, 4),
+      });
+    }
+    onOpenChange(newOpen);
+  };
+
   if (!item) return null;
 
   const detailLink = linkPrefix
@@ -154,7 +180,7 @@ export default function MediaDetailDialog({
     : `/${isTV ? "tv" : "movie"}/${item.id}`;
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog open={open} onOpenChange={handleDialogOpenChange}>
       <DialogContent className="lg:max-w-6xl max-lg:max-w-none p-0 border-none bg-[#010101] overflow-hidden">
         <DialogTitle className="sr-only">
           {getTitle(item)} - Details
@@ -195,6 +221,7 @@ export default function MediaDetailDialog({
               )}
               <Link
                 href={detailLink}
+                onClick={handleWatchNowClick}
                 className="inline-flex gap-2 items-center px-8 py-3 bg-white text-black rounded font-semibold hover:bg-white/90"
               >
                 <Play className="w-5 h-5 fill-black" />
@@ -226,6 +253,7 @@ export default function MediaDetailDialog({
             )}
             <Link
               href={detailLink}
+              onClick={handleWatchNowClick}
               className="inline-flex gap-2 items-center px-6 py-2.5 bg-white text-black rounded font-semibold hover:bg-white/90 text-sm"
             >
               <Play className="w-4 h-4 fill-black" />

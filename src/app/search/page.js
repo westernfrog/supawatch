@@ -15,6 +15,7 @@ import {
 } from "@/components/ui/select";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
+import posthog from "posthog-js";
 
 const GENRES = {
   28: "Action",
@@ -197,12 +198,60 @@ export default function SearchPage() {
   };
 
   const toggleGenre = (genreId) => {
+    const newGenres = filters.genres.includes(genreId)
+      ? filters.genres.filter((id) => id !== genreId)
+      : [...filters.genres, genreId];
+
     setFilters((prev) => ({
       ...prev,
-      genres: prev.genres.includes(genreId)
-        ? prev.genres.filter((id) => id !== genreId)
-        : [...prev.genres, genreId],
+      genres: newGenres,
     }));
+
+    // PostHog: Track filter applied
+    posthog.capture("filter_applied", {
+      filter_type: "genre",
+      genre_id: genreId,
+      genre_name: GENRES[genreId],
+      action: filters.genres.includes(genreId) ? "removed" : "added",
+      search_query: debouncedTerm,
+    });
+  };
+
+  const handleMediaTypeChange = (value) => {
+    setFilters({ ...filters, mediaType: value });
+
+    // PostHog: Track filter applied
+    posthog.capture("filter_applied", {
+      filter_type: "media_type",
+      media_type: value,
+      search_query: debouncedTerm,
+    });
+  };
+
+  const handleSortChange = (value) => {
+    setFilters({ ...filters, sortBy: value });
+
+    // PostHog: Track filter applied
+    posthog.capture("filter_applied", {
+      filter_type: "sort",
+      sort_by: value,
+      search_query: debouncedTerm,
+    });
+  };
+
+  const handleSearchSubmit = () => {
+    if (searchTerm.trim()) {
+      // PostHog: Track search performed
+      posthog.capture("search_performed", {
+        search_query: searchTerm,
+        filters: {
+          media_type: filters.mediaType,
+          genres: filters.genres.map((id) => GENRES[id]),
+          sort_by: filters.sortBy,
+          include_adult: filters.includeAdult,
+        },
+      });
+    }
   };
 
   const clearFilters = () => {
@@ -252,6 +301,7 @@ export default function SearchPage() {
             />
             <button
               type="button"
+              onClick={handleSearchSubmit}
               className="lg:px-8 px-6 lg:py-7 py-3 bg-green-500 rounded-lg m-1 active:scale-95 transition duration-300 ease-in-out"
             >
               <SearchIcon
@@ -281,9 +331,7 @@ export default function SearchPage() {
               <div className="flex items-center gap-2 lg:gap-3 flex-wrap overflow-x-auto scrollbar-hide">
                 <RadioGroup
                   value={filters.mediaType}
-                  onValueChange={(value) =>
-                    setFilters({ ...filters, mediaType: value })
-                  }
+                  onValueChange={handleMediaTypeChange}
                   className="flex items-center gap-2 bg-white/5 rounded-full p-1"
                 >
                   {["all", "movie", "tv"].map((type) => (
@@ -313,9 +361,7 @@ export default function SearchPage() {
 
                 <Select
                   value={filters.sortBy}
-                  onValueChange={(value) =>
-                    setFilters({ ...filters, sortBy: value })
-                  }
+                  onValueChange={handleSortChange}
                 >
                   <SelectTrigger className="w-45 bg-white/10 border-white/20 rounded-full text-sm">
                     <SelectValue placeholder="Sort by" />

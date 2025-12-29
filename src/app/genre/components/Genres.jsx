@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import posthog from "posthog-js";
 
 export default function Genres(props) {
   const [data, setData] = useState(null);
@@ -43,9 +44,18 @@ export default function Genres(props) {
     return null;
   }
 
+  const handleGenreClick = () => {
+    // PostHog: Track genre selected
+    posthog.capture("genre_selected", {
+      genre_id: props.genre,
+      genre_name: props.name,
+    });
+  };
+
   return (
     <Link
       href={`/genre/${props.genre}`}
+      onClick={handleGenreClick}
       className="relative group lg:col-span-2 col-span-4 cursor-pointer"
     >
       <div className="relative rounded-lg overflow-hidden bg-white/5 transition-all duration-300 ease-out group-hover:scale-105 group-hover:shadow-2xl">

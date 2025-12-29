@@ -4,6 +4,7 @@ import { Play, Volume2, VolumeX, Star } from "lucide-react";
 import Link from "next/link";
 import { useState, useEffect } from "react";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
+import posthog from "posthog-js";
 
 export default function MovieClient({ id, initialData }) {
   const [data, setData] = useState(initialData || null);
@@ -173,6 +174,28 @@ export default function MovieClient({ id, initialData }) {
   const handleOpenRecDialog = (movie) => {
     setSelectedRec(movie);
     setRecOpen(true);
+
+    // PostHog: Track recommendation clicked
+    posthog.capture("recommendation_clicked", {
+      recommendation_id: movie.id,
+      recommendation_title: movie.title,
+      source_movie_id: id,
+      source_movie_title: data?.title,
+      media_type: "movie",
+    });
+  };
+
+  const handlePlayMovie = () => {
+    setPlay(true);
+
+    // PostHog: Track movie play started
+    posthog.capture("movie_play_started", {
+      movie_id: id,
+      movie_title: data?.title,
+      release_year: data?.release_date?.slice(0, 4),
+      vote_average: data?.vote_average,
+      genres: data?.genres?.map((g) => g.name),
+    });
   };
 
   const movieGenres = {
@@ -279,7 +302,7 @@ export default function MovieClient({ id, initialData }) {
                 <div className="flex items-center justify-between gap-6">
                   <div className="flex items-center gap-4">
                     <button
-                      onClick={() => setPlay(true)}
+                      onClick={handlePlayMovie}
                       className="flex gap-2 items-center px-10 py-4 bg-white text-black rounded font-semibold hover:bg-white/90 shrink-0"
                     >
                       <Play className="w-6 h-6 fill-black" />
@@ -386,7 +409,7 @@ export default function MovieClient({ id, initialData }) {
               )}
 
               <button
-                onClick={() => setPlay(true)}
+                onClick={handlePlayMovie}
                 className="flex gap-2 items-center px-6 py-2.5 bg-white text-black rounded font-semibold text-sm"
               >
                 <Play className="w-4 h-4 fill-black" />
