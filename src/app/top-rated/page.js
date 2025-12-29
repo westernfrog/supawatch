@@ -1,6 +1,14 @@
-"use client";
-
 import MediaGrid from "../components/MediaGrid";
+
+export const metadata = {
+  title: "Top Rated Movies",
+  description:
+    "Explore the highest rated movies of all time. Find critically acclaimed films with top ratings on Supawatch.",
+  openGraph: {
+    title: "Top Rated Movies | Supawatch",
+    description: "Explore the highest rated movies of all time.",
+  },
+};
 
 export default function TopRated() {
   return (

@@ -1,5 +1,16 @@
 import Genres from "./components/Genres";
 
+export const metadata = {
+  title: "Browse Genres",
+  description:
+    "Explore movies by genre. Find action, comedy, drama, horror, sci-fi, and more on Supawatch.",
+  openGraph: {
+    title: "Browse Movie Genres | Supawatch",
+    description:
+      "Explore movies by genre. Find action, comedy, drama, horror, sci-fi, and more.",
+  },
+};
+
 export default function Genre() {
   const genresById = {
     28: "Action",

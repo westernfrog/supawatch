@@ -1,6 +1,14 @@
-"use client";
-
 import MediaGrid from "../components/MediaGrid";
+
+export const metadata = {
+  title: "Top Rated TV Series",
+  description:
+    "Discover the highest rated TV series and shows. Find top-rated series to binge-watch on Supawatch.",
+  openGraph: {
+    title: "Top Rated TV Series | Supawatch",
+    description: "Discover the highest rated TV series and shows.",
+  },
+};
 
 export default function TV() {
   return (

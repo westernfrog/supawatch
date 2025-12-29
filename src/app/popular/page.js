@@ -1,6 +1,14 @@
-"use client";
-
 import MediaGrid from "../components/MediaGrid";
+
+export const metadata = {
+  title: "Popular Movies",
+  description:
+    "Discover the most popular movies trending right now. Watch trailers and explore cast information on Supawatch.",
+  openGraph: {
+    title: "Popular Movies | Supawatch",
+    description: "Discover the most popular movies trending right now.",
+  },
+};
 
 export default function Popular() {
   return (
