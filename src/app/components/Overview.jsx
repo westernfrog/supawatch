@@ -267,7 +267,7 @@ export default function Overview() {
                       <div className="flex items-center gap-4 pt-4">
                         <Link
                           href={`/movie/${item.id}`}
-                          className="group flex gap-3 items-center px-8 py-3 bg-white text-black rounded hover:bg-white/60 transition-all active:scale-95"
+                          className="group flex gap-3 items-center px-8 py-3 bg-white text-black rounded hover:bg-white/80 transition-all active:scale-95"
                         >
                           <Play className="w-6 h-6 fill-black" />
                           <span className="text-lg font-semibold">
