@@ -88,20 +88,20 @@ export default function MediaGrid({
           />
           <div className="absolute inset-0 bg-linear-to-t from-[#010101] via-black/60 to-transparent"></div>
           <div className="absolute bottom-0 left-0 right-0 lg:px-10 px-6">
-            <h1 className="lg:text-6xl text-4xl font-bold text-mdnichrome">
+            <h1 className="lg:text-5xl text-2xl font-semibold text-mdnichrome">
               {title}
             </h1>
           </div>
         </div>
       </section>
-      <section className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 lg:px-10 px-6 py-8">
+      <section className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 lg:px-10 px-6 py-8">
         {data.map((item, index) => (
           <div
             key={`${item.id}-${index}`}
             onClick={() => handleItemClick(item)}
             className="cursor-pointer group"
           >
-            <div className="relative aspect-2/3 bg-white/5 rounded-lg overflow-hidden">
+            <div className="relative aspect-2/3 bg-white/5 rounded overflow-hidden">
               <img
                 src={`https://image.tmdb.org/t/p/w500/${item.poster_path}`}
                 alt={getTitle(item)}
@@ -114,7 +114,7 @@ export default function MediaGrid({
         {loading &&
           [...Array(10)].map((_, index) => (
             <div key={`skeleton-${index}`} className="animate-pulse">
-              <div className="relative aspect-2/3 bg-white/5 rounded-lg overflow-hidden">
+              <div className="relative aspect-2/3 bg-white/5 rounded overflow-hidden">
                 <div className="absolute inset-0 bg-linear-to-br from-white/10 via-white/5 to-transparent"></div>
               </div>
             </div>

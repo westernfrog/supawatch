@@ -1,9 +1,31 @@
 "use client";
 
-import { Play, LayoutGrid, Volume2, VolumeX } from "lucide-react";
+import { Play, LayoutGrid, Volume2, VolumeX, InfoIcon } from "lucide-react";
 import Link from "next/link";
 import { useState, useEffect } from "react";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
+
+const genresById = {
+  28: "Action",
+  12: "Adventure",
+  16: "Animation",
+  35: "Comedy",
+  80: "Crime",
+  99: "Documentary",
+  18: "Drama",
+  10751: "Family",
+  14: "Fantasy",
+  36: "History",
+  27: "Horror",
+  10402: "Music",
+  9648: "Mystery",
+  10749: "Romance",
+  878: "Science Fiction",
+  10770: "TV Movie",
+  53: "Thriller",
+  10752: "War",
+  37: "Western",
+};
 
 export default function Overview() {
   const [data, setData] = useState(null);
@@ -16,12 +38,22 @@ export default function Overview() {
   const [credits, setCredits] = useState(null);
   const [movieDetails, setMovieDetails] = useState(null);
   const [currentMovieId, setCurrentMovieId] = useState(null);
+  const [selectedGenre, setSelectedGenre] = useState(null);
 
   useEffect(() => {
     async function fetchData() {
       try {
+        // Select a random genre
+        const genreIds = Object.keys(genresById);
+        const randomGenreId =
+          genreIds[Math.floor(Math.random() * genreIds.length)];
+        setSelectedGenre({
+          id: randomGenreId,
+          name: genresById[randomGenreId],
+        });
+
         const response = await fetch(
-          "/api/getMovieList?list=now_playing&page=1"
+          `/api/getMovieDiscover?genre=${randomGenreId}&page=1`
         );
         const fetchedData = await response.json();
         setData(fetchedData.data);
@@ -155,28 +187,6 @@ export default function Overview() {
     }
   };
 
-  const genresById = {
-    28: "Action",
-    12: "Adventure",
-    16: "Animation",
-    35: "Comedy",
-    80: "Crime",
-    99: "Documentary",
-    18: "Drama",
-    10751: "Family",
-    14: "Fantasy",
-    36: "History",
-    27: "Horror",
-    10402: "Music",
-    9648: "Mystery",
-    10749: "Romance",
-    878: "Science Fiction",
-    10770: "TV Movie",
-    53: "Thriller",
-    10752: "War",
-    37: "Western",
-  };
-
   const getGenres = (genreIds) => {
     return genreIds.map((id) => ({ id, name: genresById[id] }));
   };
@@ -195,117 +205,166 @@ export default function Overview() {
           .map((item, index) => (
             <main key={index} className="relative">
               <section className="hidden lg:block">
-                <div className="absolute top-0 inset-0">
+                {/* Enhanced Backdrop with Cinematic Effect */}
+                <div className="absolute top-0 inset-0 overflow-hidden">
                   <div className="relative h-full">
                     <img
                       src={`https://image.tmdb.org/t/p/original/${item.backdrop_path}`}
                       alt="Backdrop"
-                      className="w-full h-full object-cover object-top"
+                      className="w-full h-full object-cover object-top animate-[kenburns_20s_ease-in-out_infinite_alternate]"
+                      style={{
+                        animation:
+                          "kenburns 20s ease-in-out infinite alternate",
+                      }}
                     />
-                    <div className="absolute top-0 inset-0 bg-linear-to-b from-black/30 via-black/40 to-[#010101]"></div>
-                    <div className="absolute top-0 inset-0 bg-linear-to-r from-black/60 via-transparent to-transparent"></div>
+                    <div className="absolute inset-0 bg-linear-to-b from-black/10 via-black/20 to-[#010101] via-60%"></div>
+                    <div className="absolute inset-0 bg-linear-to-r from-black/80 via-black/40 to-transparent via-50%"></div>
+                    <div className="absolute inset-0 bg-linear-to-t from-[#010101] via-transparent to-transparent opacity-80"></div>
                   </div>
                 </div>
-                <div className="h-screen">
-                  <div className="absolute z-30 inset-10 flex items-end py-6">
-                    <div className="space-y-6 w-175">
-                      {logos[item.id] && (
-                        <div className="mb-8">
+
+                <div className="h-screen relative">
+                  <div className="absolute z-30 inset-x-12 bottom-10 flex items-end">
+                    <div className="space-y-6 w-180 animate-[fadeInUp_0.8s_ease-out]">
+                      {selectedGenre && (
+                        <div className="inline-flex items-center gap-2 px-3 py-1.5 mb-10 bg-black/40 border-l-2 border-[#E50914] backdrop-blur-sm">
+                          <span className="text-white/90 text-xs font-bold uppercase tracking-widest">
+                            {selectedGenre.name} Genre
+                          </span>
+                        </div>
+                      )}
+
+                      {logos[item.id] ? (
+                        <div className="mb-6 drop-shadow-2xl">
                           <img
                             src={`https://image.tmdb.org/t/p/w500${
                               logos[item.id]
                             }`}
                             alt={item.title}
-                            className="max-w-xl h-36 object-contain"
+                            className="w-auto h-40 object-contain drop-shadow-[0_4px_20px_rgba(0,0,0,0.5)] origin-bottom-left"
                           />
                         </div>
+                      ) : (
+                        <h1 className="text-6xl font-black text-white mb-4 drop-shadow-lg leading-tight">
+                          {item.title}
+                        </h1>
                       )}
 
-                      <p className="text-lg tracking-tight opacity-90">
-                        {item.overview.split(" ").slice(0, 50).join(" ") +
-                          "..."}
+                      <div className="flex items-center gap-4 text-sm font-medium text-white/90">
+                        <span className="text-[#46d369] font-bold">
+                          {Math.floor(item.vote_average * 10)}% Match
+                        </span>
+                        <span>{item.release_date?.slice(0, 4)}</span>
+                        <span className="px-2 py-0.5 border border-white/40 rounded text-xs uppercase">
+                          HD
+                        </span>
+                      </div>
+
+                      <p className="text-lg leading-relaxed text-white drop-shadow-md line-clamp-3">
+                        {item.overview}
                       </p>
-                      <div className="flex items-center gap-4">
+
+                      <div className="flex items-center gap-4 pt-4">
                         <Link
                           href={`/movie/${item.id}`}
-                          className="flex gap-2 items-center px-10 py-4 bg-white text-black rounded font-semibold hover:bg-white/90"
+                          className="group flex gap-3 items-center px-8 py-3 bg-white text-black rounded hover:bg-white/60 transition-all active:scale-95"
                         >
                           <Play className="w-6 h-6 fill-black" />
-                          <span>Watch Now</span>
+                          <span className="text-lg font-semibold">
+                            Watch Now
+                          </span>
                         </Link>
+
                         <button
                           onClick={() => handleOpenDialog(item.id)}
-                          className="flex gap-2 items-center px-10 py-4 bg-white/10 hover:bg-white/20 text-white rounded font-semibold"
+                          className="group flex gap-3 items-center px-8 py-3 bg-white/40 text-white rounded hover:bg-[rgba(109,109,110,0.4)] transition-all active:scale-95"
                         >
-                          <LayoutGrid className="w-6 h-6" />
-                          <span>More Info</span>
+                          <InfoIcon className="w-6 h-6" />
+                          <span className="text-lg font-semibold">
+                            More Info
+                          </span>
                         </button>
                       </div>
                     </div>
                   </div>
 
-                  <div className="absolute z-30 bottom-12 left-0 right-0 flex items-center justify-center gap-6">
-                    <button
-                      onClick={() =>
-                        changePage(
-                          currentPage > 0 ? currentPage - 1 : totalPages - 1
-                        )
-                      }
-                      className="p-3 rounded-full bg-white/10 hover:bg-white/20 backdrop-blur-sm transition-colors"
-                      aria-label="Previous"
-                    >
-                      <svg
-                        className="w-5 h-5"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M15 19l-7-7 7-7"
-                        />
-                      </svg>
-                    </button>
-
-                    <div className="flex items-center gap-3">
-                      {Array.from({ length: totalPages }, (_, index) => (
+                  <div className="absolute z-30 bottom-10 right-12 flex items-end gap-10">
+                    <div className="flex flex-col items-end gap-6">
+                      <div className="flex items-center gap-4">
                         <button
-                          key={index}
-                          onClick={() => changePage(index)}
-                          className={`rounded-full transition-all ${
-                            currentPage === index
-                              ? "bg-white w-10 h-2.5"
-                              : "bg-white/30 w-3 h-2.5 hover:bg-white/50"
-                          }`}
-                        />
-                      ))}
-                    </div>
+                          onClick={() =>
+                            changePage(
+                              currentPage > 0 ? currentPage - 1 : totalPages - 1
+                            )
+                          }
+                          className="group p-3 rounded-full border border-white/10 text-white/70 hover:text-white hover:border-white/40 transition-all bg-black/40 hover:bg-black/60 backdrop-blur-md"
+                          aria-label="Previous"
+                        >
+                          <svg
+                            className="w-5 h-5 group-hover:-translate-x-0.5 transition-transform"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2.5}
+                              d="M15 19l-7-7 7-7"
+                            />
+                          </svg>
+                        </button>
 
-                    <button
-                      onClick={() =>
-                        changePage(
-                          currentPage < totalPages - 1 ? currentPage + 1 : 0
-                        )
-                      }
-                      className="p-3 rounded-full bg-white/10 hover:bg-white/20 backdrop-blur-sm transition-colors"
-                      aria-label="Next"
-                    >
-                      <svg
-                        className="w-5 h-5"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M9 5l7 7-7 7"
-                        />
-                      </svg>
-                    </button>
+                        <button
+                          onClick={() =>
+                            changePage(
+                              currentPage < totalPages - 1 ? currentPage + 1 : 0
+                            )
+                          }
+                          className="group p-3 rounded-full border border-white/10 text-white/70 hover:text-white hover:border-white/40 transition-all bg-black/40 hover:bg-black/60 backdrop-blur-md"
+                          aria-label="Next"
+                        >
+                          <svg
+                            className="w-5 h-5 group-hover:translate-x-0.5 transition-transform"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2.5}
+                              d="M9 5l7 7-7 7"
+                            />
+                          </svg>
+                        </button>
+                      </div>
+
+                      <div className="flex items-center gap-4">
+                        {data.results
+                          .slice(currentPage + 1, currentPage + 3)
+                          .map((nextItem, nextIdx) => (
+                            <div
+                              key={nextItem.id}
+                              className="group relative w-80 h-auto rounded-md overflow-hidden cursor-pointer transition-all hover:scale-105 shadow-lg"
+                              onClick={() =>
+                                changePage(currentPage + 1 + nextIdx)
+                              }
+                            >
+                              <img
+                                src={`https://image.tmdb.org/t/p/w300${nextItem.backdrop_path}`}
+                                alt={nextItem.title}
+                                className="w-full h-full object-cover opacity-70 group-hover:opacity-100 transition-opacity"
+                              />
+                              <div className="absolute bottom-0 inset-x-0 p-3 bg-linear-to-t from-black/90 via-black/60 to-transparent">
+                                <p className="text-sm font-bold text-white truncate drop-shadow-md">
+                                  {nextItem.title}
+                                </p>
+                              </div>
+                            </div>
+                          ))}
+                      </div>
+                    </div>
                   </div>
                 </div>
               </section>

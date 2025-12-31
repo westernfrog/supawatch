@@ -27,6 +27,13 @@ export default function MovieClient({ id, initialData }) {
   useEffect(() => {
     async function fetchAllData() {
       try {
+        // Reset all state before fetching to prevent stale data
+        setData(null);
+        setLogo(null);
+        setTrailer(null);
+        setCredits(null);
+        setRecommendations(null);
+
         const response = await fetch(`/api/getMovieDetailsEnhanced?id=${id}`);
         const fetchedData = await response.json();
 
@@ -56,6 +63,13 @@ export default function MovieClient({ id, initialData }) {
       fetchAllData();
     }
   }, [id]);
+
+  // Update document title when data loads
+  useEffect(() => {
+    if (data?.title) {
+      document.title = `${data.title} | Supawatch`;
+    }
+  }, [data]);
 
   useEffect(() => {
     if (!window.YT) {

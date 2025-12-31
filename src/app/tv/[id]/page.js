@@ -92,7 +92,7 @@ export default async function TVSeriesPage({ params }) {
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
       )}
-      <TVClient id={id} initialData={series} />
+      <TVClient key={id} id={id} initialData={series} />
     </>
   );
 }

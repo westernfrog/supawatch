@@ -11,6 +11,9 @@ export default function LenisScroll({ children }) {
       smoothWheel: true,
     });
 
+    // Expose lenis globally so dialogs can stop/start it
+    window.lenis = lenis;
+
     function raf(time) {
       lenis.raf(time);
       requestAnimationFrame(raf);
@@ -19,6 +22,7 @@ export default function LenisScroll({ children }) {
     requestAnimationFrame(raf);
 
     return () => {
+      window.lenis = null;
       lenis.destroy();
     };
   }, []);

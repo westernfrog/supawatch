@@ -55,7 +55,7 @@ export default function MediaCarousel({
                   onClick={() => handleItemClick(item)}
                   className="shrink-0 cursor-pointer group"
                 >
-                  <div className="relative lg:h-110 h-72 bg-white/5 rounded-lg overflow-hidden">
+                  <div className="relative lg:h-115 h-72 bg-white/5 rounded overflow-hidden">
                     <img
                       src={`https://image.tmdb.org/t/p/w500/${item.poster_path}`}
                       alt={getTitle(item)}

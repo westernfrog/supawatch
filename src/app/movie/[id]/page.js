@@ -93,7 +93,7 @@ export default async function MoviePage({ params }) {
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
       )}
-      <MovieClient id={id} initialData={movie} />
+      <MovieClient key={id} id={id} initialData={movie} />
     </>
   );
 }

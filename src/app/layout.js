@@ -106,12 +106,10 @@ export default function RootLayout({ children }) {
         />
       </head>
       <body className={`${open_sans.variable} ${mdnichrome.variable}`}>
-        <LenisScroll>
-          <Header />
-          {children}
-          <Footer />
-          <Analytics />
-        </LenisScroll>
+        <Header />
+        {children}
+        <Footer />
+        <Analytics />
       </body>
     </html>
   );
