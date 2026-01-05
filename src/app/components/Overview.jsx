@@ -39,6 +39,7 @@ export default function Overview() {
   const [movieDetails, setMovieDetails] = useState(null);
   const [currentMovieId, setCurrentMovieId] = useState(null);
   const [selectedGenre, setSelectedGenre] = useState(null);
+  const [progressKey, setProgressKey] = useState(0);
 
   useEffect(() => {
     async function fetchData() {
@@ -164,6 +165,8 @@ export default function Overview() {
   useEffect(() => {
     if (open) return;
 
+    setProgressKey((prev) => prev + 1);
+
     const interval = setInterval(() => {
       const nextPage = (currentPage + 1) % totalPages;
       setCurrentPage(nextPage);
@@ -174,6 +177,7 @@ export default function Overview() {
 
   const changePage = (page) => {
     setCurrentPage(page);
+    setProgressKey((prev) => prev + 1);
   };
 
   const handleMuteToggle = () => {
@@ -348,8 +352,8 @@ export default function Overview() {
                         .slice(currentPage + 1, currentPage + 2)
                         .map((nextItem) => (
                           <div
-                            key={nextItem.id}
-                            className="group relative w-96 aspect-video rounded-lg overflow-hidden cursor-pointer shadow-2xl ring-1 ring-white/10 hover:ring-white/40 transition-all duration-300 bg-[#1a1a1a]"
+                            key={`${nextItem.id}-${progressKey}`}
+                            className="group relative w-96 aspect-video rounded-lg overflow-hidden cursor-pointer shadow-2xl ring-1 ring-white/30 hover:ring-white/40 transition-all duration-300 bg-[#1a1a1a]"
                             onClick={() => changePage(currentPage + 1)}
                           >
                             <div className="absolute top-3 left-3 z-10 px-2 py-1 bg-black/60 backdrop-blur-sm rounded text-[10px] font-bold uppercase tracking-wider text-white/90 border border-white/10">
@@ -360,6 +364,23 @@ export default function Overview() {
                               alt={nextItem.title}
                               className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity duration-300"
                             />
+                            {/* Progress Overlay - unfades from left to right over 15s */}
+                            <div
+                              className="absolute inset-0 bg-linear-to-r from-white/25 via-white/15 to-white/10 pointer-events-none"
+                              style={{
+                                animation: "progressUnfade 15s linear forwards",
+                              }}
+                            ></div>
+                            <style jsx>{`
+                              @keyframes progressUnfade {
+                                from {
+                                  clip-path: inset(0 0 0 0);
+                                }
+                                to {
+                                  clip-path: inset(0 0 0 100%);
+                                }
+                              }
+                            `}</style>
                             <div className="absolute inset-x-0 bottom-0 p-4 bg-linear-to-t from-black via-black/80 to-transparent pt-12">
                               <h4 className="text-white font-bold text-base truncate drop-shadow-md transition-colors">
                                 {nextItem.title}
