@@ -4,6 +4,13 @@ import { Play, Volume2, VolumeX, Star, Info } from "lucide-react";
 import Link from "next/link";
 import { useState, useEffect } from "react";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import posthog from "posthog-js";
 
 export default function TVClient({ id, initialData }) {
@@ -15,6 +22,10 @@ export default function TVClient({ id, initialData }) {
   const [showTrailer, setShowTrailer] = useState(false);
   const [isMuted, setIsMuted] = useState(true);
   const [play, setPlay] = useState(false);
+  const [playEpisode, setPlayEpisode] = useState(null);
+  const [selectedSeason, setSelectedSeason] = useState("1");
+  const [episodes, setEpisodes] = useState([]);
+  const [loadingEpisodes, setLoadingEpisodes] = useState(false);
 
   const [recOpen, setRecOpen] = useState(false);
   const [selectedRec, setSelectedRec] = useState(null);
@@ -65,6 +76,29 @@ export default function TVClient({ id, initialData }) {
       fetchAllData();
     }
   }, [id]);
+
+  // Fetch episodes when season changes
+  useEffect(() => {
+    async function fetchEpisodes() {
+      if (!id || !selectedSeason) return;
+
+      setLoadingEpisodes(true);
+      try {
+        const response = await fetch(
+          `/api/getEpisodes?id=${id}&season=${selectedSeason}`
+        );
+        const fetchedData = await response.json();
+        setEpisodes(fetchedData.data?.episodes || []);
+      } catch (error) {
+        console.error("Error fetching episodes:", error);
+        setEpisodes([]);
+      } finally {
+        setLoadingEpisodes(false);
+      }
+    }
+
+    fetchEpisodes();
+  }, [id, selectedSeason]);
 
   // Update document title when data loads
   useEffect(() => {
@@ -503,6 +537,144 @@ export default function TVClient({ id, initialData }) {
               ></iframe>
             </DialogContent>
           </Dialog>
+
+          {/* Episode Player Dialog */}
+          <Dialog
+            open={!!playEpisode}
+            onOpenChange={(open) => !open && setPlayEpisode(null)}
+          >
+            <DialogContent className="lg:max-w-[80vw]! lg:h-[90vh]! w-full p-0 border-none bg-black">
+              <DialogTitle className="sr-only">Watch Episode</DialogTitle>
+              {playEpisode && (
+                <iframe
+                  className="w-full h-full rounded-md"
+                  src={`https://vidsrcme.ru/embed/tv?tmdb=${id}&season=${playEpisode.season}&episode=${playEpisode.episode}`}
+                  allowFullScreen
+                ></iframe>
+              )}
+            </DialogContent>
+          </Dialog>
+
+          {/* Netflix-style Episodes Section */}
+          {data.seasons &&
+            data.seasons.filter((s) => s.season_number > 0).length > 0 && (
+              <section className="relative py-12 bg-[#141414]">
+                <div className="lg:px-12 px-6 flex items-center justify-between mb-8">
+                  <h2 className="lg:text-2xl text-xl font-semibold text-white">
+                    Episodes
+                  </h2>
+                  <Select
+                    value={selectedSeason}
+                    onValueChange={setSelectedSeason}
+                  >
+                    <SelectTrigger className="w-44 bg-[#242424] border-white/10 text-white hover:bg-[#333] transition-colors">
+                      <SelectValue placeholder="Select season" />
+                    </SelectTrigger>
+                    <SelectContent className="bg-[#242424] border-white/10">
+                      {data.seasons
+                        .filter((s) => s.season_number > 0)
+                        .map((s) => (
+                          <SelectItem
+                            key={s.id}
+                            value={String(s.season_number)}
+                            className="text-white hover:bg-white/10 focus:bg-white/10 cursor-pointer"
+                          >
+                            Season {s.season_number}
+                          </SelectItem>
+                        ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="lg:px-12 px-6">
+                  {loadingEpisodes ? (
+                    <div className="space-y-6">
+                      {[1, 2, 3].map((i) => (
+                        <div
+                          key={i}
+                          className="animate-pulse flex items-center gap-6 py-5 border-b border-white/5"
+                        >
+                          <div className="w-8 h-8 bg-white/5 rounded shrink-0"></div>
+                          <div className="w-36 lg:w-48 h-24 lg:h-28 bg-white/5 rounded shrink-0"></div>
+                          <div className="flex-1 space-y-3">
+                            <div className="h-5 bg-white/5 rounded w-1/3"></div>
+                            <div className="h-4 bg-white/5 rounded w-3/4"></div>
+                          </div>
+                          <div className="w-12 h-6 bg-white/5 rounded shrink-0"></div>
+                        </div>
+                      ))}
+                    </div>
+                  ) : episodes.length > 0 ? (
+                    <div className="divide-y divide-white/5">
+                      {episodes.map((episode, index) => (
+                        <div
+                          key={episode.id}
+                          onClick={() =>
+                            setPlayEpisode({
+                              season: episode.season_number,
+                              episode: episode.episode_number,
+                            })
+                          }
+                          className="group flex items-center gap-5 lg:gap-8 py-5 cursor-pointer rounded-lg hover:bg-[#232323] transition-all duration-200 -mx-4 px-4"
+                        >
+                          {/* Episode Number */}
+                          <div className="w-8 lg:w-10 shrink-0">
+                            <span className="text-xl lg:text-2xl text-white/40 font-medium tabular-nums">
+                              {episode.episode_number}
+                            </span>
+                          </div>
+
+                          {/* Thumbnail with Play Overlay */}
+                          <div className="relative w-36 lg:w-48 aspect-video shrink-0 rounded overflow-hidden bg-[#333]">
+                            <img
+                              src={
+                                episode.still_path
+                                  ? `https://image.tmdb.org/t/p/w400${episode.still_path}`
+                                  : `https://image.tmdb.org/t/p/w400${data.backdrop_path}`
+                              }
+                              alt={episode.name}
+                              className="w-full h-full object-cover"
+                            />
+                            {/* Play button overlay */}
+                            <div className="absolute inset-0 flex items-center justify-center bg-black/0 group-hover:bg-black/40 transition-all duration-200">
+                              <div className="w-12 h-12 rounded-full border-2 border-white flex items-center justify-center opacity-0 group-hover:opacity-100 scale-75 group-hover:scale-100 transition-all duration-200 bg-black/30 backdrop-blur-sm">
+                                <Play className="w-5 h-5 fill-white ml-0.5" />
+                              </div>
+                            </div>
+                          </div>
+
+                          {/* Episode Details */}
+                          <div className="flex-1 min-w-0 space-y-1.5">
+                            <h3 className="text-white font-medium text-base lg:text-lg leading-tight">
+                              {episode.name}
+                            </h3>
+                            <p className="text-white/50 text-sm leading-relaxed line-clamp-2 hidden lg:block">
+                              {episode.overview || "No description available."}
+                            </p>
+                            <p className="text-white/50 text-xs leading-relaxed line-clamp-1 lg:hidden">
+                              {episode.overview || "No description available."}
+                            </p>
+                          </div>
+
+                          {/* Duration */}
+                          <div className="shrink-0 hidden sm:block">
+                            <span className="text-white/40 text-sm lg:text-base font-medium">
+                              {episode.runtime ? `${episode.runtime}m` : "—"}
+                            </span>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="text-center py-16">
+                      <p className="text-white/40 text-lg">
+                        No episodes available for this season yet.
+                      </p>
+                    </div>
+                  )}
+                </div>
+              </section>
+            )}
 
           {recommendations?.results && recommendations.results.length > 0 && (
             <section className="relative">
