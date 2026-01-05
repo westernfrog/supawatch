@@ -205,7 +205,6 @@ export default function Overview() {
           .map((item, index) => (
             <main key={index} className="relative">
               <section className="hidden lg:block">
-                {/* Enhanced Backdrop with Cinematic Effect */}
                 <div className="absolute top-0 inset-0 overflow-hidden">
                   <div className="relative h-full">
                     <img
@@ -223,85 +222,90 @@ export default function Overview() {
                   </div>
                 </div>
 
-                <div className="h-screen relative">
-                  <div className="absolute z-30 inset-x-12 bottom-10 flex items-end">
-                    <div className="space-y-6 w-180 animate-[fadeInUp_0.8s_ease-out]">
-                      {selectedGenre && (
-                        <div className="inline-flex items-center gap-2 px-3 py-1.5 mb-10 bg-black/40 border-l-2 border-[#E50914] backdrop-blur-sm">
-                          <span className="text-white/90 text-xs font-bold uppercase tracking-widest">
-                            {selectedGenre.name} Genre
+                <div className="h-screen relative flex items-center">
+                  {selectedGenre && (
+                    <div className="absolute top-32 right-0 z-40">
+                      <div className="relative">
+                        <div className="bg-[#E50914] text-white px-8 py-2.5 pr-12 shadow-lg">
+                          <span className="text-sm font-bold uppercase tracking-[0.15em]">
+                            {selectedGenre.name} Spotlight
                           </span>
                         </div>
-                      )}
+                        <div className="absolute top-full right-0 w-0 h-0 border-t-10 border-t-[#9a0610] border-r-10 border-r-transparent"></div>
+                      </div>
+                    </div>
+                  )}
 
+                  <div className="absolute z-30 inset-x-12 bottom-12 flex items-end justify-between">
+                    <div className="space-y-5 max-w-2xl animate-[fadeInUp_0.8s_ease-out]">
                       {logos[item.id] ? (
-                        <div className="mb-6 drop-shadow-2xl">
+                        <div className="mb-12 origin-bottom-left transition-transform duration-700">
                           <img
                             src={`https://image.tmdb.org/t/p/w500${
                               logos[item.id]
                             }`}
                             alt={item.title}
-                            className="w-auto h-40 object-contain drop-shadow-[0_4px_20px_rgba(0,0,0,0.5)] origin-bottom-left"
+                            className="w-auto max-h-48 object-contain drop-shadow-[0_4px_20px_rgba(0,0,0,0.8)]"
                           />
                         </div>
                       ) : (
-                        <h1 className="text-6xl font-black text-white mb-4 drop-shadow-lg leading-tight">
+                        <h1 className="text-5xl md:text-6xl font-bold text-white mb-12 drop-shadow-2xl leading-[0.95] text-mdnichrome">
                           {item.title}
                         </h1>
                       )}
 
-                      <div className="flex items-center gap-4 text-sm font-medium text-white/90">
-                        <span className="text-[#46d369] font-bold">
+                      <div className="flex items-center gap-3 mb-6 font-medium text-white/90 drop-shadow-md">
+                        <span className="text-[#46d369] font-bold text-base">
                           {Math.floor(item.vote_average * 10)}% Match
                         </span>
-                        <span>{item.release_date?.slice(0, 4)}</span>
-                        <span className="px-2 py-0.5 border border-white/40 rounded text-xs uppercase">
+                        <span className="text-white/40">|</span>
+                        <span className="text-white/80">
+                          {item.release_date?.slice(0, 4)}
+                        </span>
+                        <span className="text-white/40">|</span>
+                        <span className="px-2 py-0.5 border border-white/30 rounded text-xs font-semibold uppercase bg-white/5">
                           HD
                         </span>
                       </div>
 
-                      <p className="text-lg leading-relaxed text-white drop-shadow-md line-clamp-3">
+                      <p className="text-base md:text-lg leading-relaxed text-white/80 drop-shadow-lg line-clamp-3 max-w-xl">
                         {item.overview}
                       </p>
 
-                      <div className="flex items-center gap-4 pt-4">
+                      <div className="flex items-center gap-4 pt-2">
                         <Link
                           href={`/movie/${item.id}`}
-                          className="group flex gap-3 items-center px-8 py-3 bg-white text-black rounded hover:bg-white/80 transition-all active:scale-95"
+                          className="group flex gap-2.5 items-center px-7 py-3 bg-white text-black rounded hover:bg-white/90 transition-all active:scale-95"
                         >
-                          <Play className="w-6 h-6 fill-black" />
-                          <span className="text-lg font-semibold">
-                            Watch Now
-                          </span>
+                          <Play className="w-5 h-5 fill-black" />
+                          <span className="text-base font-bold">Watch Now</span>
                         </Link>
 
                         <button
                           onClick={() => handleOpenDialog(item.id)}
-                          className="group flex gap-3 items-center px-8 py-3 bg-white/40 text-white rounded hover:bg-[rgba(109,109,110,0.4)] transition-all active:scale-95"
+                          className="group flex gap-2.5 items-center px-7 py-3 bg-white/20 text-white rounded hover:bg-white/30 backdrop-blur-md transition-all active:scale-95"
                         >
-                          <InfoIcon className="w-6 h-6" />
-                          <span className="text-lg font-semibold">
+                          <InfoIcon className="w-5 h-5" />
+                          <span className="text-base font-semibold">
                             More Info
                           </span>
                         </button>
                       </div>
                     </div>
-                  </div>
 
-                  <div className="absolute z-30 bottom-10 right-12 flex items-end gap-10">
                     <div className="flex flex-col items-end gap-6">
-                      <div className="flex items-center gap-4">
+                      <div className="flex items-center gap-3 bg-black/40 backdrop-blur-md p-1.5 rounded-full border border-white/10">
                         <button
                           onClick={() =>
                             changePage(
                               currentPage > 0 ? currentPage - 1 : totalPages - 1
                             )
                           }
-                          className="group p-3 rounded-full border border-white/10 text-white/70 hover:text-white hover:border-white/40 transition-all bg-black/40 hover:bg-black/60 backdrop-blur-md"
+                          className="p-3 rounded-full hover:bg-white/20 transition-colors text-white"
                           aria-label="Previous"
                         >
                           <svg
-                            className="w-5 h-5 group-hover:-translate-x-0.5 transition-transform"
+                            className="w-5 h-5"
                             fill="none"
                             stroke="currentColor"
                             viewBox="0 0 24 24"
@@ -309,23 +313,23 @@ export default function Overview() {
                             <path
                               strokeLinecap="round"
                               strokeLinejoin="round"
-                              strokeWidth={2.5}
+                              strokeWidth={2}
                               d="M15 19l-7-7 7-7"
                             />
                           </svg>
                         </button>
-
+                        <div className="w-px h-6 bg-white/20"></div>
                         <button
                           onClick={() =>
                             changePage(
                               currentPage < totalPages - 1 ? currentPage + 1 : 0
                             )
                           }
-                          className="group p-3 rounded-full border border-white/10 text-white/70 hover:text-white hover:border-white/40 transition-all bg-black/40 hover:bg-black/60 backdrop-blur-md"
+                          className="p-3 rounded-full hover:bg-white/20 transition-colors text-white"
                           aria-label="Next"
                         >
                           <svg
-                            className="w-5 h-5 group-hover:translate-x-0.5 transition-transform"
+                            className="w-5 h-5"
                             fill="none"
                             stroke="currentColor"
                             viewBox="0 0 24 24"
@@ -333,37 +337,51 @@ export default function Overview() {
                             <path
                               strokeLinecap="round"
                               strokeLinejoin="round"
-                              strokeWidth={2.5}
+                              strokeWidth={2}
                               d="M9 5l7 7-7 7"
                             />
                           </svg>
                         </button>
                       </div>
 
-                      <div className="flex items-center gap-4">
-                        {data.results
-                          .slice(currentPage + 1, currentPage + 3)
-                          .map((nextItem, nextIdx) => (
-                            <div
-                              key={nextItem.id}
-                              className="group relative w-80 h-auto rounded-md overflow-hidden cursor-pointer transition-all hover:scale-105 shadow-lg"
-                              onClick={() =>
-                                changePage(currentPage + 1 + nextIdx)
-                              }
-                            >
-                              <img
-                                src={`https://image.tmdb.org/t/p/w300${nextItem.backdrop_path}`}
-                                alt={nextItem.title}
-                                className="w-full h-full object-cover opacity-70 group-hover:opacity-100 transition-opacity"
-                              />
-                              <div className="absolute bottom-0 inset-x-0 p-3 bg-linear-to-t from-black/90 via-black/60 to-transparent">
-                                <p className="text-sm font-bold text-white truncate drop-shadow-md">
-                                  {nextItem.title}
-                                </p>
+                      {data.results
+                        .slice(currentPage + 1, currentPage + 2)
+                        .map((nextItem) => (
+                          <div
+                            key={nextItem.id}
+                            className="group relative w-96 aspect-video rounded-lg overflow-hidden cursor-pointer shadow-2xl ring-1 ring-white/10 hover:ring-white/40 transition-all duration-300 bg-[#1a1a1a]"
+                            onClick={() => changePage(currentPage + 1)}
+                          >
+                            <div className="absolute top-3 left-3 z-10 px-2 py-1 bg-black/60 backdrop-blur-sm rounded text-[10px] font-bold uppercase tracking-wider text-white/90 border border-white/10">
+                              Next Up
+                            </div>
+                            <img
+                              src={`https://image.tmdb.org/t/p/w500${nextItem.backdrop_path}`}
+                              alt={nextItem.title}
+                              className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity duration-300"
+                            />
+                            <div className="absolute inset-x-0 bottom-0 p-4 bg-linear-to-t from-black via-black/80 to-transparent pt-12">
+                              <h4 className="text-white font-bold text-base truncate drop-shadow-md transition-colors">
+                                {nextItem.title}
+                              </h4>
+                              <div className="flex items-center gap-2 mt-1 text-xs text-white/60">
+                                <span>
+                                  {nextItem.release_date?.slice(0, 4)}
+                                </span>
+                                <span>•</span>
+                                <span className="text-[#46d369]">
+                                  {Math.floor(nextItem.vote_average * 10)}%
+                                  Match
+                                </span>
                               </div>
                             </div>
-                          ))}
-                      </div>
+                            <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                              <div className="w-12 h-12 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center border border-white/40">
+                                <Play className="w-5 h-5 fill-white ml-0.5" />
+                              </div>
+                            </div>
+                          </div>
+                        ))}
                     </div>
                   </div>
                 </div>
@@ -415,47 +433,63 @@ export default function Overview() {
                 </div>
 
                 <div className="px-4 py-5 space-y-4 bg-[#010101]">
-                  {logos[item.id] && (
+                  {logos[item.id] ? (
                     <img
                       src={`https://image.tmdb.org/t/p/w500${logos[item.id]}`}
                       alt={item.title}
                       className="max-w-48 max-h-16 object-contain"
                     />
+                  ) : (
+                    <h1 className="text-2xl font-bold text-white leading-tight">
+                      {item.title}
+                    </h1>
                   )}
 
-                  <div className="flex items-center gap-3">
+                  <div className="flex items-center gap-3 text-sm font-medium text-white/90">
+                    <span className="text-[#46d369] font-bold">
+                      {Math.floor(item.vote_average * 10)}% Match
+                    </span>
+                    <span className="text-white/60">•</span>
+                    <span>{item.release_date?.slice(0, 4)}</span>
+                    <span className="text-white/60">•</span>
+                    <span className="px-2 py-0.5 border border-white/40 rounded text-[10px] font-bold uppercase tracking-wider bg-white/10">
+                      HD
+                    </span>
+                  </div>
+
+                  <div className="flex items-center gap-3 pt-2">
                     <Link
                       href={`/movie/${item.id}`}
-                      className="flex gap-2 w-full items-center px-6 py-2.5 bg-white text-black rounded font-semibold text-sm"
+                      className="flex gap-2 w-full items-center justify-center px-6 py-2.5 bg-white text-black rounded font-bold text-sm hover:bg-white/90 transition-colors"
                     >
                       <Play className="w-4 h-4 fill-black" />
-                      <span className="text-center w-full">Watch Now</span>
+                      <span>Play</span>
                     </Link>
                     <button
                       onClick={() => handleOpenDialog(item.id)}
-                      className="flex gap-2 w-full items-center px-6 py-2.5 bg-white/10 text-white rounded font-semibold text-sm"
+                      className="flex gap-2 w-full items-center justify-center px-6 py-2.5 bg-neutral-800 text-white rounded font-bold text-sm hover:bg-neutral-700 transition-colors"
                     >
-                      <LayoutGrid className="w-4 h-4" />
-                      <span className="text-center w-full">More Info</span>
+                      <InfoIcon className="w-4 h-4" />
+                      <span>More Info</span>
                     </button>
                   </div>
 
-                  <p className="text-sm opacity-90 leading-relaxed line-clamp-4">
+                  <p className="text-sm opacity-80 leading-relaxed line-clamp-3 font-light text-white/90">
                     {item.overview}
                   </p>
 
-                  <div className="flex items-center justify-between pt-4">
+                  <div className="flex items-center justify-between pt-4 border-t border-white/10 mt-4">
                     <button
                       onClick={() =>
                         changePage(
                           currentPage > 0 ? currentPage - 1 : totalPages - 1
                         )
                       }
-                      className="p-2 rounded-full bg-white/10 hover:bg-white/20 transition-colors"
+                      className="p-2 rounded-full bg-white/10 hover:bg-white/20 transition-colors text-white"
                       aria-label="Previous"
                     >
                       <svg
-                        className="w-4 h-4"
+                        className="w-5 h-5"
                         fill="none"
                         stroke="currentColor"
                         viewBox="0 0 24 24"
@@ -469,15 +503,15 @@ export default function Overview() {
                       </svg>
                     </button>
 
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-1.5">
                       {Array.from({ length: totalPages }, (_, idx) => (
                         <button
                           key={idx}
                           onClick={() => changePage(idx)}
-                          className={`rounded-full transition-all ${
+                          className={`rounded-full transition-all duration-300 ${
                             currentPage === idx
-                              ? "bg-white w-6 h-2"
-                              : "bg-white/30 w-2 h-2 hover:bg-white/50"
+                              ? "bg-white w-6 h-1.5"
+                              : "bg-white/20 w-1.5 h-1.5 hover:bg-white/40"
                           }`}
                         />
                       ))}
@@ -489,11 +523,11 @@ export default function Overview() {
                           currentPage < totalPages - 1 ? currentPage + 1 : 0
                         )
                       }
-                      className="p-2 rounded-full bg-white/10 hover:bg-white/20 transition-colors"
+                      className="p-2 rounded-full bg-white/10 hover:bg-white/20 transition-colors text-white"
                       aria-label="Next"
                     >
                       <svg
-                        className="w-4 h-4"
+                        className="w-5 h-5"
                         fill="none"
                         stroke="currentColor"
                         viewBox="0 0 24 24"
