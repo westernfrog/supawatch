@@ -69,7 +69,11 @@ export default function SearchPage() {
 
   useEffect(() => {
     if (debouncedTerm.trim()) {
-      window.history.replaceState(null, "", `/search/${encodeURIComponent(debouncedTerm)}`);
+      window.history.replaceState(
+        null,
+        "",
+        `/search/${encodeURIComponent(debouncedTerm)}`,
+      );
     }
   }, [debouncedTerm]);
 
@@ -424,18 +428,39 @@ export default function SearchPage() {
       {!debouncedTerm.trim() ? (
         <section className="">
           <MediaCarousel
-            title="Now Playing"
+            title="Now Playing in Cinemas"
             apiEndpoint="/api/getMovieList?list=now_playing&page=1"
             linkPrefix="/movie"
             mediaType="movie"
             hideSeeAll={true}
           />
           <MediaCarousel
-            title="Popular Movies"
-            apiEndpoint="/api/getMovieList?list=popular&page=1"
+            title="Romantic Favourites"
+            apiEndpoint="/api/getDiscover?type=movie&with_genres=10749,18&sort_by=vote_average.desc&vote_count.gte=500"
             linkPrefix="/movie"
             mediaType="movie"
-            seeAllLink="/popular"
+            hideSeeAll={true}
+          />
+          <MediaCarousel
+            title="Popular TV Series"
+            apiEndpoint="/api/getTVList?list=popular&page=1"
+            linkPrefix="/tv"
+            mediaType="tv"
+            hideSeeAll={true}
+          />
+          <MediaCarousel
+            title="Sci-Fi & Space Adventures"
+            apiEndpoint="/api/getDiscover?type=movie&with_genres=878,12&sort_by=popularity.desc&vote_count.gte=500"
+            linkPrefix="/movie"
+            mediaType="movie"
+            hideSeeAll={true}
+          />
+          <MediaCarousel
+            title="Anime"
+            apiEndpoint="/api/getDiscover?type=tv&with_genres=16&with_original_language=ja&sort_by=popularity.desc&vote_count.gte=200"
+            linkPrefix="/tv"
+            mediaType="tv"
+            hideSeeAll={true}
           />
         </section>
       ) : (

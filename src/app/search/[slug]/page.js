@@ -91,7 +91,7 @@ export default function SearchResults() {
 
     try {
       const response = await fetch(
-        `/api/getSearch?include_adult=${filters.includeAdult}&query=${slug}&page=${page}`
+        `/api/getSearch?include_adult=${filters.includeAdult}&query=${slug}&page=${page}`,
       );
       const fetchedData = await response.json();
 
@@ -107,7 +107,7 @@ export default function SearchResults() {
       setData((prevData) => {
         const existingIds = new Set(prevData.map((item) => item.id));
         const newItems = fetchedData.data.results.filter(
-          (item) => !existingIds.has(item.id)
+          (item) => !existingIds.has(item.id),
         );
         return [...prevData, ...newItems];
       });
@@ -139,7 +139,7 @@ export default function SearchResults() {
           fetchData();
         }
       },
-      { threshold: 0.1 }
+      { threshold: 0.1 },
     );
 
     const currentTarget = observerTarget.current;
@@ -155,13 +155,13 @@ export default function SearchResults() {
 
     if (filters.mediaType !== "all") {
       filtered = filtered.filter(
-        (item) => item.media_type === filters.mediaType
+        (item) => item.media_type === filters.mediaType,
       );
     }
 
     if (filters.genres.length > 0) {
       filtered = filtered.filter((item) =>
-        item.genre_ids?.some((id) => filters.genres.includes(id))
+        item.genre_ids?.some((id) => filters.genres.includes(id)),
       );
     }
 
@@ -171,10 +171,10 @@ export default function SearchResults() {
           return (b.vote_average || 0) - (a.vote_average || 0);
         case "release_date":
           const dateA = new Date(
-            a.release_date || a.first_air_date || 0
+            a.release_date || a.first_air_date || 0,
           ).getTime();
           const dateB = new Date(
-            b.release_date || b.first_air_date || 0
+            b.release_date || b.first_air_date || 0,
           ).getTime();
           return dateB - dateA;
         case "title":
@@ -241,7 +241,7 @@ export default function SearchResults() {
         </div>
       </section>
 
-      <div className="lg:px-12 px-6 lg:pb-10 pb-6 mt-6">
+      <div className="lg:px-12 px-6 lg:pb-11 pb-6 mt-6">
         <div className="max-w-screen">
           <div className="ring-2 ring-white/80 rounded-md flex items-center justify-between transition-all">
             <input
@@ -306,8 +306,8 @@ export default function SearchResults() {
                         {type === "all"
                           ? "All"
                           : type === "tv"
-                          ? "TV"
-                          : "Movies"}
+                            ? "TV"
+                            : "Movies"}
                       </Label>
                     </div>
                   ))}
@@ -418,10 +418,10 @@ export default function SearchResults() {
                         item.poster_path
                           ? `https://image.tmdb.org/t/p/w500/${item.poster_path}`
                           : item.profile_path
-                          ? `https://image.tmdb.org/t/p/w500/${item.profile_path}`
-                          : `https://api.dicebear.com/9.x/glass/svg?seed=${
-                              item.title || item.name
-                            }&backgroundColor=0f172a,111827,1f2933,020617,18181b,0b132b,1a1a2e,121212`
+                            ? `https://image.tmdb.org/t/p/w500/${item.profile_path}`
+                            : `https://api.dicebear.com/9.x/glass/svg?seed=${
+                                item.title || item.name
+                              }&backgroundColor=0f172a,111827,1f2933,020617,18181b,0b132b,1a1a2e,121212`
                       }
                       alt={item.title || item.name}
                       className="w-full aspect-2/3 object-cover object-center"
