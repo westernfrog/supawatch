@@ -40,12 +40,6 @@ export default function Footer() {
               TV Series
             </Link>
             <Link
-              href="/genre"
-              className="text-sm text-neutral-400 hover:text-white transition-colors"
-            >
-              Genres
-            </Link>
-            <Link
               href="/search"
               className="text-sm text-neutral-400 hover:text-white transition-colors"
             >

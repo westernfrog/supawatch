@@ -121,7 +121,7 @@
   }
   body {
     @apply bg-background text-foreground;
-    letter-spacing: -0.2px;
+    letter-spacing: 0.5px;
     -moz-osx-font-smoothing: grayscale;
     -webkit-font-smoothing: antialiased;
     background-color: #010101;
@@ -156,7 +156,9 @@
   57%,
   100% {
     opacity: 1;
-    text-shadow: 0 0 4px rgba(220, 38, 38, 0.4), 0 0 8px rgba(220, 38, 38, 0.2);
+    text-shadow:
+      0 0 4px rgba(220, 38, 38, 0.4),
+      0 0 8px rgba(220, 38, 38, 0.2);
   }
   20%,
   21%,
@@ -173,7 +175,9 @@
 
 .neon-logo {
   color: #e50914 !important;
-  text-shadow: 0 0 10px rgba(229, 9, 20, 0.5), 0 0 20px rgba(229, 9, 20, 0.3);
+  text-shadow:
+    0 0 10px rgba(229, 9, 20, 0.5),
+    0 0 20px rgba(229, 9, 20, 0.3);
   animation: neon-flicker 4s infinite;
 }
 
@@ -186,12 +190,16 @@
   54%,
   56%,
   100% {
-    text-shadow: 0 0 10px rgba(229, 9, 20, 0.5), 0 0 20px rgba(229, 9, 20, 0.3);
+    text-shadow:
+      0 0 10px rgba(229, 9, 20, 0.5),
+      0 0 20px rgba(229, 9, 20, 0.3);
   }
   20%,
   24%,
   55% {
-    text-shadow: 0 0 5px rgba(229, 9, 20, 0.3), 0 0 10px rgba(229, 9, 20, 0.2);
+    text-shadow:
+      0 0 5px rgba(229, 9, 20, 0.3),
+      0 0 10px rgba(229, 9, 20, 0.2);
   }
 }
 
@@ -206,6 +214,15 @@
 }
 
 /* Content fade-in animation */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
 @keyframes fadeInUp {
   0% {
     opacity: 0;
@@ -226,5 +243,23 @@
   100% {
     transform: scaleX(1);
     transform-origin: left;
+  }
+}
+
+@keyframes progressFill {
+  from {
+    width: 0%;
+  }
+  to {
+    width: 100%;
+  }
+}
+
+@keyframes progressScaleV {
+  from {
+    transform: scaleY(0);
+  }
+  to {
+    transform: scaleY(1);
   }
 }

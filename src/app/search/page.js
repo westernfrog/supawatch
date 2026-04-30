@@ -69,11 +69,9 @@ export default function SearchPage() {
 
   useEffect(() => {
     if (debouncedTerm.trim()) {
-      router.replace(`/search/${encodeURIComponent(debouncedTerm)}`, {
-        scroll: false,
-      });
+      window.history.replaceState(null, "", `/search/${encodeURIComponent(debouncedTerm)}`);
     }
-  }, [debouncedTerm, router]);
+  }, [debouncedTerm]);
 
   const fetchData = useCallback(async () => {
     if (loading || !hasMore || !debouncedTerm.trim()) return;
@@ -85,7 +83,7 @@ export default function SearchPage() {
       const response = await fetch(
         `/api/getSearch?include_adult=${
           filters.includeAdult
-        }&query=${encodeURIComponent(debouncedTerm)}&page=${page}`
+        }&query=${encodeURIComponent(debouncedTerm)}&page=${page}`,
       );
       const fetchedData = await response.json();
 
@@ -101,7 +99,7 @@ export default function SearchPage() {
       setData((prevData) => {
         const existingIds = new Set(prevData.map((item) => item.id));
         const newItems = fetchedData.data.results.filter(
-          (item) => !existingIds.has(item.id)
+          (item) => !existingIds.has(item.id),
         );
         return [...prevData, ...newItems];
       });
@@ -138,7 +136,7 @@ export default function SearchPage() {
           fetchData();
         }
       },
-      { threshold: 0.1 }
+      { threshold: 0.1 },
     );
 
     const currentTarget = observerTarget.current;
@@ -154,13 +152,13 @@ export default function SearchPage() {
 
     if (filters.mediaType !== "all") {
       filtered = filtered.filter(
-        (item) => item.media_type === filters.mediaType
+        (item) => item.media_type === filters.mediaType,
       );
     }
 
     if (filters.genres.length > 0) {
       filtered = filtered.filter((item) =>
-        item.genre_ids?.some((id) => filters.genres.includes(id))
+        item.genre_ids?.some((id) => filters.genres.includes(id)),
       );
     }
 
@@ -170,10 +168,10 @@ export default function SearchPage() {
           return (b.vote_average || 0) - (a.vote_average || 0);
         case "release_date":
           const dateA = new Date(
-            a.release_date || a.first_air_date || 0
+            a.release_date || a.first_air_date || 0,
           ).getTime();
           const dateB = new Date(
-            b.release_date || b.first_air_date || 0
+            b.release_date || b.first_air_date || 0,
           ).getTime();
           return dateB - dateA;
         case "title":
@@ -298,6 +296,7 @@ export default function SearchPage() {
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               autoComplete="off"
+              autoFocus
             />
             <button
               type="button"
@@ -352,17 +351,14 @@ export default function SearchPage() {
                         {type === "all"
                           ? "All"
                           : type === "tv"
-                          ? "TV"
-                          : "Movies"}
+                            ? "TV"
+                            : "Movies"}
                       </Label>
                     </div>
                   ))}
                 </RadioGroup>
 
-                <Select
-                  value={filters.sortBy}
-                  onValueChange={handleSortChange}
-                >
+                <Select value={filters.sortBy} onValueChange={handleSortChange}>
                   <SelectTrigger className="w-45 bg-white/10 border-white/20 rounded-full text-sm">
                     <SelectValue placeholder="Sort by" />
                   </SelectTrigger>
@@ -462,8 +458,8 @@ export default function SearchPage() {
                         item.poster_path
                           ? `https://image.tmdb.org/t/p/w500/${item.poster_path}`
                           : item.profile_path
-                          ? `https://image.tmdb.org/t/p/w500/${item.profile_path}`
-                          : "https://images.unsplash.com/photo-1464639351491-a172c2aa2911?w=600&auto=format&fit=crop&q=60"
+                            ? `https://image.tmdb.org/t/p/w500/${item.profile_path}`
+                            : "https://images.unsplash.com/photo-1464639351491-a172c2aa2911?w=600&auto=format&fit=crop&q=60"
                       }
                       alt={item.title || item.name}
                       className="w-full aspect-2/3 object-cover object-center"

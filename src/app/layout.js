@@ -1,13 +1,12 @@
 import localFont from "next/font/local";
-import { Open_Sans } from "next/font/google";
+import { Manrope } from "next/font/google";
 import "./globals.css";
 import { Analytics } from "@vercel/analytics/react";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
-import LenisScroll from "./components/Lenis";
 import { generateWebsiteJsonLd } from "@/lib/seo";
 
-const open_sans = Open_Sans({
+const open_sans = Manrope({
   subsets: ["latin"],
   variable: "--font-open-sans",
 });
@@ -49,7 +48,7 @@ export const metadata = {
   creator: "Supawatch",
   publisher: "Supawatch",
   metadataBase: new URL(
-    process.env.NEXT_PUBLIC_BASE_URL || "https://supawatch.vercel.app"
+    process.env.NEXT_PUBLIC_BASE_URL || "https://supawatch.vercel.app",
   ),
   alternates: {
     canonical: "/",
@@ -100,6 +99,13 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en" suppressHydrationWarning={true}>
       <head>
+        {/* Preconnect to critical third-party origins for faster loading */}
+        <link rel="preconnect" href="https://image.tmdb.org" />
+        <link rel="dns-prefetch" href="https://image.tmdb.org" />
+        <link rel="preconnect" href="https://www.youtube.com" />
+        <link rel="dns-prefetch" href="https://www.youtube.com" />
+        {/* Theme color for mobile browsers */}
+        <meta name="theme-color" content="#010101" />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteJsonLd) }}
