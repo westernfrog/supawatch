@@ -290,7 +290,7 @@ export default function SearchPage() {
         </div>
       </section>
 
-      <div className="lg:px-12 px-6 mt-6">
+      <div className="lg:px-12 px-6 mt-6 pb-4">
         <div className="max-w-screen">
           <div className="ring-2 ring-white/80 rounded-md flex items-center justify-between transition-all">
             <input
@@ -432,35 +432,30 @@ export default function SearchPage() {
             apiEndpoint="/api/getMovieList?list=now_playing&page=1"
             linkPrefix="/movie"
             mediaType="movie"
-            hideSeeAll={true}
           />
           <MediaCarousel
             title="Romantic Favourites"
             apiEndpoint="/api/getDiscover?type=movie&with_genres=10749,18&sort_by=vote_average.desc&vote_count.gte=500"
             linkPrefix="/movie"
             mediaType="movie"
-            hideSeeAll={true}
           />
           <MediaCarousel
             title="Popular TV Series"
             apiEndpoint="/api/getTVList?list=popular&page=1"
             linkPrefix="/tv"
             mediaType="tv"
-            hideSeeAll={true}
           />
           <MediaCarousel
             title="Sci-Fi & Space Adventures"
             apiEndpoint="/api/getDiscover?type=movie&with_genres=878,12&sort_by=popularity.desc&vote_count.gte=500"
             linkPrefix="/movie"
             mediaType="movie"
-            hideSeeAll={true}
           />
           <MediaCarousel
             title="Anime"
             apiEndpoint="/api/getDiscover?type=tv&with_genres=16&with_original_language=ja&sort_by=popularity.desc&vote_count.gte=200"
             linkPrefix="/tv"
             mediaType="tv"
-            hideSeeAll={true}
           />
         </section>
       ) : (

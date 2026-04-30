@@ -6,11 +6,25 @@ import { useState, useEffect } from "react";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 
 const genresById = {
-  28: "Action", 12: "Adventure", 16: "Animation", 35: "Comedy",
-  80: "Crime", 99: "Documentary", 18: "Drama", 10751: "Family",
-  14: "Fantasy", 36: "History", 27: "Horror", 10402: "Music",
-  9648: "Mystery", 10749: "Romance", 878: "Sci-Fi",
-  10770: "TV Movie", 53: "Thriller", 10752: "War", 37: "Western",
+  28: "Action",
+  12: "Adventure",
+  16: "Animation",
+  35: "Comedy",
+  80: "Crime",
+  99: "Documentary",
+  18: "Drama",
+  10751: "Family",
+  14: "Fantasy",
+  36: "History",
+  27: "Horror",
+  10402: "Music",
+  9648: "Mystery",
+  10749: "Romance",
+  878: "Sci-Fi",
+  10770: "TV Movie",
+  53: "Thriller",
+  10752: "War",
+  37: "Western",
 };
 
 export default function Overview() {
@@ -37,7 +51,9 @@ export default function Overview() {
     if (!data) return;
     data.results.slice(0, 8).forEach(async ({ id }) => {
       try {
-        const result = await fetch(`/api/getMovieDetailsEnhanced?id=${id}`).then((r) => r.json());
+        const result = await fetch(
+          `/api/getMovieDetailsEnhanced?id=${id}`,
+        ).then((r) => r.json());
         setEnriched((prev) => ({
           ...prev,
           [id]: {
@@ -49,7 +65,10 @@ export default function Overview() {
           },
         }));
       } catch {
-        setEnriched((prev) => ({ ...prev, [id]: { ...(prev[id] || {}), logoFetched: true } }));
+        setEnriched((prev) => ({
+          ...prev,
+          [id]: { ...(prev[id] || {}), logoFetched: true },
+        }));
       }
     });
   }, [data]);
@@ -78,7 +97,11 @@ export default function Overview() {
   }, []);
 
   useEffect(() => {
-    if (!open) { setShowTrailer(false); setDialogPlay(false); return; }
+    if (!open) {
+      setShowTrailer(false);
+      setDialogPlay(false);
+      return;
+    }
     setShowTrailer(false);
     setIsMuted(true);
     const t = setTimeout(() => setShowTrailer(true), 3000);
@@ -90,7 +113,10 @@ export default function Overview() {
   useEffect(() => {
     if (open || !totalPages) return;
     setProgressKey((k) => k + 1);
-    const interval = setInterval(() => setCurrentPage((p) => (p + 1) % totalPages), 15000);
+    const interval = setInterval(
+      () => setCurrentPage((p) => (p + 1) % totalPages),
+      15000,
+    );
     return () => clearInterval(interval);
   }, [currentPage, totalPages, open]);
 
@@ -106,7 +132,7 @@ export default function Overview() {
         isMuted
           ? '{"event":"command","func":"unMute","args":""}'
           : '{"event":"command","func":"mute","args":""}',
-        "*"
+        "*",
       );
       setIsMuted((m) => !m);
     }
@@ -118,7 +144,10 @@ export default function Overview() {
   };
 
   const getGenreNames = (ids) =>
-    ids.slice(0, 3).map((id) => genresById[id]).filter(Boolean);
+    ids
+      .slice(0, 3)
+      .map((id) => genresById[id])
+      .filter(Boolean);
 
   const getGenres = (ids) =>
     ids.map((id) => ({ id, name: genresById[id] })).filter((g) => g.name);
@@ -149,17 +178,17 @@ export default function Overview() {
 
     return (
       <main key={item.id} className="relative">
-
         {/* ── DESKTOP ─────────────────────────────────────────── */}
         <section className="hidden lg:block">
-
           {/* Backdrop */}
           <div className="absolute top-0 inset-0 overflow-hidden">
             <img
               src={`https://image.tmdb.org/t/p/original/${item.backdrop_path}`}
               alt={item.title}
               className="w-full h-full object-cover object-top"
-              style={{ animation: "kenburns 22s ease-in-out infinite alternate" }}
+              style={{
+                animation: "kenburns 22s ease-in-out infinite alternate",
+              }}
             />
             {/* Film grain */}
             <div
@@ -177,10 +206,8 @@ export default function Overview() {
 
           <div className="h-screen relative flex items-center">
             <div className="absolute z-30 inset-x-12 bottom-12 flex items-end justify-between gap-8">
-
               {/* ── LEFT: content ── */}
               <div className="space-y-5 max-w-xl animate-[fadeInUp_0.8s_ease-out]">
-
                 {/* Logo / skeleton / title */}
                 <div className="mb-8">
                   {info.logo ? (
@@ -213,7 +240,9 @@ export default function Overview() {
                     {Math.floor(item.vote_average * 10)}% Match
                   </span>
                   <span className="text-white/25">|</span>
-                  <span className="text-white/70">{item.release_date?.slice(0, 4)}</span>
+                  <span className="text-white/70">
+                    {item.release_date?.slice(0, 4)}
+                  </span>
                   {info.runtime && (
                     <>
                       <span className="text-white/25">|</span>
@@ -237,7 +266,7 @@ export default function Overview() {
                 {/* Cast */}
                 {info.cast?.length > 0 && (
                   <div className="flex items-center gap-4 pt-1">
-                    <span className="text-white/28 text-[9px] uppercase tracking-[0.22em] font-semibold shrink-0">
+                    <span className="text-white/50 text-[10px] uppercase tracking-[0.22em] font-semibold shrink-0">
                       Starring
                     </span>
                     <div className="flex items-center gap-3">
@@ -248,12 +277,12 @@ export default function Overview() {
                           className="group flex flex-col items-center gap-1.5"
                           title={actor.name}
                         >
-                          <div className="w-10 h-10 rounded-full overflow-hidden ring-1 ring-white/15 group-hover:ring-white/55 transition-all duration-300 bg-white/10 shrink-0">
+                          <div className="w-16 h-16 rounded-full overflow-hidden ring-1 ring-white/15 group-hover:ring-white/20 transition-all duration-300 bg-white/10 shrink-0">
                             {actor.profile_path ? (
                               <img
                                 src={`https://image.tmdb.org/t/p/w185${actor.profile_path}`}
                                 alt={actor.name}
-                                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                                className="w-full h-full object-cover object-center"
                               />
                             ) : (
                               <div className="w-full h-full flex items-center justify-center text-sm font-semibold text-white/30">
@@ -261,9 +290,6 @@ export default function Overview() {
                               </div>
                             )}
                           </div>
-                          <span className="text-white/32 text-[9px] max-w-[40px] text-center truncate leading-tight group-hover:text-white/65 transition-colors">
-                            {actor.name.split(" ")[0]}
-                          </span>
                         </Link>
                       ))}
                     </div>
@@ -291,7 +317,6 @@ export default function Overview() {
 
               {/* ── RIGHT: typographic slide navigator ── */}
               <div className="flex flex-col shrink-0 w-56">
-
                 {/* Counter */}
                 <div className="flex items-baseline gap-2 mb-4 select-none">
                   <span className="text-white text-4xl font-bold tabular-nums leading-none tracking-tight">
@@ -314,7 +339,9 @@ export default function Overview() {
                         key={movie.id}
                         onClick={() => changePage(idx)}
                         className={`group flex items-stretch gap-3 py-[9px] text-left transition-opacity duration-400 ${
-                          isActive ? "opacity-100" : "opacity-20 hover:opacity-50"
+                          isActive
+                            ? "opacity-100"
+                            : "opacity-20 hover:opacity-50"
                         }`}
                       >
                         {/* Vertical track */}
@@ -348,7 +375,6 @@ export default function Overview() {
                   })}
                 </div>
               </div>
-
             </div>
           </div>
         </section>
@@ -362,7 +388,11 @@ export default function Overview() {
                   src={`https://www.youtube.com/embed/${trailerKey}?autoplay=1&mute=1&loop=1&playlist=${trailerKey}&controls=0&showinfo=0&rel=0&iv_load_policy=3&modestbranding=1&playsinline=1&disablekb=1&fs=0`}
                   className="absolute inset-0 w-full h-full"
                   allow="autoplay; encrypted-media"
-                  style={{ border: "none", pointerEvents: "none", transform: "scale(1.3)" }}
+                  style={{
+                    border: "none",
+                    pointerEvents: "none",
+                    transform: "scale(1.3)",
+                  }}
                 />
               </div>
             ) : (
@@ -378,7 +408,11 @@ export default function Overview() {
                 onClick={handleMuteToggle}
                 className="absolute bottom-3 right-3 z-20 p-2.5 rounded-full border-2 border-white/60 bg-black/40 backdrop-blur-sm"
               >
-                {isMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
+                {isMuted ? (
+                  <VolumeX className="w-4 h-4" />
+                ) : (
+                  <Volume2 className="w-4 h-4" />
+                )}
               </button>
             )}
           </div>
@@ -394,7 +428,9 @@ export default function Overview() {
             ) : !info.logoFetched ? (
               <div className="h-12 w-48 rounded animate-pulse bg-white/10" />
             ) : (
-              <h1 className="text-2xl font-bold text-white leading-tight">{item.title}</h1>
+              <h1 className="text-2xl font-bold text-white leading-tight">
+                {item.title}
+              </h1>
             )}
 
             <div className="flex items-center gap-3 text-sm font-medium text-white/90">
@@ -432,12 +468,24 @@ export default function Overview() {
 
             <div className="flex items-center justify-between pt-4 border-t border-white/10 mt-4">
               <button
-                onClick={() => changePage(currentPage > 0 ? currentPage - 1 : totalPages - 1)}
+                onClick={() =>
+                  changePage(currentPage > 0 ? currentPage - 1 : totalPages - 1)
+                }
                 className="p-2 rounded-full bg-white/10 hover:bg-white/20 transition-colors text-white"
                 aria-label="Previous"
               >
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                <svg
+                  className="w-5 h-5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M15 19l-7-7 7-7"
+                  />
                 </svg>
               </button>
               <div className="flex items-center gap-1.5">
@@ -454,12 +502,24 @@ export default function Overview() {
                 ))}
               </div>
               <button
-                onClick={() => changePage(currentPage < totalPages - 1 ? currentPage + 1 : 0)}
+                onClick={() =>
+                  changePage(currentPage < totalPages - 1 ? currentPage + 1 : 0)
+                }
                 className="p-2 rounded-full bg-white/10 hover:bg-white/20 transition-colors text-white"
                 aria-label="Next"
               >
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                <svg
+                  className="w-5 h-5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M9 5l7 7-7 7"
+                  />
                 </svg>
               </button>
             </div>
@@ -493,7 +553,11 @@ export default function Overview() {
                     src={`https://www.youtube.com/embed/${trailerKey}?autoplay=1&mute=1&loop=1&playlist=${trailerKey}&controls=0&showinfo=0&rel=0&iv_load_policy=3&modestbranding=1&playsinline=1&disablekb=1&fs=0&enablejsapi=1`}
                     className="absolute inset-0 w-full h-full"
                     allow="autoplay; encrypted-media"
-                    style={{ border: "none", pointerEvents: "none", transform: "scale(1.4)" }}
+                    style={{
+                      border: "none",
+                      pointerEvents: "none",
+                      transform: "scale(1.4)",
+                    }}
                   />
                 </div>
               ) : (
@@ -518,7 +582,9 @@ export default function Overview() {
                 ) : !info.logoFetched ? (
                   <div className="h-8 w-36 lg:h-16 lg:w-72 animate-pulse rounded-lg bg-white/10" />
                 ) : (
-                  <h2 className="text-xl lg:text-2xl font-bold text-white">{item.title}</h2>
+                  <h2 className="text-xl lg:text-2xl font-bold text-white">
+                    {item.title}
+                  </h2>
                 )}
                 <div className="flex items-center gap-3">
                   <button
@@ -545,7 +611,11 @@ export default function Overview() {
                   className="absolute bottom-5 right-5 lg:bottom-8 lg:right-8 z-20 p-2 lg:p-2.5 rounded-full border border-white/40 hover:border-white bg-black/40 hover:bg-black/60 backdrop-blur-sm transition-all"
                   aria-label={isMuted ? "Unmute" : "Mute"}
                 >
-                  {isMuted ? <VolumeX className="w-4 h-4 lg:w-5 lg:h-5" /> : <Volume2 className="w-4 h-4 lg:w-5 lg:h-5" />}
+                  {isMuted ? (
+                    <VolumeX className="w-4 h-4 lg:w-5 lg:h-5" />
+                  ) : (
+                    <Volume2 className="w-4 h-4 lg:w-5 lg:h-5" />
+                  )}
                 </button>
               )}
             </div>
@@ -556,20 +626,26 @@ export default function Overview() {
                 <span className="text-green-500 font-semibold">
                   {Math.floor(item.vote_average * 10)}% Match
                 </span>
-                <span className="opacity-80">{item.release_date?.slice(0, 4)}</span>
+                <span className="opacity-80">
+                  {item.release_date?.slice(0, 4)}
+                </span>
                 {dialogDetails?.runtime && (
                   <span className="opacity-80 border border-white/20 px-2 py-0.5 rounded text-xs">
-                    {Math.floor(dialogDetails.runtime / 60)}h {dialogDetails.runtime % 60}m
+                    {Math.floor(dialogDetails.runtime / 60)}h{" "}
+                    {dialogDetails.runtime % 60}m
                   </span>
                 )}
                 <span className="opacity-60 text-xs">
-                  ⭐ {item.vote_average?.toFixed(1)} ({item.vote_count?.toLocaleString()} votes)
+                  ⭐ {item.vote_average?.toFixed(1)} (
+                  {item.vote_count?.toLocaleString()} votes)
                 </span>
               </div>
 
               <div className="grid lg:grid-cols-3 gap-6">
                 <div className="lg:col-span-2 space-y-4">
-                  <p className="text-sm lg:text-base leading-relaxed opacity-90">{item.overview}</p>
+                  <p className="text-sm lg:text-base leading-relaxed opacity-90">
+                    {item.overview}
+                  </p>
 
                   <div className="flex flex-wrap gap-2">
                     {getGenres(item.genre_ids).map((genre) => (
@@ -593,14 +669,20 @@ export default function Overview() {
                           onClick={() => setOpen(false)}
                           className="hover:underline"
                         >
-                          {dialogCredits.crew.find((c) => c.job === "Director").name}
+                          {
+                            dialogCredits.crew.find((c) => c.job === "Director")
+                              .name
+                          }
                         </Link>
                       </p>
                     )}
                     {dialogDetails?.production_companies?.length > 0 && (
                       <p>
                         <span className="opacity-60">Studio: </span>
-                        {dialogDetails.production_companies.slice(0, 2).map((c) => c.name).join(", ")}
+                        {dialogDetails.production_companies
+                          .slice(0, 2)
+                          .map((c) => c.name)
+                          .join(", ")}
                       </p>
                     )}
                     {dialogDetails?.spoken_languages?.length > 0 && (
@@ -639,7 +721,9 @@ export default function Overview() {
                           <p className="font-medium text-sm truncate group-hover:text-white/80">
                             {actor.name}
                           </p>
-                          <p className="text-xs opacity-50 truncate">{actor.character}</p>
+                          <p className="text-xs opacity-50 truncate">
+                            {actor.character}
+                          </p>
                         </div>
                       </Link>
                     ))}
@@ -649,7 +733,6 @@ export default function Overview() {
             </div>
           </DialogContent>
         </Dialog>
-
       </main>
     );
   });
