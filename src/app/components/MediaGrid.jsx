@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState, useRef, useCallback, useMemo } from "react";
-import { Star, RotateCcw } from "lucide-react";
+import { Star, RotateCcw, Filter, SlidersHorizontal, X } from "lucide-react";
 import MediaDetailDialog from "./MediaDetailDialog";
 import { Slider } from "@/components/ui/slider";
 import { Separator } from "@/components/ui/separator";
@@ -13,6 +13,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 
 // ── Constants ─────────────────────────────────────────────────────────────────
 const CURRENT_YEAR = new Date().getFullYear();
@@ -206,6 +211,17 @@ export default function MediaGrid({
     };
   }, [fetchData, loading, hasMore]);
 
+  useEffect(() => {
+    if (showAdvanced) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "unset";
+    }
+    return () => {
+      document.body.style.overflow = "unset";
+    };
+  }, [showAdvanced]);
+
   // ── Derived list ──────────────────────────────────────────────────────────
   const displayData = useMemo(
     () =>
@@ -253,172 +269,220 @@ export default function MediaGrid({
 
   // ── Render ─────────────────────────────────────────────────────────────────
   return (
-    <div className="min-h-screen bg-[#010101]">
+    <div className="min-h-screen bg-[#0a0a0a]">
       {/* ── Hero ────────────────────────────────────────────────────────── */}
       <section className="relative overflow-hidden">
-        <div className="relative lg:h-72 h-56">
+        <div className="relative lg:h-72 h-40">
           <img
             src={heroImage || "/hero-bg.jpg"}
             alt="Hero"
             className="w-full h-full object-cover object-center"
             style={{ animation: "kenburns 30s ease-in-out infinite alternate" }}
           />
-          <div className="absolute inset-0 bg-linear-to-t from-[#010101] via-black/50 to-transparent" />
-          <div className="absolute inset-0 bg-linear-to-r from-black/60 via-transparent to-transparent" />
-          <div className="absolute bottom-0 left-0 right-0 lg:px-12 px-6 pb-7">
-            <h1 className="lg:text-5xl text-3xl font-black tracking-tighter text-white">
-              {title}
-            </h1>
-          </div>
+          <div className="absolute inset-0 bg-linear-to-t from-[#0a0a0a] via-[#0a0a0a]/60 to-transparent" />
         </div>
       </section>
 
       {/* ── Filter Bar ──────────────────────────────────────────────────── */}
-      <section className="sticky top-16 z-40 bg-[#010101]/90 backdrop-blur-2xl border-b border-white/[0.06]">
-        <div className="lg:px-12 px-4">
-          {/* Row 1: Genre pills */}
-          <div className="relative">
-            <div className="flex items-center gap-2 overflow-x-auto scrollbar-hide py-3 pr-10">
-              {genres.map(({ id, name }) => {
-                const active = selectedGenres.includes(id);
-                return (
+      <section className="sticky top-16 z-40 shadow-xl shadow-black/50">
+        <div className="bg-[#0a0a0a] relative z-20 pb-4 pt-6">
+          <div className="lg:px-12 px-5 sm:px-6 flex flex-col sm:flex-row sm:items-center justify-between w-full gap-4 sm:gap-0">
+            <h1 className="text-2xl lg:text-4xl font-black tracking-tighter text-white drop-shadow-md">
+              {title}
+            </h1>
+            <div className="flex flex-wrap items-center gap-2 self-start sm:self-auto">
+              {/* Filter Button Dropdown */}
+              <Popover open={showAdvanced} onOpenChange={setShowAdvanced}>
+                <PopoverTrigger asChild>
                   <button
-                    key={id}
-                    onClick={() => toggleGenre(id)}
-                    className={`shrink-0 text-xs font-semibold px-4 py-1.5 rounded-full transition-all duration-200 ${
-                      active
-                        ? "bg-white text-black"
-                        : "bg-white/[0.06] text-white/50 hover:bg-white/[0.1] hover:text-white"
+                    className={`flex items-center gap-2 px-4 h-10 sm:h-9 rounded-sm text-sm font-semibold transition-all duration-300 ${
+                      showAdvanced || advancedCount > 0
+                        ? "bg-[#22c55e] text-black border-[#22c55e]"
+                        : "bg-[#2a2a2a] text-white hover:bg-[#3a3a3a] hover:border-white/20"
                     }`}
                   >
-                    {name}
+                    <Filter className="w-4 h-4" />
+                    <span>Filters</span>
+                    {advancedCount > 0 && (
+                      <span
+                        className={`flex items-center justify-center w-5 h-5 rounded-sm text-[10px] font-bold ml-1 ${showAdvanced || advancedCount > 0 ? "bg-black text-[#22c55e]" : "bg-[#22c55e] text-black"}`}
+                      >
+                        {advancedCount}
+                      </span>
+                    )}
                   </button>
-                );
-              })}
-            </div>
-            <div className="pointer-events-none absolute right-0 top-0 bottom-0 w-10 bg-linear-to-l from-[#010101] to-transparent" />
-          </div>
-
-          {/* Row 2: Controls */}
-          <div className="flex items-center gap-4 py-3 border-t border-white/[0.05] flex-wrap lg:flex-nowrap">
-            {/* Year */}
-            <div className="flex items-center gap-3 min-w-0 flex-1 lg:max-w-[240px]">
-              <span className="shrink-0 text-xs font-semibold text-white/40 w-8">
-                Year
-              </span>
-              <div className="flex-1">
-                <Slider
-                  min={MIN_YEAR}
-                  max={CURRENT_YEAR}
-                  step={1}
-                  value={[yearFrom, yearTo]}
-                  onValueChange={([from, to]) => {
-                    setYearFrom(from);
-                    setYearTo(to);
+                </PopoverTrigger>
+                <PopoverContent
+                  className="w-[95vw] sm:w-[600px] lg:w-[800px] p-0 bg-[#0a0a0a] border border-white/10 shadow-2xl rounded-sm flex flex-col mt-2"
+                  align="start"
+                  sideOffset={8}
+                  collisionPadding={16}
+                  style={{
+                    maxHeight: "var(--radix-popover-content-available-height)",
                   }}
-                  className="cursor-pointer"
-                />
-              </div>
-              <Badge
-                variant="outline"
-                className="shrink-0 text-xs font-semibold tabular-nums text-white/60 border-white/10 bg-white/5"
-              >
-                {yearFrom}–{yearTo}
-              </Badge>
-            </div>
-
-            <Separator
-              orientation="vertical"
-              className="h-5 bg-white/[0.08] hidden lg:block"
-            />
-
-            {/* Rating */}
-            <div className="flex items-center gap-3 min-w-0 flex-1 lg:max-w-[200px]">
-              <span className="shrink-0 text-xs font-semibold text-white/40 w-12">
-                Rating
-              </span>
-              <div className="flex-1">
-                <Slider
-                  min={0}
-                  max={9}
-                  step={0.5}
-                  value={[minRating]}
-                  onValueChange={([v]) => setMinRating(v)}
-                  className="cursor-pointer"
-                />
-              </div>
-              <Badge
-                variant="outline"
-                className={`shrink-0 text-xs font-semibold tabular-nums border-white/10 ${
-                  minRating > 0
-                    ? "text-yellow-400 bg-yellow-500/10 border-yellow-500/20"
-                    : "text-white/40 bg-white/5"
-                }`}
-              >
-                {minRating > 0 ? `${minRating}+` : "Any"}
-              </Badge>
-            </div>
-
-            <Separator
-              orientation="vertical"
-              className="h-5 bg-white/[0.08] hidden lg:block"
-            />
-
-            {/* Language */}
-            <div className="flex items-center gap-2 overflow-x-auto scrollbar-hide">
-              <span className="shrink-0 text-xs font-semibold text-white/40">
-                Language
-              </span>
-              {LANGUAGES.map(({ code, label }) => {
-                const active = language === code;
-                return (
-                  <button
-                    key={code}
-                    onClick={() => toggleLanguage(code)}
-                    className={`shrink-0 text-xs font-semibold px-3 py-1 rounded-full transition-all duration-150 ${
-                      active
-                        ? "bg-white text-black"
-                        : "bg-white/[0.06] text-white/40 hover:bg-white/[0.1] hover:text-white"
-                    }`}
-                  >
-                    {label}
-                  </button>
-                );
-              })}
-            </div>
-
-            <Separator
-              orientation="vertical"
-              className="h-5 bg-white/[0.08] hidden lg:block"
-            />
-
-            {/* Sort + Reset + Count */}
-            <div className="flex items-center gap-3 ml-auto shrink-0">
-              {activeCount > 0 && (
-                <button
-                  onClick={clearFilters}
-                  className="flex items-center gap-1.5 text-xs font-semibold text-white/30 hover:text-red-400 transition-colors"
                 >
-                  <RotateCcw className="w-3.5 h-3.5" />
-                  Reset
-                </button>
-              )}
-              <Badge
-                variant="outline"
-                className="text-xs font-semibold text-white/40 border-white/10 bg-white/5 hidden sm:flex"
-              >
-                {displayData.length} titles
-              </Badge>
+                  <div className="p-5 sm:p-6 lg:p-8 overflow-y-auto flex-1">
+                    <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 sm:gap-8">
+                      {/* Left side: Genres (takes up 2 columns) */}
+                      <div className="lg:col-span-2 space-y-4 lg:border-r border-white/10 pb-6 lg:pb-0 lg:pr-8">
+                        <h4 className="text-sm font-semibold text-white tracking-wide uppercase">
+                          Genres
+                        </h4>
+                        <div className="flex flex-wrap gap-2">
+                          <button
+                            onClick={() => setSelectedGenres([])}
+                            className={`text-sm px-4 py-2 rounded-sm transition-colors ${
+                              selectedGenres.length === 0
+                                ? "bg-[#22c55e] text-black font-medium"
+                                : "bg-[#2a2a2a] text-white hover:bg-[#3a3a3a]"
+                            }`}
+                          >
+                            All
+                          </button>
+                          {genres.map(({ id, name }) => {
+                            const active = selectedGenres.includes(id);
+                            return (
+                              <button
+                                key={id}
+                                onClick={() => toggleGenre(id)}
+                                className={`text-sm px-4 py-2 rounded-sm transition-colors ${
+                                  active
+                                    ? "bg-[#22c55e] text-black font-medium"
+                                    : "bg-[#2a2a2a] text-white hover:bg-[#3a3a3a]"
+                                }`}
+                              >
+                                {name}
+                              </button>
+                            );
+                          })}
+                        </div>
+                      </div>
+
+                      {/* Right side: Other Filters */}
+                      <div className="lg:col-span-2 space-y-8">
+                        {/* Year Filter */}
+                        <div className="space-y-4">
+                          <div className="flex items-center justify-between">
+                            <h4 className="text-sm font-semibold text-white tracking-wide uppercase">
+                              Release Year
+                            </h4>
+                            <span className="text-sm font-medium text-[#22c55e]">
+                              {yearFrom} — {yearTo}
+                            </span>
+                          </div>
+                          <Slider
+                            min={MIN_YEAR}
+                            max={CURRENT_YEAR}
+                            step={1}
+                            value={[yearFrom, yearTo]}
+                            onValueChange={([from, to]) => {
+                              setYearFrom(from);
+                              setYearTo(to);
+                            }}
+                            className="cursor-pointer"
+                          />
+                        </div>
+
+                        {/* Rating Filter */}
+                        <div className="space-y-4">
+                          <div className="flex items-center justify-between">
+                            <h4 className="text-sm font-semibold text-white tracking-wide uppercase">
+                              Minimum Rating
+                            </h4>
+                            {minRating > 0 ? (
+                              <span className="inline-flex items-center gap-1 text-sm font-medium text-[#22c55e]">
+                                <Star className="w-4 h-4 fill-current text-[#22c55e]" />
+                                {minRating} +
+                              </span>
+                            ) : (
+                              <span className="text-sm font-medium text-white/50">
+                                Any
+                              </span>
+                            )}
+                          </div>
+                          <Slider
+                            min={0}
+                            max={9}
+                            step={0.5}
+                            value={[minRating]}
+                            onValueChange={([v]) => setMinRating(v)}
+                            className="cursor-pointer"
+                          />
+                        </div>
+
+                        {/* Language Filter */}
+                        <div className="space-y-4">
+                          <h4 className="text-sm font-semibold text-white tracking-wide uppercase">
+                            Original Language
+                          </h4>
+                          <div className="flex flex-wrap gap-2">
+                            {LANGUAGES.map(({ code, label }) => {
+                              const active = language === code;
+                              return (
+                                <button
+                                  key={code}
+                                  onClick={() => toggleLanguage(code)}
+                                  className={`text-sm px-4 py-2 rounded-sm transition-colors ${
+                                    active
+                                      ? "bg-[#22c55e] text-black font-medium"
+                                      : "bg-[#2a2a2a] text-white hover:bg-[#3a3a3a]"
+                                  }`}
+                                >
+                                  {label}
+                                </button>
+                              );
+                            })}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Panel Footer / Actions */}
+                  <div className="px-5 py-4 sm:px-6 sm:py-5 border-t border-white/10 flex items-center justify-between gap-2 bg-[#0a0a0a] shrink-0 rounded-b-sm">
+                    <div className="text-xs sm:text-sm font-medium text-white/50">
+                      <span className="text-[#22c55e] text-base sm:text-lg font-bold">
+                        {displayData.length}
+                      </span>{" "}
+                      matches
+                    </div>
+                    <div className="flex items-center gap-2 sm:gap-4">
+                      {activeCount > 0 && (
+                        <button
+                          onClick={clearFilters}
+                          className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm font-medium text-white/70 hover:text-white transition-colors px-2 sm:px-4 py-2"
+                        >
+                          <RotateCcw className="w-3 h-3 sm:w-4 sm:h-4" />
+                          <span className="hidden sm:inline">
+                            Reset Filters
+                          </span>
+                          <span className="sm:hidden">Reset</span>
+                        </button>
+                      )}
+                      <button
+                        onClick={() => setShowAdvanced(false)}
+                        className="px-6 sm:px-8 py-2 bg-[#22c55e] text-black text-xs sm:text-sm font-bold rounded-sm hover:bg-[#22c55e]/90 transition-all"
+                      >
+                        Apply
+                      </button>
+                    </div>
+                  </div>
+                </PopoverContent>
+              </Popover>
+
+              {/* Sort Dropdown */}
               <Select value={sortBy} onValueChange={setSortBy}>
-                <SelectTrigger className="w-36 h-8 text-xs font-semibold bg-white/[0.05] border-white/[0.1] text-white/60 hover:text-white focus:ring-0 focus:ring-offset-0">
-                  <SelectValue />
+                <SelectTrigger className="w-[130px] sm:w-[140px] h-10 sm:h-9 bg-[#2a2a2a] border-0 text-white rounded-sm focus:ring-0 hover:bg-[#3a3a3a] transition-colors shadow-none">
+                  <div className="flex items-center gap-2 text-sm font-medium">
+                    <SelectValue />
+                  </div>
                 </SelectTrigger>
-                <SelectContent className="bg-[#111] border-white/10">
+                <SelectContent className="bg-[#0a0a0a] rounded-sm shadow-2xl border-0">
                   {SORT_OPTIONS.map((opt) => (
                     <SelectItem
                       key={opt.value}
                       value={opt.value}
-                      className="text-xs font-semibold text-white/70 focus:bg-white/10 focus:text-white"
+                      className="text-sm font-medium text-white/70 focus:bg-[#2a2a2a] focus:text-white rounded-sm cursor-pointer"
                     >
                       {opt.label}
                     </SelectItem>
@@ -432,16 +496,7 @@ export default function MediaGrid({
 
       {/* ── Content Grid ─────────────────────────────────────────────────── */}
       <div className="lg:px-12 px-6 py-10">
-        {activeCount > 0 && (
-          <div className="mb-6 animate-in fade-in slide-in-from-bottom-2 duration-500">
-            <h2 className="text-sm font-semibold text-white/40">
-              Showing <span className="text-white">{displayData.length}</span>{" "}
-              results matching your criteria
-            </h2>
-          </div>
-        )}
-
-        <section className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-6">
+        <section className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
           {displayData.map((item, index) => (
             <div
               key={`${item.id}-${index}`}
@@ -451,30 +506,13 @@ export default function MediaGrid({
               }}
               className="cursor-pointer group relative"
             >
-              <div className="relative aspect-2/3 bg-white/5 rounded-xl overflow-hidden ring-1 ring-white/5 group-hover:ring-white/20 transition-all duration-500 shadow-2xl">
+              <div className="relative aspect-2/3 bg-white/5 rounded overflow-hidden transition-all duration-500 shadow-2xl">
                 <img
                   src={`https://image.tmdb.org/t/p/w500/${item.poster_path}`}
                   alt={getItemTitle(item)}
                   loading="lazy"
                   className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-out"
                 />
-                <div className="absolute inset-0 bg-linear-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-
-                {/* Quick Info Overlay */}
-                <div className="absolute bottom-0 left-0 right-0 p-4 translate-y-4 group-hover:translate-y-0 opacity-0 group-hover:opacity-100 transition-all duration-500">
-                  <div className="flex items-center justify-between mb-1">
-                    <span className="text-[10px] font-bold text-white/90 truncate max-w-[70%]">
-                      {getItemTitle(item)}
-                    </span>
-                    <div className="flex items-center gap-1 text-[10px] font-bold text-yellow-500">
-                      <Star className="w-2.5 h-2.5 fill-current" />
-                      {item.vote_average?.toFixed(1)}
-                    </div>
-                  </div>
-                  <p className="text-[8px] font-bold uppercase tracking-widest text-white/40">
-                    {getItemYear(item)}
-                  </p>
-                </div>
               </div>
             </div>
           ))}

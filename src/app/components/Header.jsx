@@ -2,7 +2,15 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { Search, Menu, Home, TrendingUp, Star, Tv, ChevronDown } from "lucide-react";
+import {
+  Search,
+  Menu,
+  Home,
+  TrendingUp,
+  Star,
+  Tv,
+  ChevronDown,
+} from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
 import {
   Sheet,
@@ -56,7 +64,7 @@ function GenreSelect({
                 "min-w-[11rem] border-white/10 bg-white/5 text-neutral-200 shadow-none backdrop-blur-sm transition-colors hover:bg-white/10 focus-visible:border-white/20 focus-visible:ring-white/15",
                 active && "border-white/20 bg-white/10 text-white",
               ],
-          triggerClassName
+          triggerClassName,
         )}
       >
         <span className="flex items-center gap-1">
@@ -123,13 +131,13 @@ export default function Header() {
         "fixed top-0 z-50 inset-x-0 transition-all duration-300",
         scrolled
           ? "bg-[#010101] shadow-lg"
-          : "bg-linear-to-b from-black/80 via-black/40 to-transparent"
+          : "bg-linear-to-b from-black/80 via-black/40 to-transparent",
       )}
     >
       <nav className="flex items-center justify-between lg:px-12 px-4 py-4">
         <div className="flex items-center gap-10">
           <Link href="/" className="shrink-0 group">
-            <h1 className="text-2xl text-mdnichrome lg:text-3xl font-black tracking-tight uppercase neon-logo">
+            <h1 className="text-3xl text-mdnichrome lg:text-3xl font-black tracking-tight uppercase neon-logo">
               Supawatch
             </h1>
           </Link>
@@ -143,7 +151,7 @@ export default function Header() {
                   "text-sm font-medium transition-colors duration-200",
                   isActive(item.href)
                     ? "text-white font-semibold"
-                    : "text-neutral-300 hover:text-white"
+                    : "text-neutral-300 hover:text-white",
                 )}
               >
                 {item.name}
@@ -202,11 +210,14 @@ export default function Header() {
                           "flex items-center gap-4 px-4 py-3.5 rounded-xl text-base font-medium transition-all duration-200",
                           isActive(item.href)
                             ? "bg-white/10 text-white border border-white/20"
-                            : "text-neutral-400 hover:bg-white/5 hover:text-white"
+                            : "text-neutral-400 hover:bg-white/5 hover:text-white",
                         )}
                       >
                         <Icon
-                          className={cn("w-5 h-5", isActive(item.href) && "text-white")}
+                          className={cn(
+                            "w-5 h-5",
+                            isActive(item.href) && "text-white",
+                          )}
                         />
                         <span>{item.name}</span>
                       </Link>
