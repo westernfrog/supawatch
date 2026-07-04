@@ -1,0 +1,110 @@
+{
+  "plutoCountries": [
+    "US",
+    "GB",
+    "CA",
+    "DE",
+    "FR",
+    "ES",
+    "IT",
+    "MX",
+    "BR",
+    "AR",
+    "CL",
+    "DK",
+    "SE",
+    "NO"
+  ],
+  "regions": [
+    {
+      "code": "global",
+      "label": "Global / India",
+      "file": "global.m3u",
+      "lang": "mixed"
+    },
+    {
+      "code": "US",
+      "label": "United States",
+      "file": "us.m3u",
+      "lang": "en"
+    },
+    {
+      "code": "GB",
+      "label": "United Kingdom",
+      "file": "gb.m3u",
+      "lang": "en"
+    },
+    {
+      "code": "CA",
+      "label": "Canada",
+      "file": "ca.m3u",
+      "lang": "en"
+    },
+    {
+      "code": "DE",
+      "label": "Germany",
+      "file": "de.m3u",
+      "lang": "de"
+    },
+    {
+      "code": "FR",
+      "label": "France",
+      "file": "fr.m3u",
+      "lang": "fr"
+    },
+    {
+      "code": "ES",
+      "label": "Spain",
+      "file": "es.m3u",
+      "lang": "es"
+    },
+    {
+      "code": "IT",
+      "label": "Italy",
+      "file": "it.m3u",
+      "lang": "it"
+    },
+    {
+      "code": "MX",
+      "label": "Mexico",
+      "file": "mx.m3u",
+      "lang": "es"
+    },
+    {
+      "code": "BR",
+      "label": "Brazil",
+      "file": "br.m3u",
+      "lang": "pt"
+    },
+    {
+      "code": "AR",
+      "label": "Argentina",
+      "file": "ar.m3u",
+      "lang": "es"
+    },
+    {
+      "code": "CL",
+      "label": "Chile",
+      "file": "cl.m3u",
+      "lang": "es"
+    },
+    {
+      "code": "DK",
+      "label": "Denmark",
+      "file": "dk.m3u",
+      "lang": "en"
+    },
+    {
+      "code": "SE",
+      "label": "Sweden",
+      "file": "se.m3u",
+      "lang": "en"
+    },
+    {
+      "code": "NO",
+      "label": "Norway",
+      "file": "no.m3u",
+      "lang": "en"
+    }
+  ]
+}
