@@ -30,7 +30,19 @@ interface Manifest {
   regions: Region[];
 }
 
-export default async function LivePage() {
+/* A shared link carries both the channel and the region it belongs to: the
+   channel number indexes into one particular playlist, so without the region it
+   would resolve to a different channel for a viewer in another country. Both
+   are read here rather than on the client — the server then renders the right
+   region from the start, with no hydration mismatch and no effect racing the
+   geo lookup to set it. */
+type SearchParams = Promise<{ ch?: string; region?: string }>;
+
+export default async function LivePage({
+  searchParams,
+}: {
+  searchParams: SearchParams;
+}) {
   const manifestPath = path.join(
     process.cwd(),
     "public",
@@ -51,14 +63,27 @@ export default async function LivePage() {
 
   // A Pluto-supported country gets its own feed; everyone else gets the
   // work-anywhere "Global / India" list (safe default, plays everywhere).
-  const defaultRegionCode =
+  const geoRegionCode =
     country && manifest.plutoCountries.includes(country) ? country : "global";
+
+  const { ch, region } = await searchParams;
+
+  // A region from the link only counts if we actually carry that playlist.
+  const linkedRegion =
+    region && manifest.regions.some((r) => r.code === region) ? region : null;
+
+  const channelNumber = Number(ch);
+  const linkedChannel =
+    Number.isInteger(channelNumber) && channelNumber > 0 ? channelNumber : null;
 
   return (
     <LiveClient
       regions={manifest.regions}
-      defaultRegionCode={defaultRegionCode}
-      detectedCountry={country}
+      defaultRegionCode={linkedRegion ?? geoRegionCode}
+      // A link naming a region is a deliberate choice, so geo must not override
+      // it — passing a country here is what tells the client to stop refining.
+      detectedCountry={linkedRegion ? linkedRegion : country}
+      initialChannel={linkedChannel}
     />
   );
 }

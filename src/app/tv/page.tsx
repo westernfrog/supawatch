@@ -4,6 +4,7 @@ import TvHero from "@/components/TvHero";
 import MediaGrid from "@/components/MediaGrid";
 import ShowReel from "@/components/ShowReel";
 import ScrollSnap from "@/components/ScrollSnap";
+import { GENRE_NAMES } from "@/lib/genres";
 
 export const metadata: Metadata = {
   title: "TV Series",
@@ -24,7 +25,68 @@ function hasBackdrop(m: any): boolean {
   return Boolean(m?.backdrop_path);
 }
 
-export default async function TvPage() {
+/* The hero must never come back empty — TMDB drops the odd request, and with
+   `revalidate` above one blip would be cached as a heroless page for the hour.
+   Retry, then fall back to popular shows rather than hand back nothing. */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+async function heroTitles(params: Record<string, string>): Promise<any[]> {
+  const attempt = async (endpoint: string, p: Record<string, string>) => {
+    try {
+      const data = await tmdbFetch(endpoint, p, { revalidate: 3600 });
+      return (data?.results ?? []).filter(hasBackdrop).slice(0, 8);
+    } catch (e) {
+      console.error(`[tv hero] ${endpoint} failed`, e);
+      return [];
+    }
+  };
+
+  for (let i = 0; i < 2; i++) {
+    const list = await attempt("/discover/tv", params);
+    if (list.length) return list;
+  }
+  return attempt("/tv/popular", {});
+}
+
+type Props = { searchParams: Promise<{ genre?: string }> };
+
+export default async function TvPage({ searchParams }: Props) {
+  const { genre } = await searchParams;
+
+  // Comma-separated id list ("18,80" = Drama *and* Crime), the format TMDB's
+  // with_genres takes. Junk ids are dropped; if none survive, no filter.
+  const genreIds = (genre ?? "")
+    .split(",")
+    .map((s) => s.trim())
+    .filter((s) => /^\d+$/.test(s));
+
+  // ── Same /tv layout, but every reel scoped to the selected genres ──
+  if (genreIds.length) {
+    const g = genreIds.join(",");
+    const genreName = genreIds
+      .map((id) => GENRE_NAMES[id] ?? "Genre")
+      .join(" + ");
+    const heroShows = await heroTitles({
+      with_genres: g,
+      sort_by: "popularity.desc",
+    });
+    const D = (params: string) =>
+      `/api/getDiscover?type=tv&with_genres=${g}&${params}`;
+
+    return (
+      <div className="min-h-screen bg-[#010101] text-white">
+        <ScrollSnap />
+        <TvHero initialShows={heroShows} genreId={g} />
+
+        <ShowReel  title={`Popular ${genreName}`} subtitle="Right Now"    fetchUrl={D("sort_by=popularity.desc")} mediaType="tv" />
+        <MediaGrid title="Top Rated"              subtitle="Acclaimed"    fetchUrl={D("sort_by=vote_average.desc&vote_count_gte=200")} mediaType="tv" />
+        <ShowReel  title="Fan Favorites"          subtitle="Most Watched" fetchUrl={D("sort_by=vote_count.desc")} mediaType="tv" />
+        <ShowReel  title="Fresh Episodes"         subtitle="Newest First" fetchUrl={D("sort_by=first_air_date.desc&vote_count_gte=20")} mediaType="tv" />
+        <MediaGrid title="Hidden Gems"            subtitle="Underrated"   fetchUrl={D("sort_by=vote_average.desc&vote_count_gte=50")} mediaType="tv" />
+        <ShowReel  title={`${genreName} Movies`}  subtitle="On Film"      fetchUrl={`/api/getDiscover?type=movie&with_genres=${g}&sort_by=popularity.desc`} mediaType="movie" />
+      </div>
+    );
+  }
+
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let onAir: any[] = [];
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -46,10 +108,13 @@ export default async function TvPage() {
     .filter((s) => hasBackdrop(s) && !seen.has(s.id) && seen.add(s.id))
     .slice(0, 8);
 
+  // Both calls above dropped — retry rather than ship a heroless page.
+  const heroShows = shows.length ? shows : await heroTitles({});
+
   return (
     <div className="min-h-screen bg-[#010101] text-white">
       <ScrollSnap />
-      <TvHero initialShows={shows} />
+      <TvHero initialShows={heroShows} />
 
       {/* ── On air ── */}
       <ShowReel  title="On TV Tonight"     subtitle="Airing Today"      fetchUrl="/api/getTvList?list=airing_today" mediaType="tv" />

@@ -3,7 +3,8 @@
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { Play, Volume2, VolumeX } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { cn, heroTitleSize } from "@/lib/utils";
+import { useTrailerGuard } from "@/lib/trailer-guard";
 import WatchModal from "./WatchModal";
 import { fetchJson } from "@/lib/client-api";
 
@@ -117,7 +118,11 @@ export default function MoviePageHero({
     setMuted((m) => !m);
   };
 
-  const tSrc = trailerKey
+  /* A geo-blocked trailer paints YouTube's own "Video unavailable" card
+     inside the frame; drop back to the backdrop still instead. */
+  const trailerBlocked = useTrailerGuard(iframeRef, showVideo, trailerKey);
+
+  const tSrc = trailerKey && !trailerBlocked
     ? `https://www.youtube.com/embed/${trailerKey}?autoplay=1&mute=1&loop=1&playlist=${trailerKey}&controls=0&showinfo=0&rel=0&iv_load_policy=3&modestbranding=1&playsinline=1&disablekb=1&fs=0&enablejsapi=1&vq=hd1080`
     : null;
 
@@ -144,7 +149,7 @@ export default function MoviePageHero({
         {tSrc && (
           <div
             className={cn(
-              "absolute inset-0 transition-opacity duration-1000",
+              "absolute inset-0 z-0 transition-opacity duration-1000",
               showVideo ? "opacity-100" : "opacity-0",
             )}
           >
@@ -159,7 +164,7 @@ export default function MoviePageHero({
                 transform: "scale(1.35)",
               }}
             />
-            <div className="absolute inset-0 z-10 bg-transparent" />
+            <div className="pointer-events-none absolute inset-0 bg-transparent" />
           </div>
         )}
 
@@ -197,7 +202,7 @@ export default function MoviePageHero({
 
         {/* ── Content block ── */}
         <div
-          className="absolute inset-x-12 bottom-0"
+          className="absolute inset-x-12 bottom-0 z-20"
           style={{
             animation: "fade-in-up 0.55s 0.1s cubic-bezier(0.16,1,0.3,1) both",
           }}
@@ -217,9 +222,9 @@ export default function MoviePageHero({
               />
             ) : (
               <h1
-                className="font-nichrome font-black leading-[0.88] text-white uppercase tracking-tight"
+                className="max-w-[16ch] text-balance font-nichrome font-black leading-[0.88] text-white uppercase tracking-tight"
                 style={{
-                  fontSize: "clamp(4rem, 6vw, 8rem)",
+                  fontSize: heroTitleSize(showName),
                   textShadow:
                     "0 2px 40px rgba(0,0,0,0.95), 0 0 80px rgba(0,0,0,0.6)",
                 }}
@@ -520,9 +525,9 @@ export default function MoviePageHero({
                 />
               ) : (
                 <h1
-                  className="font-nichrome font-black leading-[0.88] text-white uppercase tracking-tight"
+                  className="max-w-[16ch] text-balance font-nichrome font-black leading-[0.88] text-white uppercase tracking-tight"
                   style={{
-                    fontSize: "clamp(2.6rem, 10vw, 4rem)",
+                    fontSize: heroTitleSize(showName, "compact"),
                     textShadow: "0 2px 30px rgba(0,0,0,0.95)",
                   }}
                 >

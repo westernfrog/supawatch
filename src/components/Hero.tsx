@@ -7,7 +7,8 @@ import MovieDetailsModal from "./MovieDetailsModal";
 import TvDetailsModal from "./TvDetailsModal";
 import WatchModal from "./WatchModal";
 import TvWatchModal from "./TvWatchModal";
-import { cn } from "@/lib/utils";
+import { cn, heroTitleSize } from "@/lib/utils";
+import { useTrailerGuard } from "@/lib/trailer-guard";
 import { fetchJson } from "@/lib/client-api";
 
 const PROVIDER_URLS: Record<number, (title: string) => string> = {
@@ -341,7 +342,11 @@ export default function Hero() {
   const providers = item ? (providersCache[item.id]?.list ?? []) : [];
   const providersLink = item ? (providersCache[item.id]?.link ?? null) : null;
   const tKey = (info as Enriched).trailerKey;
-  const tSrc = tKey
+  /* A geo-blocked trailer paints YouTube's own "Video unavailable" card
+     inside the frame; drop back to the backdrop still instead. */
+  const trailerBlocked = useTrailerGuard(iframeRef, showVideo, tKey);
+
+  const tSrc = tKey && !trailerBlocked
     ? `https://www.youtube.com/embed/${tKey}?autoplay=1&mute=1&loop=1&playlist=${tKey}&controls=0&showinfo=0&rel=0&iv_load_policy=3&modestbranding=1&playsinline=1&disablekb=1&fs=0&enablejsapi=1&vq=hd1080`
     : null;
 
@@ -392,21 +397,13 @@ export default function Hero() {
               src={`https://image.tmdb.org/t/p/original${bgBack.backdrop_path}`}
               alt=""
               aria-hidden
-              className="absolute inset-0 h-full w-full object-cover object-center"
-              style={{
-                animation: "recede 1.6s cubic-bezier(0.33,0,0.2,1) both",
-                willChange: "transform, filter",
-              }}
+              className="animate-recede absolute inset-0 h-full w-full object-cover object-center"
             />
           )}
           {bgFront && (
             <div
               key={`bgfront-${bgFront.id}-${idx}`}
-              className="absolute inset-0 overflow-hidden"
-              style={{
-                animation: "cinematic-in 1.6s cubic-bezier(0.22,1,0.36,1) both",
-                willChange: "transform, opacity, filter",
-              }}
+              className="animate-cinematic-in absolute inset-0 overflow-hidden"
             >
               <img
                 src={`https://image.tmdb.org/t/p/original${bgFront.backdrop_path}`}
@@ -501,9 +498,9 @@ export default function Hero() {
               <div className="h-[80px] w-[460px] animate-pulse bg-white/[0.06]" />
             ) : (
               <h1
-                className="font-nichrome font-black leading-[0.88] text-white uppercase tracking-tight"
+                className="max-w-[16ch] text-balance font-nichrome font-black leading-[0.88] text-white uppercase tracking-tight"
                 style={{
-                  fontSize: "clamp(4.5rem, 7vw, 9rem)",
+                  fontSize: heroTitleSize(title),
                   textShadow:
                     "0 2px 40px rgba(0,0,0,0.95), 0 0 80px rgba(0,0,0,0.6)",
                 }}
@@ -933,9 +930,9 @@ export default function Hero() {
                 <div className="h-10 w-48 animate-pulse bg-white/[0.07]" />
               ) : (
                 <h1
-                  className="font-nichrome font-black leading-[0.88] text-white uppercase tracking-tight"
+                  className="max-w-[16ch] text-balance font-nichrome font-black leading-[0.88] text-white uppercase tracking-tight"
                   style={{
-                    fontSize: "clamp(2.6rem, 10vw, 4rem)",
+                    fontSize: heroTitleSize(title, "compact"),
                     textShadow: "0 2px 30px rgba(0,0,0,0.95)",
                   }}
                 >

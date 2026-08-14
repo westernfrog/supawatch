@@ -27,6 +27,19 @@ export function resolveRegion(code: string | null | undefined): string {
   return VALID_REGIONS.has(upper) ? upper : "US";
 }
 
+/**
+ * Like resolveRegion, but says "I don't know" instead of guessing. Callers that
+ * pick *content* by country need this: defaulting an unrecognised code to "US"
+ * hands someone in an unsupported country an American feed and no clue why.
+ */
+export function resolveRegionOrNull(
+  code: string | null | undefined,
+): string | null {
+  if (!code) return null;
+  const upper = code.toUpperCase();
+  return VALID_REGIONS.has(upper) ? upper : null;
+}
+
 type HeaderGetter = { get(name: string): string | null };
 
 /**
@@ -34,11 +47,11 @@ type HeaderGetter = { get(name: string): string | null };
  * (e.g. local dev). Callers can then fall back to an IP lookup or a default.
  */
 export function countryFromHeaders(h: HeaderGetter): string | null {
-  const vercel = h.get("x-vercel-ip-country");
-  if (vercel) return resolveRegion(vercel);
+  const vercel = resolveRegionOrNull(h.get("x-vercel-ip-country"));
+  if (vercel) return vercel;
 
   const cf = h.get("cf-ipcountry");
-  if (cf && cf !== "XX" && cf !== "T1") return resolveRegion(cf);
+  if (cf && cf !== "XX" && cf !== "T1") return resolveRegionOrNull(cf);
 
   return null;
 }

@@ -1,13 +1,27 @@
 "use client";
 
-import { useState, useEffect, useRef, useCallback } from "react";
+import {
+  useState,
+  useEffect,
+  useRef,
+  useCallback,
+  useTransition,
+} from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { Play, Volume2, VolumeX, Info } from "lucide-react";
 import TvWatchModal from "./TvWatchModal";
-import { cn } from "@/lib/utils";
+import GenrePicker from "./GenrePicker";
+import { TV_GENRE_LIST, GENRE_NAMES } from "@/lib/genres";
+import { cn, heroTitleSize } from "@/lib/utils";
+import { useTrailerGuard } from "@/lib/trailer-guard";
 import { fetchJson } from "@/lib/client-api";
 
 const SLIDE_MS = 40000;
+
+/* Stable identity — a fresh [] each render would make the "did the list
+   change?" check below true forever, and it adjusts state during render. */
+const NO_SHOWS: Show[] = [];
 
 const PROVIDER_URLS: Record<number, (title: string) => string> = {
   8: (t) => `https://www.netflix.com/search?q=${encodeURIComponent(t)}`,
@@ -90,11 +104,23 @@ interface ProvidersInfo {
 
 interface Props {
   initialShows: Show[];
+  genreId?: string;
 }
 
-export default function TvHero({ initialShows }: Props) {
-  const [shows] = useState<Show[]>(initialShows);
+export default function TvHero({ initialShows, genreId }: Props) {
+  const router = useRouter();
+  /* Read straight from props: this list changes when the genre filter
+     navigates, and holding it in state would pin the hero to whatever the
+     first render happened to receive. */
+  const shows = initialShows.length ? initialShows : NO_SHOWS;
   const [idx, setIdx] = useState(0);
+  /* Previous backdrop stays mounted underneath so a slide change dissolves
+     instead of cutting to black for an instant. */
+  const [bgFrontId, setBgFrontId] = useState<number | null>(null);
+  const [bgFront, setBgFront] = useState<Show | null>(null);
+  const [bgBack, setBgBack] = useState<Show | null>(null);
+  const [shownList, setShownList] = useState(shows);
+  const [pending, startTransition] = useTransition();
   const [enriched, setEnriched] = useState<Record<number, Enriched>>({});
   const [showVideo, setShowVideo] = useState(false);
   const [muted, setMuted] = useState(true);
@@ -156,6 +182,32 @@ export default function TvHero({ initialShows }: Props) {
     setMuted(true);
   }, []);
 
+  /* A new list arrived (the genre filter navigated) — restart the carousel
+     instead of leaving it parked on an index from the previous list. */
+  if (shownList !== shows) {
+    setShownList(shows);
+    setIdx(0);
+    setShowVideo(false);
+    setMuted(true);
+  }
+
+  /* Genre filter is a comma-separated id list, the format with_genres takes. */
+  const selectedGenres = genreId ? genreId.split(",").filter(Boolean) : [];
+
+  const applyGenres = (next: string[]) =>
+    startTransition(() =>
+      router.push(next.length ? `/tv?genre=${next.join(",")}` : "/tv"),
+    );
+
+  /* Any selected id the standard list doesn't carry still needs a row to
+     toggle it back off. */
+  const genreOptions = [
+    ...selectedGenres
+      .filter((id) => !TV_GENRE_LIST.some((g) => g.id === id))
+      .map((id) => ({ id, name: GENRE_NAMES[id] ?? "Genre" })),
+    ...TV_GENRE_LIST,
+  ];
+
   useEffect(() => {
     if (!shows.length || showWatch) return;
     const t = setInterval(() => goTo((idx + 1) % shows.length), SLIDE_MS);
@@ -166,6 +218,15 @@ export default function TvHero({ initialShows }: Props) {
   const activeTrailerKey = shows[idx]
     ? (enriched[shows[idx].id]?.trailerKey ?? null)
     : null;
+
+  /* A geo-blocked trailer paints YouTube's own "Video unavailable" card
+     inside the frame; drop back to the backdrop still instead. Called
+     here, above the empty-list early return, so the hook order holds. */
+  const trailerBlocked = useTrailerGuard(
+    iframeRef,
+    showVideo,
+    activeTrailerKey,
+  );
 
   /* ── video reveal — start the 6s countdown only once the trailer key is
         known, so the progress ring and the reveal stay perfectly in sync ── */
@@ -202,7 +263,15 @@ export default function TvHero({ initialShows }: Props) {
   };
 
   const show = shows[idx];
-  if (!show) return <div className="h-screen bg-[#010101]" />;
+  if (show && show.id !== bgFrontId) {
+    setBgBack(bgFront);
+    setBgFront(show);
+    setBgFrontId(show.id);
+  }
+
+  /* No hero titles — render nothing and let the reels start at the top,
+     rather than holding a full-screen black block that reads as broken. */
+  if (!show) return null;
 
   const info = (enriched[show.id] ?? {}) as Partial<Enriched>;
   const genres = show.genre_ids
@@ -216,27 +285,53 @@ export default function TvHero({ initialShows }: Props) {
   const providers = providersCache[show.id]?.list ?? [];
   const providersLink = providersCache[show.id]?.link ?? null;
   const tKey = (info as Enriched).trailerKey;
-  const tSrc = tKey
+  const tSrc = tKey && !trailerBlocked
     ? `https://www.youtube.com/embed/${tKey}?autoplay=1&mute=1&loop=1&playlist=${tKey}&controls=0&showinfo=0&rel=0&iv_load_policy=3&modestbranding=1&playsinline=1&disablekb=1&fs=0&enablejsapi=1&vq=hd1080`
     : null;
+
+  /* The whole hero dissolves while a genre change is in flight. The menu is
+     portaled outside this subtree, so it stays sharp above the dissolve. */
+  const swapping = cn(
+    "transition-[opacity,filter] duration-500 ease-out motion-reduce:transition-none",
+    pending ? "opacity-40 blur-[6px]" : "opacity-100 blur-0",
+  );
 
   return (
     <>
       {/* ══════════════════  DESKTOP  ══════════════════ */}
-      <section className="relative hidden h-screen overflow-hidden lg:block">
-        {/* Backdrop */}
-        {show.backdrop_path && (
-          <div className="absolute inset-0 overflow-hidden">
+      <section
+        className={cn(
+          "relative hidden h-screen overflow-hidden lg:block",
+          swapping,
+        )}
+      >
+        {/* Backdrop — cinematic cross-dissolve: the new frame blooms in over
+            the previous one as it eases back into a soft, dim blur */}
+        <div className="absolute inset-0 overflow-hidden">
+          {bgBack?.backdrop_path && (
             <img
-              key={`bg-${show.id}`}
-              src={`https://image.tmdb.org/t/p/original${show.backdrop_path}`}
+              key={`bgback-${bgBack.id}`}
+              src={`https://image.tmdb.org/t/p/original${bgBack.backdrop_path}`}
               alt=""
               aria-hidden
-              className="absolute inset-0 h-full w-full object-cover object-center"
-              style={{ animation: "ken-burns 22s ease-in-out infinite alternate" }}
+              className="animate-recede absolute inset-0 h-full w-full object-cover object-center"
             />
-          </div>
-        )}
+          )}
+          {bgFront?.backdrop_path && (
+            <div
+              key={`bgfront-${bgFront.id}-${idx}`}
+              className="animate-cinematic-in absolute inset-0 overflow-hidden"
+            >
+              <img
+                src={`https://image.tmdb.org/t/p/original${bgFront.backdrop_path}`}
+                alt=""
+                aria-hidden
+                className="absolute inset-0 h-full w-full object-cover object-center"
+                style={{ animation: "ken-burns 22s ease-in-out infinite alternate" }}
+              />
+            </div>
+          )}
+        </div>
 
         {/* Trailer */}
         {tSrc && (
@@ -307,9 +402,9 @@ export default function TvHero({ initialShows }: Props) {
               <div className="h-[80px] w-[460px] animate-pulse bg-white/[0.06]" />
             ) : (
               <h1
-                className="font-nichrome font-black leading-[0.88] text-white uppercase tracking-tight"
+                className="max-w-[16ch] text-balance font-nichrome font-black leading-[0.88] text-white uppercase tracking-tight"
                 style={{
-                  fontSize: "clamp(4rem, 6vw, 8rem)",
+                  fontSize: heroTitleSize(show.name),
                   textShadow: "0 2px 40px rgba(0,0,0,0.95), 0 0 80px rgba(0,0,0,0.6)",
                 }}
               >
@@ -436,30 +531,6 @@ export default function TvHero({ initialShows }: Props) {
               Details
             </Link>
 
-            {providers.length > 0 && (
-              <>
-                <div className="h-4 w-px bg-white/[0.12]" />
-                <div className="flex items-center gap-2">
-                  {providers.slice(0, 5).map((p) => (
-                    <Link
-                      key={p.provider_id}
-                      href={PROVIDER_URLS[p.provider_id]?.(show.name) ?? providersLink ?? "#"}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      title={p.provider_name}
-                      className="h-[44px] w-[44px] shrink-0 overflow-hidden rounded-xl opacity-75 shadow-[0_2px_12px_rgba(0,0,0,0.5)] transition-all duration-200 hover:scale-[1.08] hover:opacity-100 hover:shadow-[0_4px_20px_rgba(0,0,0,0.6)]"
-                    >
-                      <img
-                        src={`https://image.tmdb.org/t/p/w154${p.logo_path}`}
-                        alt={p.provider_name}
-                        className="h-full w-full object-cover"
-                      />
-                    </Link>
-                  ))}
-                </div>
-              </>
-            )}
-
             {tSrc && (
               <>
                 <div className="h-4 w-px bg-white/[0.12]" />
@@ -491,6 +562,16 @@ export default function TvHero({ initialShows }: Props) {
                 )}
               </>
             )}
+
+            {/* Genre picker — last stop on the action bar */}
+            <div className="h-4 w-px bg-white/[0.12]" />
+            <GenrePicker
+              selected={selectedGenres}
+              options={genreOptions}
+              align="start"
+              allLabel="All Shows"
+              onApply={applyGenres}
+            />
           </div>
 
           {/* Created by + slide numbers */}
@@ -515,6 +596,37 @@ export default function TvHero({ initialShows }: Props) {
                     {(info as Enriched).createdBy}
                   </span>
                 )}
+              </>
+            )}
+
+            {/* Where to watch — a credit, not an action, so it sits on the
+                credits line rather than competing with Watch Now. */}
+            {providers.length > 0 && (
+              <>
+                {(info as Enriched).createdBy && (
+                  <div className="mx-1 h-3 w-px shrink-0 bg-white/[0.1]" />
+                )}
+                <span className="shrink-0 font-manrope text-[10px] font-semibold uppercase tracking-[0.2em] text-neutral-600">
+                  On
+                </span>
+                <div className="flex items-center gap-1.5">
+                  {providers.slice(0, 5).map((p) => (
+                    <Link
+                      key={p.provider_id}
+                      href={PROVIDER_URLS[p.provider_id]?.(show.name) ?? providersLink ?? "#"}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      title={p.provider_name}
+                      className="h-[26px] w-[26px] shrink-0 overflow-hidden rounded-[6px] opacity-70 ring-1 ring-white/[0.08] transition-all duration-200 hover:opacity-100 hover:ring-white/[0.2]"
+                    >
+                      <img
+                        src={`https://image.tmdb.org/t/p/w92${p.logo_path}`}
+                        alt={p.provider_name}
+                        className="h-full w-full object-cover"
+                      />
+                    </Link>
+                  ))}
+                </div>
               </>
             )}
 
@@ -558,7 +670,7 @@ export default function TvHero({ initialShows }: Props) {
       </section>
 
       {/* ══════════════════  MOBILE / TABLET  ══════════════════ */}
-      <section className="relative lg:hidden">
+      <section className={cn("relative lg:hidden", swapping)}>
         <div className="relative overflow-hidden" style={{ height: "72vh", minHeight: "500px" }}>
           {show.backdrop_path && (
             <img
@@ -567,6 +679,7 @@ export default function TvHero({ initialShows }: Props) {
               alt=""
               aria-hidden
               className="h-full w-full object-cover object-center"
+              style={{ animation: "fade-in-up 0.7s ease-out both" }}
             />
           )}
 
@@ -651,8 +764,8 @@ export default function TvHero({ initialShows }: Props) {
                 <div className="h-10 w-48 animate-pulse bg-white/[0.07]" />
               ) : (
                 <h1
-                  className="font-nichrome font-black leading-[0.88] text-white uppercase tracking-tight"
-                  style={{ fontSize: "clamp(2.6rem, 10vw, 4rem)", textShadow: "0 2px 30px rgba(0,0,0,0.95)" }}
+                  className="max-w-[16ch] text-balance font-nichrome font-black leading-[0.88] text-white uppercase tracking-tight"
+                  style={{ fontSize: heroTitleSize(show.name, "compact"), textShadow: "0 2px 30px rgba(0,0,0,0.95)" }}
                 >
                   {show.name}
                 </h1>
@@ -684,6 +797,15 @@ export default function TvHero({ initialShows }: Props) {
                   {muted ? <VolumeX className="h-3.5 w-3.5" /> : <Volume2 className="h-3.5 w-3.5" />}
                 </button>
               )}
+
+              <div className="flex-1" />
+              <GenrePicker
+                selected={selectedGenres}
+                options={genreOptions}
+                align="end"
+                allLabel="All Shows"
+                onApply={applyGenres}
+              />
             </div>
           </div>
         </div>

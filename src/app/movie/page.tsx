@@ -25,27 +25,53 @@ function hasBackdrop(m: any): boolean {
   return Boolean(m?.backdrop_path);
 }
 
+/* The hero must never come back empty. TMDB drops the occasional request
+   ("TypeError: fetch failed"), and with `revalidate` above, one blip would
+   otherwise be cached as a heroless page for the next hour — the state you
+   can only escape by reloading until a fetch happens to succeed. So: retry
+   once, then fall back to popular titles rather than hand back nothing. */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+async function heroTitles(params: Record<string, string>): Promise<any[]> {
+  const attempt = async (endpoint: string, p: Record<string, string>) => {
+    try {
+      const data = await tmdbFetch(endpoint, p, { revalidate: 3600 });
+      return (data?.results ?? []).filter(hasBackdrop).slice(0, 8);
+    } catch (e) {
+      console.error(`[movie hero] ${endpoint} failed`, e);
+      return [];
+    }
+  };
+
+  for (let i = 0; i < 2; i++) {
+    const list = await attempt("/discover/movie", params);
+    if (list.length) return list;
+  }
+  return attempt("/movie/popular", {});
+}
+
 type Props = { searchParams: Promise<{ genre?: string }> };
 
 export default async function MoviesPage({ searchParams }: Props) {
   const { genre } = await searchParams;
 
-  // ── Same /movie layout, but every reel scoped to one genre ──
-  if (genre) {
-    const g = genre;
-    const genreName = GENRE_NAMES[g] ?? "Genre";
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    let heroMovies: any[] = [];
-    try {
-      const data = await tmdbFetch(
-        "/discover/movie",
-        { with_genres: g, sort_by: "popularity.desc" },
-        { revalidate: 3600 },
-      );
-      heroMovies = (data?.results ?? []).filter(hasBackdrop).slice(0, 8);
-    } catch {
-      // MoviesHero handles an empty list gracefully
-    }
+  // `genre` is a comma-separated id list ("28,27" = Action *and* Horror),
+  // which is exactly the format TMDB's with_genres takes. Junk ids are
+  // dropped; if nothing survives we fall through to the unfiltered page.
+  const genreIds = (genre ?? "")
+    .split(",")
+    .map((s) => s.trim())
+    .filter((s) => /^\d+$/.test(s));
+
+  // ── Same /movie layout, but every reel scoped to the selected genres ──
+  if (genreIds.length) {
+    const g = genreIds.join(",");
+    const genreName = genreIds
+      .map((id) => GENRE_NAMES[id] ?? "Genre")
+      .join(" + ");
+    const heroMovies = await heroTitles({
+      with_genres: g,
+      sort_by: "popularity.desc",
+    });
     const D = (params: string) => `/api/getDiscover?type=movie&with_genres=${g}&${params}`;
     return (
       <div className="min-h-screen bg-[#010101] text-white">
@@ -84,10 +110,13 @@ export default async function MoviesPage({ searchParams }: Props) {
     .filter((m) => hasBackdrop(m) && !seen.has(m.id) && seen.add(m.id))
     .slice(0, 8);
 
+  // Both calls above dropped — retry rather than ship a heroless page.
+  const heroMovies = movies.length ? movies : await heroTitles({});
+
   return (
     <div className="min-h-screen bg-[#010101] text-white">
       <ScrollSnap />
-      <MoviesHero initialMovies={movies} />
+      <MoviesHero initialMovies={heroMovies} />
 
       {/* ── In cinemas ── */}
       <ShowReel  title="In Theaters"       subtitle="Now Playing"       fetchUrl="/api/getMovieList?list=now_playing" mediaType="movie" />

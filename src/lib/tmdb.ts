@@ -9,7 +9,7 @@ export const CACHE = {
   day: 86400,
 } as const;
 
-type ParamValue = string | number | boolean | null | undefined;
+export type ParamValue = string | number | boolean | null | undefined;
 
 export class TmdbError extends Error {
   status: number;
@@ -35,7 +35,12 @@ export async function tmdbFetch<T = any>(
   const url = new URL(`${TMDB_BASE}${endpoint}`);
   url.searchParams.set("language", "en-US");
   Object.entries(params).forEach(([key, value]) => {
-    if (value !== null && value !== undefined && value !== "") {
+    /* null drops the param entirely — the only way to shed the en-US default
+       above, which /images treats as a language filter. undefined and "" stay
+       "leave it alone". */
+    if (value === null) {
+      url.searchParams.delete(key);
+    } else if (value !== undefined && value !== "") {
       url.searchParams.set(key, String(value));
     }
   });

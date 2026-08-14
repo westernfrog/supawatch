@@ -49,9 +49,11 @@ export default function Header() {
             </span>
           </Link>
 
-          <div className="mx-9 h-4 w-px shrink-0 bg-white/[0.1]" />
+          {/* data-intro-chrome — held back by the brand intro, then settled in
+              around the logo once it lands (see IntroSplash). */}
+          <div data-intro-chrome className="mx-9 h-4 w-px shrink-0 bg-white/[0.1]" />
 
-          <nav className="hidden items-center gap-8 lg:flex">
+          <nav data-intro-chrome className="hidden items-center gap-8 lg:flex">
             {navigation.map((item) => {
               const active = isActive(item.href);
               return (
@@ -79,6 +81,7 @@ export default function Header() {
           <Link
             href="/search"
             aria-label="Search"
+            data-intro-chrome
             className="flex items-center gap-1.5 text-white/40 transition-colors duration-200 hover:text-white/70"
           >
             <Search className="h-[14px] w-[14px]" />

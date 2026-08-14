@@ -10,7 +10,7 @@ import {
 } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import Link from "next/link";
-import { Search } from "lucide-react";
+import { Search, X } from "lucide-react";
 import gsap from "gsap";
 import { cn } from "@/lib/utils";
 import { Input } from "@/components/ui/input";
@@ -230,6 +230,12 @@ interface Filters {
 /* Matches MediaGrid's container/column convention exactly, so results read
    as the same grid system as the rest of the app. */
 const PAD = "px-5 md:px-8 lg:px-12";
+
+/* "All" first, then every genre — the Genre filter's option list. */
+const GENRE_ENTRIES: [string, string][] = [
+  ["all", "All"],
+  ...Object.entries(GENRES),
+];
 const GRID = "grid grid-cols-3 sm:grid-cols-6";
 
 export default function SearchClient() {
@@ -546,18 +552,45 @@ export default function SearchClient() {
         >
           {/* Query + filters */}
           <div className="order-2 flex flex-1 flex-col justify-center py-7 lg:order-1 lg:justify-end lg:py-9 lg:pr-[340px] xl:pr-[400px]">
-            <div className="group relative flex w-full max-w-[640px] items-center gap-3 border-b border-white/15 pb-3 transition-colors duration-300 group-focus-within:border-white/35">
-              <Search className="h-5 w-5 shrink-0 text-white/30 transition-colors duration-300 group-focus-within:text-white/70 md:h-[22px] md:w-[22px]" />
-              <Input
-                ref={inputRef}
-                type="text"
-                value={query}
-                onChange={(e) => setQuery(e.target.value)}
-                placeholder="Search movies & TV shows"
-                aria-label="Search movies and TV shows"
-                autoComplete="off"
-                spellCheck={false}
-                className="h-auto w-full rounded-none border-0 bg-transparent px-0 font-manrope text-xl font-medium text-white shadow-none placeholder:text-white/25 focus-visible:ring-0 md:text-2xl lg:text-[28px]"
+            {/* Query — the page's headline, not a form field. A micro-label
+                names it, the typed query carries display weight, and the rule
+                beneath lights up on focus (the same selection signature the
+                filters and the hero's genre picker use). */}
+            <div className="group w-full max-w-[640px]">
+              <span className="mb-3 flex items-center gap-2 font-manrope text-[10px] font-semibold uppercase tracking-[0.2em] text-neutral-600 transition-colors duration-300 group-focus-within:text-neutral-400">
+                <Search className="h-3 w-3" />
+                Search
+              </span>
+
+              <div className="flex items-center gap-4 pb-3">
+                <Input
+                  ref={inputRef}
+                  type="text"
+                  value={query}
+                  onChange={(e) => setQuery(e.target.value)}
+                  placeholder="Movies, series, anything…"
+                  aria-label="Search movies and TV shows"
+                  autoComplete="off"
+                  spellCheck={false}
+                  className="h-auto min-w-0 flex-1 rounded-none border-0 bg-transparent px-0 font-manrope text-[26px] font-semibold leading-[1.15] tracking-[-0.01em] text-white shadow-none placeholder:font-medium placeholder:tracking-[-0.005em] placeholder:text-white/[0.18] focus-visible:ring-0 md:text-[32px] lg:text-[38px]"
+                />
+                {hasQuery && (
+                  <button
+                    onClick={() => {
+                      setQuery("");
+                      inputRef.current?.focus();
+                    }}
+                    aria-label="Clear search"
+                    className="shrink-0 text-white/25 transition-colors duration-200 hover:text-white"
+                  >
+                    <X className="h-[18px] w-[18px]" />
+                  </button>
+                )}
+              </div>
+
+              <span
+                aria-hidden
+                className="block h-[2px] w-full rounded-full bg-white/[0.09] transition-colors duration-300 group-focus-within:bg-white motion-reduce:transition-none"
               />
             </div>
 
@@ -565,7 +598,7 @@ export default function SearchClient() {
                 default top-rated shelf alike. A quiet label opens each row
                 so Sort / Year / Rated / Genre read as separate groups at a
                 glance, instead of one undifferentiated run of words. */}
-            <div className="mt-7 flex max-w-[640px] flex-col gap-3">
+            <div className="mt-8 flex max-w-[640px] flex-col gap-4">
               <FilterRow label="Sort">
                 {SORTS.filter((s) => hasQuery || s.v !== "relevance").map(
                   (s) => {
@@ -612,24 +645,20 @@ export default function SearchClient() {
                 </FilterOption>
               </FilterRow>
 
-              {/* Genre — a scroll rail, not a wrap, so the console stays a
-                  fixed, compact height. Right edge fades so the cut-off chip
-                  reads as "more to scroll," not a layout bug. */}
-              <div className="relative flex items-start gap-4 pt-1">
-                <span className="w-12 shrink-0 pt-1.5 font-manrope text-[11px] text-white/35">
-                  Genre
-                </span>
-                <div className="relative min-w-0 flex-1">
-                  <GenreList
-                    value={filters.genre}
-                    onChange={(v) => setFilters((f) => ({ ...f, genre: v }))}
-                  />
-                  <div
-                    aria-hidden
-                    className="pointer-events-none absolute inset-y-0 right-0 w-10 bg-gradient-to-r from-transparent to-[#010101]"
-                  />
-                </div>
-              </div>
+              {/* Genre — wraps in the same plain-text vocabulary as the rows
+                  above. Every option stays visible and scannable; nothing
+                  hides behind a horizontal scroll. */}
+              <FilterRow label="Genre">
+                {GENRE_ENTRIES.map(([id, name]) => (
+                  <FilterOption
+                    key={id}
+                    active={filters.genre === id}
+                    onClick={() => setFilters((f) => ({ ...f, genre: id }))}
+                  >
+                    {name}
+                  </FilterOption>
+                ))}
+              </FilterRow>
             </div>
           </div>
 
@@ -1506,9 +1535,9 @@ function Hal9000Panel({
   );
 }
 
-/* A plain form-label row: a small dim word naming the group, then its
-   options on the same line. Just enough structure to separate Sort from
-   Year from Rated at a glance — no boxes, no tracking, no console framing. */
+/* A filter group: the app's standard micro-label (same scale as the hero's
+   "Starring" / "Created by") naming the group, then its options on the same
+   line. No boxes, no fills — the console is typography, not chrome. */
 function FilterRow({
   label,
   children,
@@ -1517,20 +1546,21 @@ function FilterRow({
   children: React.ReactNode;
 }) {
   return (
-    <div className="flex flex-wrap items-baseline gap-x-4 gap-y-2">
-      <span className="w-12 shrink-0 font-manrope text-[11px] text-white/35">
+    <div className="flex gap-4 md:gap-5">
+      <span className="w-[52px] shrink-0 pt-[7px] font-manrope text-[10px] font-semibold uppercase tracking-[0.2em] text-neutral-600">
         {label}
       </span>
-      <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
+      <div className="flex min-w-0 flex-wrap items-center gap-x-5 gap-y-1.5">
         {children}
       </div>
     </div>
   );
 }
 
-/* A filter option, styled exactly like Header's nav links: active = bold
-   white, inactive = dim, brightens on hover. No borders, no fills — the
-   same plain-text convention used everywhere else in the app. */
+/* A filter option: Header-nav text states, plus the 1.5px rule the app uses
+   elsewhere to mark a current selection (hero genre picker, slide numbers).
+   The rule is always in the layout — transparent when inactive — so nothing
+   shifts as the selection moves. */
 function FilterOption({
   active,
   onClick,
@@ -1547,51 +1577,27 @@ function FilterOption({
       onClick={onClick}
       aria-pressed={active}
       className={cn(
-        "-my-2 py-2 font-manrope text-[13px] transition-colors",
+        "group/opt flex flex-col items-stretch font-manrope text-[13px] tracking-[0.01em] transition-colors duration-200 motion-reduce:transition-none",
         active
           ? tone === "danger"
             ? "font-semibold text-[#c44539]"
             : "font-semibold text-white"
-          : "text-white/45 hover:text-white/75",
+          : "text-white/45 hover:text-white/80",
       )}
     >
       {children}
+      <span
+        aria-hidden
+        className={cn(
+          "mt-[3px] h-[1.5px] rounded-full transition-colors duration-200 motion-reduce:transition-none",
+          active
+            ? tone === "danger"
+              ? "bg-[#c44539]"
+              : "bg-white"
+            : "bg-transparent group-hover/opt:bg-white/20",
+        )}
+      />
     </button>
   );
 }
 
-/* ── Cinematic Genre List ── */
-function GenreList({
-  value,
-  onChange,
-}: {
-  value: string;
-  onChange: (v: string) => void;
-}) {
-  const entries: [string, string][] = [
-    ["all", "All"],
-    ...Object.entries(GENRES),
-  ];
-  return (
-    <div className="scrollbar-hide flex gap-2 overflow-x-auto pr-10">
-      {entries.map(([id, name]) => {
-        const active = value === id;
-        return (
-          <button
-            key={id}
-            onClick={() => onChange(id)}
-            aria-pressed={active}
-            className={cn(
-              "shrink-0 whitespace-nowrap px-3.5 py-2 font-manrope text-[13px] transition-all duration-300",
-              active
-                ? "bg-white font-semibold text-black"
-                : "bg-white/[0.04] text-white/45 hover:bg-white/[0.08] hover:text-white/75",
-            )}
-          >
-            {name}
-          </button>
-        );
-      })}
-    </div>
-  );
-}

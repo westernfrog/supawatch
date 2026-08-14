@@ -20,6 +20,27 @@ export const GENRE_LIST: { id: string; name: string }[] = [
   { id: "37", name: "Western" },
 ];
 
+/* TMDB keeps a separate genre vocabulary for TV — no "Action", but an
+   "Action & Adventure", plus Kids / News / Reality / Soap / Talk. */
+export const TV_GENRE_LIST: { id: string; name: string }[] = [
+  { id: "10759", name: "Action & Adventure" },
+  { id: "16", name: "Animation" },
+  { id: "35", name: "Comedy" },
+  { id: "80", name: "Crime" },
+  { id: "99", name: "Documentary" },
+  { id: "18", name: "Drama" },
+  { id: "10751", name: "Family" },
+  { id: "10762", name: "Kids" },
+  { id: "9648", name: "Mystery" },
+  { id: "10763", name: "News" },
+  { id: "10764", name: "Reality" },
+  { id: "10765", name: "Sci-Fi & Fantasy" },
+  { id: "10766", name: "Soap" },
+  { id: "10767", name: "Talk" },
+  { id: "10768", name: "War & Politics" },
+  { id: "37", name: "Western" },
+];
+
 export const GENRE_NAMES: Record<string, string> = {
   ...Object.fromEntries(GENRE_LIST.map((g) => [g.id, g.name])),
   "10759": "Action & Adventure",

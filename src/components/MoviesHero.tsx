@@ -1,21 +1,30 @@
 "use client";
 
-import { useState, useEffect, useRef, useCallback } from "react";
+import {
+  useState,
+  useEffect,
+  useRef,
+  useCallback,
+  useTransition,
+} from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Play, Volume2, VolumeX, Info } from "lucide-react";
 import WatchModal from "./WatchModal";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
+import GenrePicker from "./GenrePicker";
 import { GENRE_LIST, GENRE_NAMES } from "@/lib/genres";
-import { cn } from "@/lib/utils";
+import { cn, heroTitleSize } from "@/lib/utils";
+import { useTrailerGuard } from "@/lib/trailer-guard";
 import { fetchJson } from "@/lib/client-api";
 
 const SLIDE_MS = 40000;
 
 const PROVIDER_URLS: Record<number, (title: string) => string> = {
   8: (t) => `https://www.netflix.com/search?q=${encodeURIComponent(t)}`,
-  9: (t) => `https://www.amazon.com/gp/video/search?phrase=${encodeURIComponent(t)}`,
-  10: (t) => `https://www.amazon.com/gp/video/search?phrase=${encodeURIComponent(t)}`,
+  9: (t) =>
+    `https://www.amazon.com/gp/video/search?phrase=${encodeURIComponent(t)}`,
+  10: (t) =>
+    `https://www.amazon.com/gp/video/search?phrase=${encodeURIComponent(t)}`,
   15: (t) => `https://www.hulu.com/search?q=${encodeURIComponent(t)}`,
   337: (t) => `https://www.disneyplus.com/search?q=${encodeURIComponent(t)}`,
   350: () => `https://tv.apple.com/`,
@@ -24,12 +33,17 @@ const PROVIDER_URLS: Record<number, (title: string) => string> = {
   387: (t) => `https://www.peacocktv.com/watch/search/${encodeURIComponent(t)}`,
   531: (t) => `https://www.paramountplus.com/search/${encodeURIComponent(t)}/`,
   507: (t) => `https://mubi.com/en/search/${encodeURIComponent(t)}`,
-  192: (t) => `https://www.youtube.com/results?search_query=${encodeURIComponent(t)}`,
+  192: (t) =>
+    `https://www.youtube.com/results?search_query=${encodeURIComponent(t)}`,
   619: (t) => `https://www.britbox.com/search?q=${encodeURIComponent(t)}`,
   283: (t) => `https://www.crunchyroll.com/search?q=${encodeURIComponent(t)}`,
   37: (t) => `https://www.fubo.tv/welcome/search?q=${encodeURIComponent(t)}`,
   209: (t) => `https://www.shudder.com/search?q=${encodeURIComponent(t)}`,
 };
+
+/* Stable identity — a fresh [] each render would make the "did the list
+   change?" check below true forever, and it adjusts state during render. */
+const NO_MOVIES: Movie[] = [];
 
 const GENRE_MAP: Record<number, string> = {
   28: "Action",
@@ -98,14 +112,26 @@ interface Props {
 
 export default function MoviesHero({ initialMovies, genreId }: Props) {
   const router = useRouter();
-  const [movies] = useState<Movie[]>(initialMovies);
+  /* Read straight from props: this list changes when the genre filter
+     navigates, and holding it in state would pin the hero to whatever the
+     first render happened to receive. The page guarantees it is non-empty. */
+  const movies = initialMovies.length ? initialMovies : NO_MOVIES;
   const [idx, setIdx] = useState(0);
+  /* Previous backdrop stays mounted underneath so a slide change dissolves
+     instead of cutting to black for an instant. */
+  const [bgFrontId, setBgFrontId] = useState<number | null>(null);
+  const [bgFront, setBgFront] = useState<Movie | null>(null);
+  const [bgBack, setBgBack] = useState<Movie | null>(null);
+  const [shownList, setShownList] = useState(movies);
   const [enriched, setEnriched] = useState<Record<number, Enriched>>({});
   const [showVideo, setShowVideo] = useState(false);
   const [muted, setMuted] = useState(true);
-  const [providersCache, setProvidersCache] = useState<Record<number, ProvidersInfo>>({});
+  const [providersCache, setProvidersCache] = useState<
+    Record<number, ProvidersInfo>
+  >({});
   const [region, setRegion] = useState("US");
   const [showWatch, setShowWatch] = useState(false);
+  const [pending, startTransition] = useTransition();
   const iframeRef = useRef<HTMLIFrameElement>(null);
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -119,8 +145,10 @@ export default function MoviesHero({ initialMovies, genreId }: Props) {
     movies.forEach(({ id }) => {
       fetchJson(`/api/getMovieDetailsEnhanced?id=${id}`)
         .then((res) => {
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          const directorEntry = (res.credits?.crew ?? []).find((c: any) => c.job === "Director");
+          const directorEntry = (res.credits?.crew ?? []).find(
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            (c: any) => c.job === "Director",
+          );
           setEnriched((p) => ({
             ...p,
             [id]: {
@@ -157,6 +185,18 @@ export default function MoviesHero({ initialMovies, genreId }: Props) {
     setMuted(true);
   }, []);
 
+  /* A new list arrived (the genre filter navigated) — restart the carousel
+     instead of leaving it parked on an index from the previous list.
+     Adjusted during render, which React re-runs before committing, rather
+     than in an effect that would paint the stale slide first. */
+  if (shownList !== movies) {
+    setShownList(movies);
+    setIdx(0);
+    setShowVideo(false);
+    setMuted(true);
+  }
+
+
   useEffect(() => {
     if (!movies.length || showWatch) return;
     const t = setInterval(() => goTo((idx + 1) % movies.length), SLIDE_MS);
@@ -167,6 +207,15 @@ export default function MoviesHero({ initialMovies, genreId }: Props) {
   const activeTrailerKey = movies[idx]
     ? (enriched[movies[idx].id]?.trailerKey ?? null)
     : null;
+
+  /* A geo-blocked trailer paints YouTube's own "Video unavailable" card
+     inside the frame; drop back to the backdrop still instead. Called
+     here, above the empty-list early return, so the hook order holds. */
+  const trailerBlocked = useTrailerGuard(
+    iframeRef,
+    showVideo,
+    activeTrailerKey,
+  );
 
   /* ── video reveal — start the 6s countdown only once the trailer key is
         known, so the progress ring and the reveal stay perfectly in sync ── */
@@ -182,7 +231,9 @@ export default function MoviesHero({ initialMovies, genreId }: Props) {
   useEffect(() => {
     const movie = movies[idx];
     if (!movie || providersCache[movie.id] !== undefined) return;
-    fetchJson(`/api/getWatchProviders?id=${movie.id}&region=${region}&media_type=movie`)
+    fetchJson(
+      `/api/getWatchProviders?id=${movie.id}&region=${region}&media_type=movie`,
+    )
       .then((res) =>
         setProvidersCache((p) => ({
           ...p,
@@ -190,20 +241,35 @@ export default function MoviesHero({ initialMovies, genreId }: Props) {
         })),
       )
       .catch(() =>
-        setProvidersCache((p) => ({ ...p, [movie.id]: { list: [], link: null } })),
+        setProvidersCache((p) => ({
+          ...p,
+          [movie.id]: { list: [], link: null },
+        })),
       );
   }, [movies, idx, region]);
 
   const toggleMute = () => {
     iframeRef.current?.contentWindow?.postMessage(
-      JSON.stringify({ event: "command", func: muted ? "unMute" : "mute", args: "" }),
+      JSON.stringify({
+        event: "command",
+        func: muted ? "unMute" : "mute",
+        args: "",
+      }),
       "*",
     );
     setMuted((m) => !m);
   };
 
   const movie = movies[idx];
-  if (!movie) return <div className="h-screen bg-[#010101]" />;
+  if (movie && movie.id !== bgFrontId) {
+    setBgBack(bgFront);
+    setBgFront(movie);
+    setBgFrontId(movie.id);
+  }
+  /* No hero titles (an empty genre, or the server-side fetch failed) — render
+     nothing and let the reels start at the top, rather than holding a
+     full-screen black block that reads as a broken page. */
+  if (!movie) return null;
 
   const info = (enriched[movie.id] ?? {}) as Partial<Enriched>;
   const genres = movie.genre_ids
@@ -217,70 +283,82 @@ export default function MoviesHero({ initialMovies, genreId }: Props) {
   const providers = providersCache[movie.id]?.list ?? [];
   const providersLink = providersCache[movie.id]?.link ?? null;
   const tKey = (info as Enriched).trailerKey;
-  const tSrc = tKey
+  const tSrc = tKey && !trailerBlocked
     ? `https://www.youtube.com/embed/${tKey}?autoplay=1&mute=1&loop=1&playlist=${tKey}&controls=0&showinfo=0&rel=0&iv_load_policy=3&modestbranding=1&playsinline=1&disablekb=1&fs=0&enablejsapi=1&vq=hd1080`
     : null;
 
-  // Make sure the active genre always has a matching dropdown entry.
-  const genreOptions =
-    !genreId || GENRE_LIST.some((x) => x.id === genreId)
-      ? GENRE_LIST
-      : [{ id: genreId, name: GENRE_NAMES[genreId] ?? "Genre" }, ...GENRE_LIST];
+  /* Genre filter is a comma-separated list — "28,27" is Action *and* Horror,
+     which is exactly what TMDB's with_genres takes. */
+  const selectedGenres = genreId ? genreId.split(",").filter(Boolean) : [];
 
-  const genrePicker = (
-    <Select
-      value={genreId ?? "all"}
-      onValueChange={(v) => router.push(v === "all" ? "/movie" : `/movie?genre=${v}`)}
-    >
-      <SelectTrigger
-        aria-label="Browse by genre"
-        className="h-9 w-fit gap-2 rounded-full border border-white/15 bg-black/35 px-4 font-manrope text-[12px] font-medium uppercase tracking-[0.12em] text-white/90 backdrop-blur-md transition-colors hover:border-white/30 hover:bg-black/55 focus-visible:ring-0 data-[size=default]:h-9 [&>svg]:size-3.5 [&>svg]:text-white/45"
-      >
-        <SelectValue />
-      </SelectTrigger>
-      <SelectContent className="z-[400] max-h-[60vh] min-w-[190px] rounded-xl border border-white/10 bg-[#0c0c0c]/95 p-1.5 text-white shadow-[0_24px_70px_rgba(0,0,0,0.75)] backdrop-blur-2xl">
-        <SelectItem
-          value="all"
-          className="rounded-lg py-2 font-manrope text-[13px] text-white/70 focus:bg-white/[0.1] focus:text-white data-[state=checked]:text-white"
-        >
-          All Movies
-        </SelectItem>
-        {genreOptions.map((gx) => (
-          <SelectItem
-            key={gx.id}
-            value={gx.id}
-            className="rounded-lg py-2 font-manrope text-[13px] text-white/70 focus:bg-white/[0.1] focus:text-white data-[state=checked]:text-white"
-          >
-            {gx.name}
-          </SelectItem>
-        ))}
-      </SelectContent>
-    </Select>
+  /* startTransition keeps `pending` true for the whole navigation — the
+     server re-renders the page with the new genre and streams fresh props
+     back — so the hero can dissolve out and back in instead of snapping. */
+  const applyGenres = (next: string[]) =>
+    startTransition(() =>
+      router.push(next.length ? `/movie?genre=${next.join(",")}` : "/movie"),
+    );
+
+  /* Any selected id the standard list doesn't carry (a TV genre arrived via
+     a cross-link, say) still needs a row to toggle it back off. */
+  const genreOptions = [
+    ...selectedGenres
+      .filter((id) => !GENRE_LIST.some((g) => g.id === id))
+      .map((id) => ({ id, name: GENRE_NAMES[id] ?? "Genre" })),
+    ...GENRE_LIST,
+  ];
+
+  /* The whole hero dissolves while a genre change is in flight. The menu is
+     portaled outside this subtree, so it stays sharp above the dissolve. */
+  const swapping = cn(
+    "transition-[opacity,filter] duration-500 ease-out motion-reduce:transition-none",
+    pending ? "opacity-40 blur-[6px]" : "opacity-100 blur-0",
   );
 
   return (
     <>
       {/* ══════════════════  DESKTOP  ══════════════════ */}
-      <section className="relative hidden h-screen overflow-hidden lg:block">
-        {/* Backdrop */}
-        {movie.backdrop_path && (
-          <div className="absolute inset-0 overflow-hidden">
+      <section
+        className={cn(
+          "relative hidden h-screen overflow-hidden lg:block",
+          swapping,
+        )}
+      >
+        {/* Backdrop — cinematic cross-dissolve: the new frame blooms in over
+            the previous one as it eases back into a soft, dim blur */}
+        <div className="absolute inset-0 overflow-hidden">
+          {bgBack?.backdrop_path && (
             <img
-              key={`bg-${movie.id}`}
-              src={`https://image.tmdb.org/t/p/original${movie.backdrop_path}`}
+              key={`bgback-${bgBack.id}`}
+              src={`https://image.tmdb.org/t/p/original${bgBack.backdrop_path}`}
               alt=""
               aria-hidden
-              className="absolute inset-0 h-full w-full object-cover object-center"
-              style={{ animation: "ken-burns 22s ease-in-out infinite alternate" }}
+              className="animate-recede absolute inset-0 h-full w-full object-cover object-center"
             />
-          </div>
-        )}
+          )}
+          {bgFront?.backdrop_path && (
+            <div
+              key={`bgfront-${bgFront.id}-${idx}`}
+              className="animate-cinematic-in absolute inset-0 overflow-hidden"
+            >
+              <img
+                src={`https://image.tmdb.org/t/p/original${bgFront.backdrop_path}`}
+                alt=""
+                aria-hidden
+                className="absolute inset-0 h-full w-full object-cover object-center"
+                style={{
+                  animation: "ken-burns 22s ease-in-out infinite alternate",
+                }}
+              />
+            </div>
+          )}
+        </div>
 
         {/* YouTube trailer */}
         {tSrc && (
           <div
             className={cn(
-              "absolute inset-0",
+              "absolute inset-0 z-0",
               showVideo ? "animate-trailer-reveal" : "opacity-0",
             )}
           >
@@ -289,9 +367,13 @@ export default function MoviesHero({ initialMovies, genreId }: Props) {
               src={tSrc}
               allow="autoplay; encrypted-media"
               className="absolute inset-0 h-full w-full"
-              style={{ border: "none", pointerEvents: "none", transform: "scale(1.35)" }}
+              style={{
+                border: "none",
+                pointerEvents: "none",
+                transform: "scale(1.35)",
+              }}
             />
-            <div className="absolute inset-0 z-10 bg-transparent" />
+            <div className="pointer-events-none absolute inset-0 bg-transparent" />
           </div>
         )}
 
@@ -314,7 +396,8 @@ export default function MoviesHero({ initialMovies, genreId }: Props) {
           <div
             className="absolute inset-0"
             style={{
-              background: "linear-gradient(to bottom, rgba(1,1,1,0.38) 0%, transparent 12%)",
+              background:
+                "linear-gradient(to bottom, rgba(1,1,1,0.38) 0%, transparent 12%)",
             }}
           />
           <div
@@ -328,42 +411,44 @@ export default function MoviesHero({ initialMovies, genreId }: Props) {
 
         {/* Content block */}
         <div
-          className="absolute inset-x-12 bottom-0"
-          style={{ animation: "fade-in-up 0.55s 0.1s cubic-bezier(0.16,1,0.3,1) both" }}
+          className="absolute inset-x-12 bottom-0 z-20"
+          style={{
+            animation: "fade-in-up 0.55s 0.1s cubic-bezier(0.16,1,0.3,1) both",
+          }}
         >
-          {/* Genre picker */}
-          <div className="pb-4">{genrePicker}</div>
-
           {/* Logo / Title */}
           <div
-            key={`title-${idx}`}
+            key={`title-${movie.id}`}
             className="pb-4"
-            style={{ animation: "fade-in-up 0.5s 0s cubic-bezier(0.16,1,0.3,1) both" }}
+            style={{
+              animation: "fade-in-up 0.5s 0s cubic-bezier(0.16,1,0.3,1) both",
+            }}
           >
-            {(info as Enriched).logo ? (
-              <img
-                src={`https://image.tmdb.org/t/p/w500${(info as Enriched).logo}`}
-                alt={movie.title}
-                className="max-h-[11rem] w-auto max-w-[560px] object-contain drop-shadow-[0_2px_30px_rgba(0,0,0,0.95)]"
-              />
-            ) : !(info as Enriched).logoFetched ? (
-              <div className="h-[80px] w-[460px] animate-pulse bg-white/[0.06]" />
-            ) : (
-              <h1
-                className="font-nichrome font-black leading-[0.88] text-white uppercase tracking-tight"
-                style={{
-                  fontSize: "clamp(4rem, 6vw, 8rem)",
-                  textShadow: "0 2px 40px rgba(0,0,0,0.95), 0 0 80px rgba(0,0,0,0.6)",
-                }}
-              >
-                {movie.title}
-              </h1>
-            )}
+              {(info as Enriched).logo ? (
+                <img
+                  src={`https://image.tmdb.org/t/p/w500${(info as Enriched).logo}`}
+                  alt={movie.title}
+                  className="max-h-[11rem] w-auto max-w-[560px] object-contain drop-shadow-[0_2px_30px_rgba(0,0,0,0.95)]"
+                />
+              ) : !(info as Enriched).logoFetched ? (
+                <div className="h-[80px] w-[460px] animate-pulse bg-white/[0.06]" />
+              ) : (
+                <h1
+                  className="max-w-[16ch] text-balance font-nichrome font-black leading-[0.88] text-white uppercase tracking-tight"
+                  style={{
+                    fontSize: heroTitleSize(movie.title),
+                    textShadow:
+                      "0 2px 40px rgba(0,0,0,0.95), 0 0 80px rgba(0,0,0,0.6)",
+                  }}
+                >
+                  {movie.title}
+                </h1>
+              )}
           </div>
 
           {/* Meta strip */}
           <div
-            key={`meta-${idx}`}
+            key={`meta-${movie.id}`}
             className="mb-4 flex items-center gap-2.5 font-manrope text-[14px] text-neutral-400"
             style={{
               textShadow: "0 1px 16px rgba(0,0,0,0.95)",
@@ -412,9 +497,12 @@ export default function MoviesHero({ initialMovies, genreId }: Props) {
 
           {/* Overview */}
           <p
-            key={`ov-${idx}`}
+            key={`ov-${movie.id}`}
             className="mb-4 max-w-[52ch] text-[16px] leading-[1.7] text-neutral-300/90 line-clamp-2"
-            style={{ animation: "fade-in-up 0.5s 0.06s cubic-bezier(0.16,1,0.3,1) both" }}
+            style={{
+              animation:
+                "fade-in-up 0.5s 0.06s cubic-bezier(0.16,1,0.3,1) both",
+            }}
           >
             {movie.overview}
           </p>
@@ -422,10 +510,11 @@ export default function MoviesHero({ initialMovies, genreId }: Props) {
           {/* Starring */}
           {cast.length > 0 && (
             <div
-              key={`cast-${idx}`}
+              key={`cast-${movie.id}`}
               className="flex items-center gap-4 pb-4"
               style={{
-                animation: "fade-in-up 0.5s 0.16s cubic-bezier(0.16,1,0.3,1) both",
+                animation:
+                  "fade-in-up 0.5s 0.16s cubic-bezier(0.16,1,0.3,1) both",
                 textShadow: "0 1px 16px rgba(0,0,0,0.95)",
               }}
             >
@@ -434,7 +523,11 @@ export default function MoviesHero({ initialMovies, genreId }: Props) {
               </span>
               <div className="flex items-center gap-3">
                 {cast.map((c, i) => (
-                  <Link key={c.id} href={`/person/${c.id}`} className="group flex items-center gap-2">
+                  <Link
+                    key={c.id}
+                    href={`/person/${c.id}`}
+                    className="group flex items-center gap-2"
+                  >
                     <div className="h-7 w-7 shrink-0 overflow-hidden rounded-full bg-neutral-800 ring-1 ring-white/[0.1] transition-opacity duration-150 group-hover:opacity-80">
                       {c.profile_path ? (
                         <img
@@ -462,7 +555,10 @@ export default function MoviesHero({ initialMovies, genreId }: Props) {
 
           {/* Action bar + slide numbers */}
           <div className="flex items-center gap-5 pb-7 pt-2">
-            <button onClick={() => setShowWatch(true)} className="group flex items-center gap-3">
+            <button
+              onClick={() => setShowWatch(true)}
+              className="group flex items-center gap-3"
+            >
               <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-white transition-all duration-200 group-hover:scale-[1.07] group-hover:shadow-[0_0_28px_rgba(255,255,255,0.15)]">
                 <Play className="ml-0.5 h-[17px] w-[17px] fill-black text-black" />
               </div>
@@ -481,43 +577,39 @@ export default function MoviesHero({ initialMovies, genreId }: Props) {
               Details
             </Link>
 
-            {providers.length > 0 && (
-              <>
-                <div className="h-4 w-px bg-white/[0.12]" />
-                <div className="flex items-center gap-2">
-                  {providers.slice(0, 5).map((p) => (
-                    <Link
-                      key={p.provider_id}
-                      href={
-                        PROVIDER_URLS[p.provider_id]?.(movie.title) ?? providersLink ?? "#"
-                      }
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      title={p.provider_name}
-                      className="h-[44px] w-[44px] shrink-0 overflow-hidden rounded-xl opacity-75 shadow-[0_2px_12px_rgba(0,0,0,0.5)] transition-all duration-200 hover:scale-[1.08] hover:opacity-100 hover:shadow-[0_4px_20px_rgba(0,0,0,0.6)]"
-                    >
-                      <img
-                        src={`https://image.tmdb.org/t/p/w154${p.logo_path}`}
-                        alt={p.provider_name}
-                        className="h-full w-full object-cover"
-                      />
-                    </Link>
-                  ))}
-                </div>
-              </>
-            )}
-
             {tSrc && (
               <>
                 <div className="h-4 w-px bg-white/[0.12]" />
                 {!showVideo ? (
-                  <div key={`circle-${idx}`} className="flex h-11 w-11 items-center justify-center rounded-full bg-white/[0.07] ring-1 ring-white/[0.12]">
-                    <svg className="h-[22px] w-[22px] -rotate-90" viewBox="0 0 36 36">
-                      <circle cx="18" cy="18" r="15" fill="none" stroke="rgba(255,255,255,0.12)" strokeWidth="2" />
+                  <div
+                    key={`circle-${idx}`}
+                    className="flex h-11 w-11 items-center justify-center rounded-full bg-white/[0.07] ring-1 ring-white/[0.12]"
+                  >
+                    <svg
+                      className="h-[22px] w-[22px] -rotate-90"
+                      viewBox="0 0 36 36"
+                    >
                       <circle
-                        cx="18" cy="18" r="15" fill="none" stroke="var(--color-brand, #e50914)" strokeWidth="2.5"
-                        strokeLinecap="round" strokeDasharray="94.25" strokeDashoffset="94.25"
-                        style={{ animation: `showreel-circle 6000ms linear forwards` }}
+                        cx="18"
+                        cy="18"
+                        r="15"
+                        fill="none"
+                        stroke="rgba(255,255,255,0.12)"
+                        strokeWidth="2"
+                      />
+                      <circle
+                        cx="18"
+                        cy="18"
+                        r="15"
+                        fill="none"
+                        stroke="var(--color-brand, #e50914)"
+                        strokeWidth="2.5"
+                        strokeLinecap="round"
+                        strokeDasharray="94.25"
+                        strokeDashoffset="94.25"
+                        style={{
+                          animation: `showreel-circle 6000ms linear forwards`,
+                        }}
                       />
                     </svg>
                     <style>{`
@@ -543,6 +635,15 @@ export default function MoviesHero({ initialMovies, genreId }: Props) {
               </>
             )}
 
+            {/* Genre picker — last stop on the action bar */}
+            <div className="h-4 w-px bg-white/[0.12]" />
+            <GenrePicker
+              selected={selectedGenres}
+              options={genreOptions}
+              align="start"
+              allLabel="All Movies"
+              onApply={applyGenres}
+            />
           </div>
 
           {/* Created by + slide numbers inline */}
@@ -570,6 +671,41 @@ export default function MoviesHero({ initialMovies, genreId }: Props) {
               </>
             )}
 
+            {/* Where to watch — a credit, not an action, so it sits on the
+                credits line rather than competing with Watch Now. */}
+            {providers.length > 0 && (
+              <>
+                {(info as Enriched).director && (
+                  <div className="mx-1 h-3 w-px shrink-0 bg-white/[0.1]" />
+                )}
+                <span className="shrink-0 font-manrope text-[10px] font-semibold uppercase tracking-[0.2em] text-neutral-600">
+                  On
+                </span>
+                <div className="flex items-center gap-1.5">
+                  {providers.slice(0, 5).map((p) => (
+                    <Link
+                      key={p.provider_id}
+                      href={
+                        PROVIDER_URLS[p.provider_id]?.(movie.title) ??
+                        providersLink ??
+                        "#"
+                      }
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      title={p.provider_name}
+                      className="h-[26px] w-[26px] shrink-0 overflow-hidden rounded-[6px] opacity-70 ring-1 ring-white/[0.08] transition-all duration-200 hover:opacity-100 hover:ring-white/[0.2]"
+                    >
+                      <img
+                        src={`https://image.tmdb.org/t/p/w92${p.logo_path}`}
+                        alt={p.provider_name}
+                        className="h-full w-full object-cover"
+                      />
+                    </Link>
+                  ))}
+                </div>
+              </>
+            )}
+
             <div className="flex-1" />
 
             <div className="flex items-center gap-6">
@@ -585,7 +721,9 @@ export default function MoviesHero({ initialMovies, genreId }: Props) {
                     <span
                       className={cn(
                         "font-space text-[13px] font-medium tabular-nums tracking-[0.04em] transition-colors duration-300",
-                        active ? "text-white" : "text-neutral-500 group-hover:text-neutral-300",
+                        active
+                          ? "text-white"
+                          : "text-neutral-500 group-hover:text-neutral-300",
                       )}
                     >
                       {String(i + 1).padStart(2, "0")}
@@ -610,8 +748,11 @@ export default function MoviesHero({ initialMovies, genreId }: Props) {
       </section>
 
       {/* ══════════════════  MOBILE / TABLET  ══════════════════ */}
-      <section className="relative lg:hidden">
-        <div className="relative overflow-hidden" style={{ height: "72vh", minHeight: "500px" }}>
+      <section className={cn("relative lg:hidden", swapping)}>
+        <div
+          className="relative overflow-hidden"
+          style={{ height: "72vh", minHeight: "500px" }}
+        >
           {movie.backdrop_path && (
             <img
               key={`mbg-${movie.id}`}
@@ -619,6 +760,7 @@ export default function MoviesHero({ initialMovies, genreId }: Props) {
               alt=""
               aria-hidden
               className="h-full w-full object-cover object-center"
+              style={{ animation: "fade-in-up 0.7s ease-out both" }}
             />
           )}
 
@@ -628,7 +770,11 @@ export default function MoviesHero({ initialMovies, genreId }: Props) {
                 src={tSrc}
                 allow="autoplay; encrypted-media"
                 className="absolute inset-0 h-full w-full"
-                style={{ border: "none", pointerEvents: "none", transform: "scale(1.4)" }}
+                style={{
+                  border: "none",
+                  pointerEvents: "none",
+                  transform: "scale(1.4)",
+                }}
               />
             </div>
           )}
@@ -636,7 +782,8 @@ export default function MoviesHero({ initialMovies, genreId }: Props) {
           <div
             className="pointer-events-none absolute inset-x-0 top-0 h-28"
             style={{
-              background: "linear-gradient(to bottom, rgba(1,1,1,0.55) 0%, transparent 100%)",
+              background:
+                "linear-gradient(to bottom, rgba(1,1,1,0.55) 0%, transparent 100%)",
             }}
           />
           <div
@@ -649,7 +796,10 @@ export default function MoviesHero({ initialMovies, genreId }: Props) {
 
           <div className="absolute bottom-0 left-0 right-0 px-5 pb-6 md:px-8 md:pb-8">
             {/* Progress bars */}
-            <div key={`indicators-${idx}`} className="mb-5 flex items-center gap-1.5">
+            <div
+              key={`indicators-${idx}`}
+              className="mb-5 flex items-center gap-1.5"
+            >
               {movies.map((m, i) => {
                 const active = i === idx;
                 return (
@@ -674,7 +824,15 @@ export default function MoviesHero({ initialMovies, genreId }: Props) {
             </div>
 
             {/* Genre picker */}
-            <div className="mb-3">{genrePicker}</div>
+            <div className="mb-4 flex justify-end">
+              <GenrePicker
+                selected={selectedGenres}
+                options={genreOptions}
+                align="end"
+                allLabel="All Movies"
+                onApply={applyGenres}
+              />
+            </div>
 
             {/* Genre tags */}
             {genres.length > 0 && (
@@ -697,7 +855,7 @@ export default function MoviesHero({ initialMovies, genreId }: Props) {
             )}
 
             {/* Logo / Title */}
-            <div className="mb-4" key={`mtitle-${idx}`}>
+            <div className="mb-4" key={`mtitle-${movie.id}`}>
               {(info as Enriched).logo ? (
                 <img
                   src={`https://image.tmdb.org/t/p/w300${(info as Enriched).logo}`}
@@ -708,9 +866,9 @@ export default function MoviesHero({ initialMovies, genreId }: Props) {
                 <div className="h-10 w-48 animate-pulse bg-white/[0.07]" />
               ) : (
                 <h1
-                  className="font-nichrome font-black leading-[0.88] text-white uppercase tracking-tight"
+                  className="max-w-[16ch] text-balance font-nichrome font-black leading-[0.88] text-white uppercase tracking-tight"
                   style={{
-                    fontSize: "clamp(2.6rem, 10vw, 4rem)",
+                    fontSize: heroTitleSize(movie.title, "compact"),
                     textShadow: "0 2px 30px rgba(0,0,0,0.95)",
                   }}
                 >
@@ -806,7 +964,11 @@ export default function MoviesHero({ initialMovies, genreId }: Props) {
               </span>
               <div className="flex items-center gap-2.5">
                 {cast.map((c, i) => (
-                  <Link key={c.id} href={`/person/${c.id}`} className="group flex items-center gap-1.5">
+                  <Link
+                    key={c.id}
+                    href={`/person/${c.id}`}
+                    className="group flex items-center gap-1.5"
+                  >
                     <div className="h-6 w-6 shrink-0 overflow-hidden rounded-full bg-neutral-800 ring-1 ring-white/[0.1] transition-opacity group-hover:opacity-75">
                       {c.profile_path ? (
                         <img
@@ -843,7 +1005,9 @@ export default function MoviesHero({ initialMovies, genreId }: Props) {
                   <Link
                     key={p.provider_id}
                     href={
-                      PROVIDER_URLS[p.provider_id]?.(movie.title) ?? providersLink ?? "#"
+                      PROVIDER_URLS[p.provider_id]?.(movie.title) ??
+                      providersLink ??
+                      "#"
                     }
                     target="_blank"
                     rel="noopener noreferrer"

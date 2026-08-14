@@ -255,6 +255,9 @@ function Card({ item }: { item: ShowItem }) {
   const [trailerVisible, setTrailerVisible] = useState(false);
   const [isMuted, setIsMuted] = useState(true);
   const [montageGone, setMontageGone] = useState(false);
+  /* Geo-blocked or otherwise unplayable trailer — stay on the montage rather than
+     dissolving into YouTube's "Video unavailable" card. */
+  const [trailerBlocked, setTrailerBlocked] = useState(false);
   const [barLocked, setBarLocked] = useState(false);
   const [originRect, setOriginRect] = useState<OriginRect | null>(null);
   const revealTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -310,14 +313,19 @@ function Card({ item }: { item: ShowItem }) {
   }, []);
 
   const handleMouseEnter = useCallback(() => {
-    if (!trailerSrc) return;
+    if (!trailerSrc || trailerBlocked) return;
     setIsHovering(true);
     setMontageGone(false);
     setBarLocked(false);
     revealScheduledRef.current = false;
     hoverStartRef.current = Date.now();
-    revealTimerRef.current = setTimeout(reveal, MAX_WAIT);
-  }, [trailerSrc, reveal]);
+    /* Nothing ever played by MAX_WAIT: the frame is showing YouTube's own
+       error card, so hold the montage instead of dissolving into it. */
+    revealTimerRef.current = setTimeout(() => {
+      if (revealScheduledRef.current) return;
+      setTrailerBlocked(true);
+    }, MAX_WAIT);
+  }, [trailerSrc, trailerBlocked, reveal]);
 
   const handleMouseLeave = useCallback(() => {
     for (const timer of [revealTimerRef, settleTimerRef, exitTimerRef]) {
@@ -347,6 +355,15 @@ function Card({ item }: { item: ShowItem }) {
       } catch {
         return;
       }
+      if (d?.event === "onError" || typeof d?.info?.errorCode === "number") {
+        if (revealTimerRef.current) clearTimeout(revealTimerRef.current);
+        if (settleTimerRef.current) clearTimeout(settleTimerRef.current);
+        setTrailerBlocked(true);
+        setTrailerVisible(false);
+        setMontageGone(false);
+        return;
+      }
+
       const playing =
         (d?.event === "onStateChange" && d?.info === 1) ||
         (d?.event === "infoDelivery" && d?.info?.playerState === 1);

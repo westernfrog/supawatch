@@ -1,5 +1,5 @@
 import { cache } from "react";
-import { CACHE, tmdbFetch } from "@/lib/tmdb";
+import { CACHE, tmdbFetch, type ParamValue } from "@/lib/tmdb";
 
 export type MediaType = "movie" | "tv";
 
@@ -194,24 +194,51 @@ export async function getEnhancedMediaDetails(mediaType: MediaType, id: string) 
       { append_to_response: "videos,credits", include_video_language: "en,null" },
       { revalidate: CACHE.hour },
     ),
+    /* A dropped images call must not sink the whole details response — it
+       would surface as "no logo" and get cached as a text title for an hour.
+       The widening passes below retry it. */
     tmdbFetch<{ logos?: Logo[] }>(
       `/${mediaType}/${id}/images`,
       { include_image_language: "en,null" },
       { revalidate: CACHE.hour },
-    ),
+    ).catch(() => null),
   ]);
 
   const originalLanguage = typeof data.original_language === "string" ? data.original_language : null;
   const countries = mediaType === "tv" ? productionCountries(data.origin_country) : productionCountries(data.production_countries);
 
+  /* Widen the search until a logo turns up. The narrow en/neutral pass misses
+     plenty of titles — Parasite has one logo there and four unfiltered, Your
+     Name five and fifteen — and every miss falls back to a plain text title.
+     pickBestLogo still ranks en > language-neutral > the title's own language,
+     so widening only ever adds candidates; it never demotes an English one.
+     `language: null` sheds tmdbFetch's en-US default, which /images applies
+     as a filter of its own. */
   let logos = imagesData?.logos ?? [];
-  if (!pickBestLogo(logos, originalLanguage) && originalLanguage && originalLanguage !== "en") {
-    const widerImages = await tmdbFetch<{ logos?: Logo[] }>(
-      `/${mediaType}/${id}/images`,
-      { include_image_language: `en,null,${originalLanguage}` },
-      { revalidate: CACHE.day },
-    ).catch(() => null);
-    logos = widerImages?.logos ?? logos;
+  if (!pickBestLogo(logos, originalLanguage)) {
+    const widerPasses: Record<string, ParamValue>[] = [
+      /* Same query as above: covers the first call having been dropped
+         rather than the title genuinely lacking an English logo. */
+      { include_image_language: "en,null" },
+    ];
+    if (originalLanguage && originalLanguage !== "en") {
+      widerPasses.push({
+        include_image_language: `en,null,${originalLanguage}`,
+      });
+    }
+    widerPasses.push({ language: null });
+
+    for (const params of widerPasses) {
+      const wider = await tmdbFetch<{ logos?: Logo[] }>(
+        `/${mediaType}/${id}/images`,
+        params,
+        { revalidate: CACHE.day },
+      ).catch(() => null);
+      if (wider?.logos?.length) {
+        logos = wider.logos;
+        if (pickBestLogo(logos, originalLanguage)) break;
+      }
+    }
   }
 
   const videos: TmdbVideo[] = data.videos?.results ?? [];

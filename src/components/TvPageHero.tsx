@@ -3,7 +3,8 @@
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { Play, Volume2, VolumeX } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { cn, heroTitleSize } from "@/lib/utils";
+import { useTrailerGuard } from "@/lib/trailer-guard";
 import TvWatchModal from "./TvWatchModal";
 import { fetchJson } from "@/lib/client-api";
 
@@ -127,7 +128,11 @@ export default function TvPageHero({
 
   const watchSeasons = seasons.filter((s) => s.season_number >= 1);
   const seasonCount = watchSeasons.length;
-  const tSrc = trailerKey
+  /* A geo-blocked trailer paints YouTube's own "Video unavailable" card
+     inside the frame; drop back to the backdrop still instead. */
+  const trailerBlocked = useTrailerGuard(iframeRef, showVideo, trailerKey);
+
+  const tSrc = trailerKey && !trailerBlocked
     ? `https://www.youtube.com/embed/${trailerKey}?autoplay=1&mute=1&loop=1&playlist=${trailerKey}&controls=0&showinfo=0&rel=0&iv_load_policy=3&modestbranding=1&playsinline=1&disablekb=1&fs=0&enablejsapi=1&vq=hd1080`
     : null;
 
@@ -227,9 +232,9 @@ export default function TvPageHero({
               />
             ) : (
               <h1
-                className="font-nichrome font-black leading-[0.88] text-white uppercase tracking-tight"
+                className="max-w-[16ch] text-balance font-nichrome font-black leading-[0.88] text-white uppercase tracking-tight"
                 style={{
-                  fontSize: "clamp(4rem, 6vw, 8rem)",
+                  fontSize: heroTitleSize(showName),
                   textShadow:
                     "0 2px 40px rgba(0,0,0,0.95), 0 0 80px rgba(0,0,0,0.6)",
                 }}
@@ -558,9 +563,9 @@ export default function TvPageHero({
                 />
               ) : (
                 <h1
-                  className="font-nichrome font-black leading-[0.88] text-white uppercase tracking-tight"
+                  className="max-w-[16ch] text-balance font-nichrome font-black leading-[0.88] text-white uppercase tracking-tight"
                   style={{
-                    fontSize: "clamp(2.6rem, 10vw, 4rem)",
+                    fontSize: heroTitleSize(showName, "compact"),
                     textShadow: "0 2px 30px rgba(0,0,0,0.95)",
                   }}
                 >

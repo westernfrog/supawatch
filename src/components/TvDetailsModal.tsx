@@ -2,8 +2,9 @@
 
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { X, Play, Volume2, VolumeX, Info } from "lucide-react";
+import { Play, Volume2, VolumeX, Info } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useTrailerGuard } from "@/lib/trailer-guard";
 import TvSeasonsBrowser, { type Season } from "./TvSeasonsBrowser";
 import TvWatchModal from "./TvWatchModal";
 import { fetchJson } from "@/lib/client-api";
@@ -126,7 +127,11 @@ export default function TvDetailsModal({ show, onClose }: Props) {
   const rt     = data?.episodeRuntime;
   const rtStr  = rt ? `${rt}m / ep` : null;
   const tKey   = data?.trailerKey;
-  const tSrc   = tKey
+  /* A geo-blocked trailer paints YouTube's own "Video unavailable" card
+     inside the frame; drop back to the backdrop still instead. */
+  const trailerBlocked = useTrailerGuard(iframeRef, showVideo, tKey);
+
+  const tSrc   = tKey && !trailerBlocked
     ? `https://www.youtube.com/embed/${tKey}?autoplay=1&mute=1&loop=1&playlist=${tKey}&controls=0&showinfo=0&rel=0&iv_load_policy=3&modestbranding=1&playsinline=1&disablekb=1&fs=0&enablejsapi=1&vq=hd1080`
     : null;
 
@@ -146,17 +151,8 @@ export default function TvDetailsModal({ show, onClose }: Props) {
             onClick={e => e.stopPropagation()}
           >
 
-            {/* ── Close (top-right) ── */}
-            <button
-              onClick={onClose}
-              aria-label="Close"
-              className="absolute right-7 top-5 z-30 flex h-8 w-8 items-center justify-center rounded-full bg-white/[0.08] text-white shadow-[inset_0_0_0_1px_rgba(255,255,255,0.12)] backdrop-blur-md transition-all duration-200 hover:bg-white/[0.16] hover:shadow-[inset_0_0_0_1px_rgba(255,255,255,0.22)] md:right-10 md:top-6"
-            >
-              <X className="h-[15px] w-[15px]" />
-            </button>
-
             {/* ── Hero backdrop / trailer ── */}
-            <div className="relative w-full overflow-hidden" style={{ height: "clamp(260px, 50vh, 58vh)" }}>
+            <div className="relative w-full overflow-hidden" style={{ height: "clamp(320px, 62vh, 68vh)" }}>
               <img
                 src={`https://image.tmdb.org/t/p/original${show.backdrop_path}`}
                 alt=""
@@ -300,17 +296,36 @@ export default function TvDetailsModal({ show, onClose }: Props) {
               <div className="mb-7 flex flex-col gap-3.5">
                 {data?.cast && data.cast.length > 0 && (
                   <div className="flex items-start gap-4">
-                    <span className="w-[76px] shrink-0 pt-[5px] font-manrope text-[10px] font-bold uppercase tracking-widest text-neutral-600">Starring</span>
-                    <p className="leading-relaxed text-[15px] text-neutral-300">
-                      {data.cast.slice(0, 5).map((c, i) => (
-                        <span key={c.id}>
-                          {i > 0 && <span className="text-neutral-700">, </span>}
-                          <Link href={`/person/${c.id}`} onClick={onClose} className="transition-all duration-200 hover:text-white hover:underline hover:decoration-white/30 underline-offset-4">
+                    <span className="w-[76px] shrink-0 pt-[7px] font-manrope text-[10px] font-bold uppercase tracking-widest text-neutral-600">Starring</span>
+                    <div className="flex flex-wrap items-center gap-x-4 gap-y-2.5">
+                      {data.cast.slice(0, 4).map(c => (
+                        <Link
+                          key={c.id}
+                          href={`/person/${c.id}`}
+                          onClick={onClose}
+                          title={c.character || undefined}
+                          className="group flex items-center gap-2"
+                        >
+                          <span className="flex h-7 w-7 shrink-0 overflow-hidden rounded-full bg-neutral-800 ring-1 ring-white/[0.1] transition-opacity duration-150 group-hover:opacity-80">
+                            {c.profile_path ? (
+                              <img
+                                src={`https://image.tmdb.org/t/p/w45${c.profile_path}`}
+                                alt=""
+                                aria-hidden
+                                className="h-full w-full object-cover"
+                              />
+                            ) : (
+                              <span className="flex h-full w-full items-center justify-center font-manrope text-[9px] text-neutral-500">
+                                {c.name[0]}
+                              </span>
+                            )}
+                          </span>
+                          <span className="text-[15px] text-neutral-300 transition-colors duration-150 group-hover:text-white">
                             {c.name}
-                          </Link>
-                        </span>
+                          </span>
+                        </Link>
                       ))}
-                    </p>
+                    </div>
                   </div>
                 )}
                 {data?.createdBy && (
@@ -331,7 +346,7 @@ export default function TvDetailsModal({ show, onClose }: Props) {
                       {genres.map((g, i) => (
                         <span key={g.id}>
                           {i > 0 && <span className="text-neutral-700">, </span>}
-                          <Link href={`/movie?genre=${g.id}`} onClick={onClose} className="transition-all duration-200 hover:text-white hover:underline hover:decoration-white/30 underline-offset-4">{g.name}</Link>
+                          <Link href={`/movie?genre=${g.id}`} onClick={onClose} className="underline decoration-neutral-600 decoration-1 underline-offset-[3px] transition-colors duration-200 hover:text-white hover:decoration-white/50">{g.name}</Link>
                         </span>
                       ))}
                     </p>
