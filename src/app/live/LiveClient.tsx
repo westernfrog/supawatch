@@ -1286,34 +1286,28 @@ export default function LiveClient({
               }}
             />
 
-            {/* IR window at the tip, with the emitter behind it. Dark red glass
-                when idle — the lens is tinted, not black — and the LED blooms
-                through it and onto the surrounding shell when a key fires. */}
+            {/* IR window at the tip. Dark red glass when idle — the lens is
+                tinted, not black — and on a keypress the whole lens lights
+                evenly and blooms onto the surrounding shell. No emitter dot
+                behind it: a hard bright point reads as a pilot light, and what
+                you actually see on a real handset is the glass itself glowing. */}
             <span className="relative mx-auto flex h-2 w-11 shrink-0 items-center justify-center lg:h-[9px] lg:w-12">
               <span
                 aria-hidden
                 className={cn(
-                  "pointer-events-none absolute -inset-x-10 -inset-y-7 transition-opacity duration-200",
-                  irFiring ? "opacity-100 duration-[40ms]" : "opacity-0",
+                  "pointer-events-none absolute -inset-x-2.5 -inset-y-1.5 rounded-full bg-[#ff4a2e] blur-[6px] transition-opacity duration-200",
+                  irFiring ? "opacity-40 duration-[40ms]" : "opacity-0",
                 )}
-                style={{
-                  backgroundImage:
-                    "radial-gradient(ellipse at center, rgba(255,72,48,0.30) 0%, rgba(255,60,40,0.10) 38%, transparent 72%)",
-                }}
               />
               <span
                 aria-hidden
-                className="relative h-full w-full overflow-hidden rounded-full bg-[#150809] shadow-[inset_0_1px_2px_rgba(0,0,0,0.95),inset_0_-1px_0_rgba(255,255,255,0.05)] ring-1 ring-black/80"
-              >
-                <span
-                  className={cn(
-                    "absolute left-1/2 top-1/2 h-1.5 w-1.5 -translate-x-1/2 -translate-y-1/2 rounded-full transition-all duration-200",
-                    irFiring
-                      ? "bg-[#ff5236] shadow-[0_0_7px_3px_rgba(255,70,45,0.95),0_0_16px_7px_rgba(255,50,30,0.45)] duration-[40ms]"
-                      : "bg-[#3a1210] shadow-none",
-                  )}
-                />
-              </span>
+                className={cn(
+                  "relative h-full w-full rounded-full ring-1 ring-black/80 transition-all duration-200",
+                  irFiring
+                    ? "bg-[#7c2416] shadow-[inset_0_0_3px_rgba(255,124,94,0.3)] duration-[40ms]"
+                    : "bg-[#150809] shadow-[inset_0_1px_2px_rgba(0,0,0,0.95),inset_0_-1px_0_rgba(255,255,255,0.05)]",
+                )}
+              />
             </span>
 
             {/* The key field. The column's height tracks the set beside it,
