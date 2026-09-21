@@ -5,6 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Search } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { APP_NAME } from "@/lib/app-name";
 
 const navigation = [
   { name: "Home", href: "/" },
@@ -43,12 +44,12 @@ export default function Header() {
       <div className="flex h-full items-center px-(--gutter)">
         {/* ── Logo + divider + nav ── */}
         <div className="flex items-center">
-          <Link href="/" aria-label="Supawatch" className="shrink-0">
+          <Link href="/" aria-label={APP_NAME} className="shrink-0">
             <span
               id="brand-logo"
               className="neon-gaslight select-none font-nichrome text-[1.45rem] font-extrabold uppercase tracking-tight"
             >
-              Supawatch
+              {APP_NAME}
             </span>
           </Link>
 

@@ -5,6 +5,7 @@ import type { Metadata } from "next";
 import JsonLd from "@/components/JsonLd";
 import PersonPageHero from "@/components/PersonPageHero";
 import PersonCredits from "@/components/PersonCredits";
+import { APP_NAME } from "@/lib/app-name";
 
 // Generate titles on first visit, then reuse the rendered page for an hour.
 // Unknown IDs remain routable; only a confirmed TMDB 404 is a missing title.
@@ -23,7 +24,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     const name = p.name ?? "Person";
     const description = p.biography
       ? `${p.biography.slice(0, 155)}…`
-      : `Filmography, biography, photos, and known-for titles for ${name} on Supawatch.`;
+      : `Filmography, biography, photos, and known-for titles for ${name} on ${APP_NAME}.`;
     const image = p.profile_path
       ? `https://image.tmdb.org/t/p/h632${p.profile_path}`
       : undefined;
@@ -33,7 +34,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       description,
       alternates: { canonical: `/person/${id}` },
       openGraph: {
-        title: `${name} | Supawatch`,
+        title: `${name} | ${APP_NAME}`,
         description,
         type: "profile",
         url: `/person/${id}`,
@@ -41,7 +42,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       },
       twitter: {
         card: "summary",
-        title: `${name} | Supawatch`,
+        title: `${name} | ${APP_NAME}`,
         description,
         images: image ? [image] : [],
       },

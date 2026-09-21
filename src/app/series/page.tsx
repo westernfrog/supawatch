@@ -2,16 +2,17 @@ import BrowseFeed from "@/components/BrowseFeed";
 import { tmdbFetch } from "@/lib/tmdb";
 import type { Metadata } from "next";
 import TvHero from "@/components/TvHero";
+import { APP_NAME } from "@/lib/app-name";
 
 export const metadata: Metadata = {
   title: "Series",
   description:
-    "Explore trending, top-rated, airing, international, animated, and network series with trailers, seasons, cast, and recommendations on Supawatch.",
+    `Explore trending, top-rated, airing, international, animated, and network series with trailers, seasons, cast, and recommendations on ${APP_NAME}.`,
   alternates: { canonical: "/series" },
   openGraph: {
-    title: "Series | Supawatch",
+    title: `Series | ${APP_NAME}`,
     description:
-      "Explore trending, top-rated, airing, international, animated, and network series with trailers, seasons, cast, and recommendations on Supawatch.",
+      `Explore trending, top-rated, airing, international, animated, and network series with trailers, seasons, cast, and recommendations on ${APP_NAME}.`,
     url: "/series",
   },
 };

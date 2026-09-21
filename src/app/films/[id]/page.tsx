@@ -1,6 +1,7 @@
 import { DetailNavigation, DetailFacts, DetailCastSection, DetailRecommendations } from "@/components/TitleDetailSections";
 import { tmdbFetch, TmdbError } from "@/lib/tmdb";
 import { GENRE_NAMES } from "@/lib/genres";
+import { APP_NAME } from "@/lib/app-name";
 import { getCachedMediaDetails } from "@/lib/media";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
@@ -45,7 +46,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     const year = movie.release_date?.slice(0, 4);
     const description = movie.overview
       ? movie.overview.slice(0, 160)
-      : `Watch trailers, cast details, ratings, and recommendations for ${title} on Supawatch.`;
+      : `Watch trailers, cast details, ratings, and recommendations for ${title} on ${APP_NAME}.`;
     const image = movie.backdrop_path
       ? `https://image.tmdb.org/t/p/w1280${movie.backdrop_path}`
       : movie.poster_path
@@ -65,7 +66,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
         "where to watch",
       ],
       openGraph: {
-        title: `${title} | Supawatch`,
+        title: `${title} | ${APP_NAME}`,
         description,
         type: "video.movie",
         url: `/films/${id}`,
@@ -73,7 +74,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       },
       twitter: {
         card: "summary_large_image",
-        title: `${title} | Supawatch`,
+        title: `${title} | ${APP_NAME}`,
         description,
         images: image ? [image] : [],
       },

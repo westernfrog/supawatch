@@ -51,6 +51,7 @@ export type ImportResult = { added: number; skipped: number };
 
 const KEY = "sw-history-v1";
 const SEEDED_FLAG = "sw-history-seeded";
+const APP_NAME = process.env.NEXT_PUBLIC_APP_NAME?.trim() || "Supawatch";
 
 /* Two opens of the same episode inside this window are one sitting, not two
    plays — the player remounts on a reload or a server switch, and React's
@@ -147,7 +148,7 @@ export function getHistory(): WatchEvent[] {
 /** A pretty-printed backup. This is the only way history survives a browser. */
 export function exportHistory(): string {
   return JSON.stringify(
-    { app: "supawatch", kind: "watch-history", v: 1, exportedAt: Date.now(), events: getHistory() },
+    { app: APP_NAME, kind: "watch-history", v: 1, exportedAt: Date.now(), events: getHistory() },
     null,
     2,
   );
@@ -169,7 +170,7 @@ export function importHistory(json: string): ImportResult {
     throw new Error("That file isn't valid JSON.");
   }
   if (!Array.isArray(incoming)) {
-    throw new Error("That file doesn't look like a Supawatch history export.");
+    throw new Error(`That file doesn't look like a ${APP_NAME} history export.`);
   }
 
   const store = readStore() ?? { v: 1 as const, e: [] };

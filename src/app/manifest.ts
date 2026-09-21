@@ -1,9 +1,11 @@
 import type { MetadataRoute } from "next";
+import { APP_NAME } from "@/lib/app-name";
+import { APP_ICON, APP_ICON_TYPE } from "@/lib/app-icon";
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: "Supawatch",
-    short_name: "Supawatch",
+    name: APP_NAME,
+    short_name: APP_NAME,
     description: "Explore films, series, trailers, recommendations, and live channels.",
     start_url: "/",
     display: "standalone",
@@ -11,9 +13,9 @@ export default function manifest(): MetadataRoute.Manifest {
     theme_color: "#010101",
     icons: [
       {
-        src: "/favicon.ico",
+        src: APP_ICON,
         sizes: "any",
-        type: "image/x-icon",
+        ...(APP_ICON_TYPE ? { type: APP_ICON_TYPE } : {}),
       },
     ],
   };

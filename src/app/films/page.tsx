@@ -3,16 +3,17 @@ import { tmdbFetch } from "@/lib/tmdb";
 import type { Metadata } from "next";
 import MoviesHero from "@/components/MoviesHero";
 import { GENRE_NAMES } from "@/lib/genres";
+import { APP_NAME } from "@/lib/app-name";
 
 export const metadata: Metadata = {
   title: "Films",
   description:
-    "Explore popular, upcoming, top-rated, international, and films by genre with trailers, cast, ratings, and recommendations on Supawatch.",
+    `Explore popular, upcoming, top-rated, international, and films by genre with trailers, cast, ratings, and recommendations on ${APP_NAME}.`,
   alternates: { canonical: "/films" },
   openGraph: {
-    title: "Films | Supawatch",
+    title: `Films | ${APP_NAME}`,
     description:
-      "Explore popular, upcoming, top-rated, international, and films by genre with trailers, cast, ratings, and recommendations on Supawatch.",
+      `Explore popular, upcoming, top-rated, international, and films by genre with trailers, cast, ratings, and recommendations on ${APP_NAME}.`,
     url: "/films",
   },
 };

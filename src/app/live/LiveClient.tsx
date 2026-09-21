@@ -10,6 +10,7 @@ import {
 } from "react";
 import Hls from "hls.js";
 import { cn } from "@/lib/utils";
+import { APP_NAME } from "@/lib/app-name";
 import { parseId3, type Id3Text } from "@/lib/id3";
 import {
   Select,
@@ -63,9 +64,10 @@ interface Region {
 const STATIC_NOISE =
   "url(\"data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='1.2' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E\")";
 
-const DEAD_KEY = "supawatch:dead-channels";
-const CRT_KEY = "supawatch:crt";
-const CRT_EVENT = "supawatch:crt-change";
+const APP_STORAGE_PREFIX = APP_NAME.toLowerCase();
+const DEAD_KEY = `${APP_STORAGE_PREFIX}:dead-channels`;
+const CRT_KEY = `${APP_STORAGE_PREFIX}:crt`;
+const CRT_EVENT = `${APP_STORAGE_PREFIX}:crt-change`;
 /* The keys the handset itself carries — what blinks the emitter. Single
    characters are matched lower-cased, so both cases of each shortcut count. */
 const REMOTE_KEYS = new Set([
@@ -84,10 +86,10 @@ const REMOTE_KEYS = new Set([
   "p",
 ]);
 
-const FAV_KEY = "supawatch:favourites";
-const LAST_KEY = "supawatch:last-channel";
+const FAV_KEY = `${APP_STORAGE_PREFIX}:favourites`;
+const LAST_KEY = `${APP_STORAGE_PREFIX}:last-channel`;
 
-const FAV_EVENT = "supawatch:favourites-change";
+const FAV_EVENT = `${APP_STORAGE_PREFIX}:favourites-change`;
 
 /* Favourites are stored state too, so they go through useSyncExternalStore for
    the same reason the CRT setting does: the server has none and the client may
@@ -1084,7 +1086,7 @@ export default function LiveClient({
                       <div className="tv-osd-icon">{muted || volume === 0 ? <VolumeX size={22} /> : <Volume2 size={22} />}</div>
                       <div><span className="tv-osd-caption">{muted ? "Sound muted" : "Volume"}</span><div className="tv-volume-track" role="meter" aria-label="Volume" aria-valuemin={0} aria-valuemax={100} aria-valuenow={muted ? 0 : Math.round(volume * 100)}>{Array.from({ length: 20 }, (_, i) => <i key={i} data-filled={!muted && i < Math.round(volume * 20)} />)}</div></div>
                       <strong>{muted ? "0" : Math.round(volume * 100)}</strong>
-                    </> : <><div className="tv-channel-badge">{osdLines[0].startsWith("CH ") ? <><span>CHANNEL</span><strong>{osdLines[0].slice(3)}</strong></> : <Tv size={24} />}</div><div className="tv-osd-details"><span className="tv-osd-caption">{osdLines[0].startsWith("CH ") ? osdLines[2] ?? "Live television" : osdLines[0]}</span><strong>{osdLines[1] ?? (osdLines[0].startsWith("CH ") ? "Enter a channel number" : "Supawatch TV")}</strong>{osdLines[3] && <span>{osdLines[3]}</span>}</div></>}
+                    </> : <><div className="tv-channel-badge">{osdLines[0].startsWith("CH ") ? <><span>CHANNEL</span><strong>{osdLines[0].slice(3)}</strong></> : <Tv size={24} />}</div><div className="tv-osd-details"><span className="tv-osd-caption">{osdLines[0].startsWith("CH ") ? osdLines[2] ?? "Live television" : osdLines[0]}</span><strong>{osdLines[1] ?? (osdLines[0].startsWith("CH ") ? "Enter a channel number" : `${APP_NAME} TV`)}</strong>{osdLines[3] && <span>{osdLines[3]}</span>}</div></>}
                   </div>
                 )}
 
@@ -1252,7 +1254,7 @@ export default function LiveClient({
               from the container rather than from thirty separate handlers. */}
           <aside className="tv-remote" aria-label="TV remote" onClickCapture={pulseIr}>
             <div className="remote-emitter" data-active={irFiring} aria-hidden="true" />
-            <div className="remote-shoulder"><button className="remote-key remote-power" onClick={togglePower} aria-label="Power" aria-pressed={tvPower}><Power size={19} /></button><span className="remote-brand">SUPAWATCH<span>TELEVISION</span></span><button className="remote-key" onClick={showCurrentInfo} aria-label="Channel info"><Info size={18} /></button></div>
+            <div className="remote-shoulder"><button className="remote-key remote-power" onClick={togglePower} aria-label="Power" aria-pressed={tvPower}><Power size={19} /></button><span className="remote-brand">{APP_NAME}<span>TELEVISION</span></span><button className="remote-key" onClick={showCurrentInfo} aria-label="Channel info"><Info size={18} /></button></div>
             <div className="remote-numberpad">{["1", "2", "3", "4", "5", "6", "7", "8", "9", "clear", "0", "enter"].map(key => <button className="remote-key" key={key} onClick={() => handleNumpad(key)} aria-label={key === "clear" ? "Clear channel number" : key === "enter" ? "Enter channel number" : `Channel ${key}`}>{key === "clear" ? <span>DEL</span> : key === "enter" ? <span>ENTER</span> : key}</button>)}</div>
             <div className="remote-dial"><button className="dial-up" onClick={() => remoteNavigate(-1)} aria-label="Navigate up"><ChevronUp /></button><button className="dial-left" onClick={() => changeVolume(-10)} aria-label="Lower volume"><ChevronLeft /></button><button className="dial-ok" onClick={remoteOK} aria-label="Select or show channel info">OK</button><button className="dial-right" onClick={() => changeVolume(10)} aria-label="Raise volume"><ChevronRight /></button><button className="dial-down" onClick={() => remoteNavigate(1)} aria-label="Navigate down"><ChevronDown /></button></div>
             <div className="remote-rockers"><div className="remote-rocker"><button onClick={() => changeVolume(10)} aria-label="Volume up"><Plus size={19} /></button><span>VOL</span><button onClick={() => changeVolume(-10)} aria-label="Volume down"><Minus size={19} /></button></div><div className="remote-center-keys"><button className="remote-key" onClick={toggleMute} aria-label="Mute" aria-pressed={muted}>{muted ? <VolumeX size={18} /> : <Volume2 size={18} />}</button><button className="remote-key" onClick={toggleCategoryMenu} aria-label="Channel menu" aria-expanded={isCategoryMenuOpen}><LayoutGrid size={17} /></button><span>MENU</span></div><div className="remote-rocker"><button onClick={() => changeChannelRelative(1)} aria-label="Channel up"><ChevronUp size={20} /></button><span>CH</span><button onClick={() => changeChannelRelative(-1)} aria-label="Channel down"><ChevronDown size={20} /></button></div></div>
@@ -1582,7 +1584,7 @@ function TvMenu({
       }
       if (event.key === "Escape" || event.key.toLowerCase() === exitHint.toLowerCase()) { event.preventDefault(); event.stopPropagation(); onClose(); }
     }}>
-      <header><div><span className="tv-osd-caption">Supawatch TV</span><h3>{title === "Region" ? "Around the world" : "What’s your mood?"}</h3></div><button onClick={onClose} aria-label={`Close ${title.toLowerCase()} menu`}><X size={18} /></button></header>
+      <header><div><span className="tv-osd-caption">{APP_NAME} TV</span><h3>{title === "Region" ? "Around the world" : "What’s your mood?"}</h3></div><button onClick={onClose} aria-label={`Close ${title.toLowerCase()} menu`}><X size={18} /></button></header>
       <div className="tv-menu-options">{items.map((item, index) => <button key={item.key} data-menu-item data-menu-focus={undefined} onFocus={event => { root.current?.querySelectorAll<HTMLElement>("[data-menu-item]").forEach(button => { button.dataset.menuFocus = "false"; }); event.currentTarget.dataset.menuFocus = "true"; }} aria-current={item.key === selected ? "true" : undefined} onClick={() => onSelect(item.key)}><span>{String(index + 1).padStart(2, "0")}</span><span>{item.label}</span>{item.key === selected && <Check size={16} />}</button>)}</div>
       <footer><span><kbd>↑ ↓</kbd> Browse</span><span><kbd>Enter</kbd> Select</span><span><kbd>{exitHint}</kbd> Close</span></footer>
     </div>

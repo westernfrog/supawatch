@@ -4,6 +4,7 @@ import { usePathname } from "next/navigation";
 import { useEffect, useLayoutEffect, useRef } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { APP_NAME } from "@/lib/app-name";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -585,9 +586,8 @@ export default function Footer() {
                 textShadow: "0 0 24px rgba(255,210,74,0.24)",
               }}
             >
-              It is a period of endless cinema. Countless films and series
-              drift across the galaxy — seek them out, and find your next great
-              watch…
+              It is a period of endless cinema. Countless films and series drift
+              across the galaxy — seek them out, and find your next great watch…
             </p>
             <p
               className="mt-10 font-nichrome font-black uppercase leading-[0.82] select-none pointer-events-none tracking-tight"
@@ -600,7 +600,7 @@ export default function Footer() {
                 textShadow: "0 0 34px rgba(255,210,74,0.22)",
               }}
             >
-              Supawatch
+              {APP_NAME}
             </p>
           </div>
         </div>

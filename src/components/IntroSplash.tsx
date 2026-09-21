@@ -5,8 +5,9 @@ import { usePathname } from "next/navigation";
 import gsap from "gsap";
 import { fetchJson } from "@/lib/client-api";
 import styles from "./IntroSplash.module.css";
+import { APP_NAME, APP_NAME_UPPERCASE } from "@/lib/app-name";
 
-const WORD = "SUPAWATCH";
+const WORD = APP_NAME_UPPERCASE;
 const SESSION_KEY = "sw-intro-frame-v1";
 const MIN_HOLD_MS = 1600;
 const MAX_HOLD_MS = 4200;
@@ -222,7 +223,7 @@ export default function IntroSplash() {
   if (!active || pathname !== "/") return null;
 
   return (
-    <div ref={rootRef} className={styles.intro} aria-label="Supawatch opening sequence">
+    <div ref={rootRef} className={styles.intro} aria-label="${APP_NAME} opening sequence">
       <div data-shutter className={`${styles.shutter} ${styles.shutterTop}`} aria-hidden="true" />
       <div data-shutter className={`${styles.shutter} ${styles.shutterBottom}`} aria-hidden="true" />
       <div className={styles.stage} aria-hidden="true">

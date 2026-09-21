@@ -4,14 +4,17 @@ import path from "path";
 import { headers } from "next/headers";
 import { countryFromHeaders } from "@/lib/geo";
 import LiveClient from "./LiveClient";
+import { APP_NAME } from "@/lib/app-name";
 
 export const metadata: Metadata = {
   title: "Live Channels",
-  description: "Watch curated live channels by region on Supawatch, including news, films, sports, entertainment, kids, music, and more.",
+  description:
+    `Watch curated live channels by region on ${APP_NAME}, including news, films, sports, entertainment, kids, music, and more.`,
   alternates: { canonical: "/live" },
   openGraph: {
-    title: "Live Channels | Supawatch",
-    description: "Watch curated live channels by region on Supawatch, including news, films, sports, entertainment, kids, music, and more.",
+    title: `Live Channels | ${APP_NAME}`,
+    description:
+      `Watch curated live channels by region on ${APP_NAME}, including news, films, sports, entertainment, kids, music, and more.`,
     url: "/live",
   },
 };

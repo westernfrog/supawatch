@@ -10,6 +10,8 @@ import BottomNav from "@/components/BottomNav";
 import IntroSplash from "@/components/IntroSplash";
 import JsonLd from "@/components/JsonLd";
 import RouteTransition from "@/components/RouteTransition";
+import { APP_NAME } from "@/lib/app-name";
+import { APP_ICON, APP_ICON_TYPE } from "@/lib/app-icon";
 
 const mdNichrome = localFont({
   src: [
@@ -59,18 +61,28 @@ export const viewport: Viewport = {
 
 const siteUrl = process.env.NEXT_PUBLIC_BASE_URL ?? "https://supawatch.vercel.app";
 const siteDescription =
-  "Discover films and series on Supawatch. Explore trailers, cast information, ratings, recommendations, and live channels in one place.";
+  `Discover films and series on ${APP_NAME}. Explore trailers, cast information, ratings, recommendations, and live channels in one place.`;
+const socialImage =
+  process.env.NEXT_PUBLIC_SOCIAL_IMAGE ?? "/images/space_odyssey_bg.png";
 
 export const metadata: Metadata = {
   title: {
-    default: "Supawatch - Films, Series, Trailers & Live Channels",
-    template: "%s | Supawatch",
+    default: `${APP_NAME} - Films, Series, Trailers & Live Channels`,
+    template: `%s | ${APP_NAME}`,
   },
   description: siteDescription,
   keywords: ["films", "series", "streaming", "trailers", "cast", "ratings", "live TV"],
-  authors: [{ name: "Supawatch" }],
-  creator: "Supawatch",
-  applicationName: "Supawatch",
+  authors: [{ name: APP_NAME }],
+  creator: APP_NAME,
+  applicationName: APP_NAME,
+  icons: {
+    icon: [
+      {
+        url: APP_ICON,
+        ...(APP_ICON_TYPE ? { type: APP_ICON_TYPE } : {}),
+      },
+    ],
+  },
   metadataBase: new URL(siteUrl),
   manifest: "/manifest.webmanifest",
   robots: {
@@ -87,23 +99,23 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     url: siteUrl,
-    siteName: "Supawatch",
-    title: "Supawatch - Films, Series, Trailers & Live Channels",
+    siteName: APP_NAME,
+    title: `${APP_NAME} - Films, Series, Trailers & Live Channels`,
     description: siteDescription,
-    images: [{ url: "/images/space_odyssey_bg.png", alt: "Supawatch" }],
+    images: [{ url: socialImage, alt: APP_NAME }],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Supawatch - Films, Series, Trailers & Live Channels",
+    title: `${APP_NAME} - Films, Series, Trailers & Live Channels`,
     description: siteDescription,
-    images: ["/images/space_odyssey_bg.png"],
+    images: [socialImage],
   },
 };
 
 const siteJsonLd = {
   "@context": "https://schema.org",
   "@type": "WebSite",
-  name: "Supawatch",
+  name: APP_NAME,
   url: siteUrl,
   description: siteDescription,
   potentialAction: {

@@ -16,6 +16,7 @@ import { fetchJson } from "@/lib/client-api";
 import { formatCount, formatRuntime, type VizDatum } from "@/lib/viz";
 import { hourLabel, WEEKDAY_LABELS } from "@/lib/dates";
 import * as S from "@/lib/stats";
+import { APP_NAME } from "@/lib/app-name";
 
 /* ── Your stats ────────────────────────────────────────────────────────────
    Everything here is computed on this device from this browser's own watch
@@ -391,7 +392,8 @@ function download(json: string) {
   const url = URL.createObjectURL(new Blob([json], { type: "application/json" }));
   const a = document.createElement("a");
   a.href = url;
-  a.download = `supawatch-history-${new Date().toISOString().slice(0, 10)}.json`;
+  const filePrefix = APP_NAME.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "") || "watch-history";
+  a.download = `${filePrefix}-history-${new Date().toISOString().slice(0, 10)}.json`;
   a.click();
   URL.revokeObjectURL(url);
 }
@@ -415,8 +417,8 @@ function Empty({ seeded }: { seeded: boolean }) {
   return (
     <div className="px-6 py-16 md:px-12">
       <p className="max-w-prose font-manrope text-[15px] leading-relaxed text-neutral-400">
-        Nothing here yet. Supawatch builds this page from what you actually press play on — no
-        account, no upload, nothing leaves this browser.{" "}
+        Nothing here yet. {APP_NAME} builds this page from what you actually press
+        play on — no account, no upload, nothing leaves this browser.{" "}
         {seeded
           ? "We found some titles you'd browsed before, but browsing isn't watching, so they don't count here."
           : "Watch something and it'll start filling in."}
