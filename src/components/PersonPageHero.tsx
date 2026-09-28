@@ -42,7 +42,7 @@ export default function PersonPageHero({ name, department, biography, profilePat
       {backdropPath && <div className="cinematic-art person-scene-backdrop" aria-hidden="true"><BlurImage src={`https://image.tmdb.org/t/p/w1280${backdropPath}`} alt="" width={1280} height={720} lazy={false} /></div>}
       {activePhoto && <div className="person-scene-portrait"><BlurImage key={activePhoto} src={`https://image.tmdb.org/t/p/h632${activePhoto}`} alt={name} width={632} height={948} lazy={false} /></div>}
       <div className="cinematic-scrim" />
-      <Link href="/search" className="scene-back"><ArrowLeft size={16} /><span>Discover people</span></Link>
+      <Link prefetch={false} href="/search" className="scene-back"><ArrowLeft size={16} /><span>Discover people</span></Link>
       <div className="scene-content"><p className="scene-kicker">In the spotlight / {department}</p><h1 className="scene-title">{name}</h1><div className="person-scene-meta"><span>{creditsCount} credited titles</span>{yearsActive && <span>Credits / {yearsActive}</span>}</div><a href="#filmography" className="collection-browse">Explore the work<ArrowDown size={18} /></a></div>
       <a href="#biography-heading" className="scene-scroll"><span>Behind the screen</span><ArrowDown size={18} /></a>
     </header>

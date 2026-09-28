@@ -6,10 +6,8 @@ import JsonLd from "@/components/JsonLd";
 import PersonPageHero from "@/components/PersonPageHero";
 import PersonCredits from "@/components/PersonCredits";
 
-// Generate titles on first visit, then reuse the rendered page for an hour.
-// Unknown IDs remain routable; only a confirmed TMDB 404 is a missing title.
-export const revalidate = 3600;
-export function generateStaticParams() { return []; }
+// Rendered per request, not ISR: the catalogue is too large and long-tailed for
+// per-ID cache entries (each one bills as ISR writes). TMDB fetches stay cached.
 
 interface Props {
   params: Promise<{ id: string }>;

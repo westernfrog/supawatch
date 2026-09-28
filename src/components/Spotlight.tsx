@@ -441,7 +441,7 @@ export default function Spotlight({
                             {item.genres.map((g, i) => (
                               <span key={g.id}>
                                 {i > 0 && ", "}
-                                <Link
+                                <Link prefetch={false}
                                   href={`/${item.media_type === "movie" ? "films" : "series"}?genre=${g.id}`}
                                   onClick={(e) => e.stopPropagation()}
                                   className="underline decoration-white/25 underline-offset-4 transition-colors hover:text-white hover:decoration-white/70"
@@ -481,7 +481,7 @@ export default function Spotlight({
 
                       <div className="hidden h-4 w-px bg-white/[0.12] sm:block" />
 
-                      <Link
+                      <Link prefetch={false}
                         href={href}
                         onClick={(e) => e.stopPropagation()}
                         className="flex items-center gap-1.5 font-manrope text-[11px] font-semibold uppercase tracking-[0.2em] text-neutral-400 transition-colors hover:text-white"
@@ -495,7 +495,7 @@ export default function Spotlight({
                           <div className="hidden h-4 w-px bg-white/[0.12] lg:block" />
                           <div className="hidden items-center lg:flex">
                             {info.cast!.map((c, i) => (
-                              <Link
+                              <Link prefetch={false}
                                 key={c.id}
                                 href={`/person/${c.id}`}
                                 onClick={(e) => e.stopPropagation()}

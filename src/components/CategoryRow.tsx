@@ -102,7 +102,7 @@ export default function CategoryRow({
           {title}
         </h2>
         {seeAllHref && (
-          <Link
+          <Link prefetch={false}
             href={seeAllHref}
             className="mb-[3px] font-manrope text-[10px] uppercase tracking-[0.2em] text-neutral-600 transition-colors hover:text-white"
           >

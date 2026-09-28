@@ -71,7 +71,7 @@ export default function TagCloud({
         );
 
         return tag.href ? (
-          <Link
+          <Link prefetch={false}
             key={tag.id}
             href={tag.href}
             className="outline-none transition-colors hover:!text-white focus-visible:ring-1 focus-visible:ring-white/40"

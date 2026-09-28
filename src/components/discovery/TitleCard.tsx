@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import type { ReactNode } from "react";
 import { ArrowUpRight, Film } from "lucide-react";
 import AudienceRating from "@/components/AudienceRating";
 import BlurImage from "@/components/BlurImage";
@@ -20,10 +21,14 @@ type Props = {
   note?: string;
   onOpen?: () => void;
   onNavigate?: () => void;
+  /** Text shown in place of the title (e.g. mid-animation); the real title stays the accessible name. */
+  displayTitle?: string;
+  /** An extra action placed before "My List", such as Watch now. */
+  primaryAction?: ReactNode;
 };
 
 /** The same artwork, metadata and actions on every browsing surface. */
-export default function TitleCard({ item: input, rank, savedList, story, landscape, note, onOpen, onNavigate }: Props) {
+export default function TitleCard({ item: input, rank, savedList, story, landscape, note, onOpen, onNavigate, displayTitle, primaryAction }: Props) {
   const item: DiscoveryTitle = { backdrop_path: null, overview: "", genre_ids: [], vote_average: 0, vote_count: 0, original_language: "", date: "", ...input };
   const href = `/${item.media_type === "movie" ? "films" : "series"}/${item.id}`;
   const genre = item.genre_ids.map(id => GENRE_NAMES[String(id)]).filter(Boolean).slice(0, 2).join(" / ");
@@ -34,14 +39,14 @@ export default function TitleCard({ item: input, rank, savedList, story, landsca
   </>;
   return <article className={cn("media-card", savedList && "media-card--saved", story && "media-card--story", landscape && "media-card--landscape")}>
     <div className="media-card-visual">
-      {onOpen ? <button type="button" className="media-card-art" onClick={onOpen} aria-label={`Explore ${item.title}`}>{art}</button> : <Link href={href} onNavigate={onNavigate} transitionTypes={["nav-forward"]} className="media-card-art" aria-label={`Explore ${item.title}`}>{art}</Link>}
+      {onOpen ? <button type="button" className="media-card-art" onClick={onOpen} aria-label={`Explore ${item.title}`}>{art}</button> : <Link prefetch={false} href={href} onNavigate={onNavigate} transitionTypes={["nav-forward"]} className="media-card-art" aria-label={`Explore ${item.title}`}>{art}</Link>}
       {rank != null && <span className="media-card-rank" aria-label={`Rank ${rank}`}>{String(rank).padStart(2, "0")}</span>}
     </div>
     <div className="media-card-copy">
       <div className="media-card-meta"><span>{item.media_type === "tv" ? "Series" : "Film"}{item.date ? ` / ${item.date.slice(0, 4)}` : ""}</span><AudienceRating value={item.vote_average} /></div>
-      <div className="media-card-heading"><h3>{onOpen ? <button type="button" onClick={onOpen}>{item.title}</button> : <Link href={href} onNavigate={onNavigate} transitionTypes={["nav-forward"]}>{item.title}</Link>}</h3></div>
+      <div className="media-card-heading"><h3>{onOpen ? <button type="button" onClick={onOpen} aria-label={displayTitle ? item.title : undefined}>{displayTitle ?? item.title}</button> : <Link prefetch={false} href={href} onNavigate={onNavigate} transitionTypes={["nav-forward"]} aria-label={displayTitle ? item.title : undefined}>{displayTitle ?? item.title}</Link>}</h3></div>
       {(note || genre) && <p className="media-card-note">{note || genre}</p>}
-      {!savedList && <div className="media-card-save"><SaveTitleButton item={item} /></div>}
+      {!savedList && <div className={cn("media-card-save", primaryAction && "media-card-save--with-action")}>{primaryAction}<SaveTitleButton item={item} /></div>}
       {story && item.overview && <p className="media-card-synopsis">{item.overview}</p>}
     </div>
     {savedList && <div className="media-card-saved-action"><SaveTitleButton item={item} remove /></div>}

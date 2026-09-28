@@ -122,7 +122,7 @@ export default function RankedBars({
         return (
           <li key={datum.key} className="border-b border-white/[0.06] last:border-b-0">
             {datum.href ? (
-              <Link
+              <Link prefetch={false}
                 href={datum.href}
                 className="group flex items-center gap-4 py-3.5 outline-none transition-opacity hover:opacity-100 focus-visible:ring-1 focus-visible:ring-white/40 md:gap-5"
               >

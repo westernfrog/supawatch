@@ -2,6 +2,7 @@ import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
 import BrowseSelection, { SavedBrowseShelf } from "@/components/BrowseSelection";
 import CinemaShelf from "@/components/CinemaShelf";
+import PillChoice from "@/components/PillChoice";
 import TopSix from "@/components/TopSix";
 import { GENRE_LIST, TV_GENRE_LIST, GENRE_NAMES } from "@/lib/genres";
 
@@ -32,12 +33,12 @@ export default function BrowseFeed({ mediaType, genre }: { mediaType: "movie" | 
   const extraShelf = (shelf: typeof extraShelves[number]) => <CinemaShelf key={shelf.id} id={shelf.id} title={shelf.title} subtitle={shelf.subtitle} fallbackCollection={shelf.collection} mediaType={mediaType} variant={shelf.variant} limit={shelf.variant === "stories" ? 9 : 12} fetchUrl={discover({ with_genres: [...new Set([...(genre?.split(",") ?? []), ...shelf.genres.split(",")])].join(","), vote_average_gte: 7, vote_count_gte: 50 })} />;
   const firstUrl = genre ? discover() : film ? "/api/getMovieList?list=now_playing" : "/api/getTvList?list=on_the_air";
   return <div className="browse-feed discovery-controls">
-    <header className="browse-feed-intro"><div><p className="eyebrow">Browse the catalogue</p><h2>{genreName || (film ? "Films" : "Series")}</h2></div><Link href="/watchlist" className="text-link">My List <ArrowUpRight size={16} /></Link></header>
+    <header className="browse-feed-intro"><div><p className="eyebrow">Browse the catalogue</p><h2>{genreName || (film ? "Films" : "Series")}</h2></div><Link prefetch={false} href="/watchlist" className="text-link">My List <ArrowUpRight size={16} /></Link></header>
     <BrowseSelection key={`${mediaType}:${genre ?? "all"}`} mediaType={mediaType} genre={genre} />
     <SavedBrowseShelf mediaType={mediaType} />
 
     <CinemaShelf id="tonight" title={genreName ? `${genreName}, right now.` : film ? "Now on the big screen." : "Everyone's talking about it."} subtitle="In the conversation" fetchUrl={firstUrl} mediaType={mediaType} />
-    <CinemaShelf id="standouts" title={film ? "Small running time. Big impression." : "In it for the long haul."} subtitle="A closer look" variant="stories" fetchUrl={film ? discover({ with_runtime_gte: 60, with_runtime_lte: 105, vote_average_gte: 7, sort_by: "vote_average.desc", vote_count_gte: 500 }) : discover({ vote_average_gte: 8, vote_count_gte: 1000, sort_by: "vote_average.desc" })} mediaType={mediaType} limit={9} />
+    <PillChoice id="standouts" kicker="This is your last chance" description={film ? "Two films under 105 minutes. One keeps you comfortable, one takes you down the rabbit hole." : "Two series worth the long haul. One keeps you comfortable, one takes you down the rabbit hole."} fetchUrl={film ? discover({ with_runtime_gte: 60, with_runtime_lte: 105, vote_average_gte: 7, sort_by: "vote_average.desc", vote_count_gte: 500 }) : discover({ vote_average_gte: 8, vote_count_gte: 1000, sort_by: "vote_average.desc" })} mediaType={mediaType} limit={12} />
     <TopSix mediaType={mediaType} genreIds={genre ? [genre] : undefined} />
 
     <CinemaShelf title={film && !genre ? "Coming to a screen near you." : "A new story starts here."} subtitle="Next on your radar" fetchUrl={film && !genre ? "/api/getMovieList?list=upcoming" : discover({ year_from: new Date().getUTCFullYear() - 1, year_to: new Date().getUTCFullYear(), sort_by: film ? "primary_release_date.desc" : "first_air_date.desc", vote_count_gte: 50 })} mediaType={mediaType} />

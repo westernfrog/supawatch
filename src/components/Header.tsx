@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Search } from "lucide-react";
+import { Popcorn, Search } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const navigation = [
@@ -80,20 +80,38 @@ export default function Header() {
 
         <div className="flex-1" />
 
-        {/* ── Search ── */}
+        {/* ── Search ── shaped like a field on wide screens, but it is a link:
+            the search page focuses its real input on arrival, so the cursor
+            lands where people expect. Just the icon on narrow screens. */}
         {!onSearchPage && (
           <Link
             href="/search"
             aria-label="Search"
             data-intro-chrome
-            className="flex min-h-11 min-w-11 items-center justify-center gap-1.5 text-white/50 transition-colors duration-200 hover:text-white/80"
+            className="flex min-h-11 min-w-11 items-center justify-center text-white/50 hover:text-white/80"
           >
-            <Search className="h-[14px] w-[14px]" />
-            <span className="hidden font-manrope text-[15px] font-medium tracking-[0.01em] lg:inline">
-              Search
+            <Search className="h-[14px] w-[14px] lg:hidden" />
+            <span className="header-search hidden lg:flex">
+              <Search className="h-[14px] w-[14px] shrink-0" />
+              <span>Find a film, series, or person…</span>
             </span>
           </Link>
         )}
+
+        {/* ── Support ── see .support-link in globals.css. */}
+        <a
+          href="https://www.buymeacoffee.com/amansinghme"
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label="Buy me popcorns (opens in a new tab)"
+          data-intro-chrome
+          className="ml-2 flex min-h-11 min-w-11 shrink-0 items-center justify-center lg:ml-6"
+        >
+          <span className="support-link">
+            <span className="support-link-mark"><Popcorn className="h-[15px] w-[15px]" /></span>
+            <span className="support-link-label">Buy me popcorns</span>
+          </span>
+        </a>
       </div>
     </header>
   );

@@ -8,6 +8,7 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import BottomNav from "@/components/BottomNav";
 import IntroSplash from "@/components/IntroSplash";
+import { introPrepaintScript } from "@/lib/intro";
 import JsonLd from "@/components/JsonLd";
 import RouteTransition from "@/components/RouteTransition";
 
@@ -131,6 +132,7 @@ export default function RootLayout({
         <link rel="preconnect" href="https://image.tmdb.org" crossOrigin="anonymous" />
         <link rel="dns-prefetch" href="https://image.tmdb.org" />
         <JsonLd data={siteJsonLd} />
+        <script dangerouslySetInnerHTML={{ __html: introPrepaintScript }} />
       </head>
       <body className="flex min-h-screen flex-col">
         <SmoothScroll />

@@ -1,5 +1,6 @@
 "use client";
 
+import HeroSlideIndicator, { ReelCueMark } from "@/components/HeroSlideIndicator";
 import { useTrailerLayout } from "@/lib/useTrailerLayout";
 import { youtubeEmbedUrl } from "@/lib/youtube";
 
@@ -330,6 +331,7 @@ export default function Hero() {
     <>
       {/* ══════════════════  DESKTOP  ══════════════════ */}
       <section data-reel-hero className="relative hidden h-screen overflow-hidden lg:block">
+        <ReelCueMark key={idx} durationMs={SLIDE_MS} />
         {/* Backdrop — cinematic cross-dissolve: the new frame blooms in over the
             previous one as it eases back into a soft, dim blur */}
         <div data-intro-image className="absolute inset-0 overflow-hidden">
@@ -419,7 +421,7 @@ export default function Hero() {
         {/* ── Content block ── */}
         <div
           data-intro-content
-          className="absolute inset-x-(--gutter) bottom-0"
+          className="absolute inset-x-(--gutter) bottom-9"
           style={{
             animation: "fade-in-up 0.55s 0.1s cubic-bezier(0.16,1,0.3,1) both",
           }}
@@ -502,7 +504,7 @@ export default function Hero() {
                   {genres.map((g, i) => (
                     <span key={g.id}>
                       {i > 0 && <span className="text-neutral-400">, </span>}
-                      <Link
+                      <Link prefetch={false}
                         href={`/films?genre=${g.id}`}
                         className="underline decoration-neutral-500 decoration-1 underline-offset-[3px] transition-colors hover:text-white hover:decoration-white/50"
                       >
@@ -527,7 +529,7 @@ export default function Hero() {
             >
               <div className="flex items-center">
                 {cast.map((c, i) => (
-                  <Link
+                  <Link prefetch={false}
                     key={c.id}
                     href={`/person/${c.id}`}
                     className={cn(
@@ -549,7 +551,7 @@ export default function Hero() {
                   </Link>
                 ))}
               </div>
-              <Link
+              <Link prefetch={false}
                 href={
                   item.media_type === "tv"
                     ? `/series/${item.id}`
@@ -595,7 +597,7 @@ export default function Hero() {
                 <div className="h-4 w-px bg-white/[0.12]" />
                 <div className="flex items-center gap-2">
                   {providers.slice(0, 5).map((p) => (
-                    <Link
+                    <Link prefetch={false}
                       key={p.provider_id}
                       href={PROVIDER_URLS[p.provider_id]?.(title) ?? providersLink ?? "#"}
                       target="_blank"
@@ -653,42 +655,7 @@ export default function Hero() {
 
             <div className="flex-1" />
 
-            {/* Slide numbers */}
-            <div className="flex items-center gap-6">
-              {items.map((m, i) => {
-                const active = i === idx;
-                return (
-                  <button
-                    key={m.id}
-                    onClick={() => goTo(i)}
-                    aria-label={itemTitle(m)}
-                    className="group flex flex-col items-center gap-[3px]"
-                  >
-                    <span
-                      className={cn(
-                        "font-space text-[13px] font-medium tabular-nums tracking-[0.04em] transition-colors duration-300",
-                        active
-                          ? "text-white"
-                          : "text-neutral-500 group-hover:text-neutral-300",
-                      )}
-                    >
-                      {String(i + 1).padStart(2, "0")}
-                    </span>
-                    <span className="relative h-[1.5px] w-4 overflow-hidden rounded-full bg-white/15">
-                      {active && (
-                        <span
-                          className="absolute inset-0 rounded-full bg-white"
-                          style={{
-                            animation: `progressTrack ${SLIDE_MS}ms linear forwards`,
-                            transformOrigin: "left",
-                          }}
-                        />
-                      )}
-                    </span>
-                  </button>
-                );
-              })}
-            </div>
+            <HeroSlideIndicator labels={items.map(itemTitle)} active={idx} durationMs={SLIDE_MS} onSelect={goTo} />
           </div>
         </div>
 
@@ -851,7 +818,7 @@ export default function Hero() {
                 {genres.map((g, i) => (
                   <span key={g.id} className="flex items-center gap-2.5">
                     {i > 0 && <span className="text-white/25">·</span>}
-                    <Link
+                    <Link prefetch={false}
                       href={`/films?genre=${g.id}`}
                       className="font-manrope text-[9px] uppercase tracking-[0.18em] text-white/55 transition-colors hover:text-white"
                     >
@@ -951,7 +918,7 @@ export default function Hero() {
               </span>
               <div className="h-3 w-px bg-white/[0.08]" />
               {cast.map((c) => (
-                <Link
+                <Link prefetch={false}
                   key={c.id}
                   href={`/person/${c.id}`}
                   className="group flex items-center gap-1.5"

@@ -371,7 +371,7 @@ export default function StatsClient() {
       </ChartFrame>
 
       <div className="px-6 pb-20 md:px-12">
-        <Link
+        <Link prefetch={false}
           href="/charts"
           className="font-space text-[11px] uppercase tracking-[0.16em] text-neutral-500 transition-colors hover:text-white"
         >
@@ -422,10 +422,10 @@ function Empty({ seeded }: { seeded: boolean }) {
           : "Watch something and it'll start filling in."}
       </p>
       <div className="mt-8 flex flex-wrap gap-3">
-        <Link href="/" className={BTN}>
+        <Link prefetch={false} href="/" className={BTN}>
           Find something to watch
         </Link>
-        <Link href="/charts" className={BTN}>
+        <Link prefetch={false} href="/charts" className={BTN}>
           See the global charts
         </Link>
       </div>

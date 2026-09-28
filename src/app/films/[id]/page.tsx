@@ -9,10 +9,8 @@ import MoviePageHero from "@/components/MoviePageHero";
 import TasteTracker from "@/components/TasteTracker";
 import { normalizeTitle } from "@/lib/discovery";
 
-// Generate titles on first visit, then reuse the rendered page for an hour.
-// Unknown IDs remain routable; only a confirmed TMDB 404 is a missing title.
-export const revalidate = 3600;
-export function generateStaticParams() { return []; }
+// Rendered per request, not ISR: the catalogue is too large and long-tailed for
+// per-ID cache entries (each one bills as ISR writes). TMDB fetches stay cached.
 
 interface Props {
   params: Promise<{ id: string }>;
@@ -93,7 +91,7 @@ export default async function MoviePage({ params }: Props) {
   try {
     [enhanced, recsData] = await Promise.all([
       getCachedMediaDetails("movie", id),
-      tmdbFetch(`/movie/${id}/recommendations`, {}, { revalidate: 3600 }).catch(() => ({ results: [] })),
+      tmdbFetch(`/movie/${id}/recommendations`, {}, { revalidate: 86400 }).catch(() => ({ results: [] })),
     ]);
   } catch (error) {
     if (error instanceof TmdbError && error.status === 404) notFound();

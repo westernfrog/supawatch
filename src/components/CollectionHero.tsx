@@ -20,7 +20,7 @@ export default function CollectionHero({ title, kicker, description, count, unit
   return (
     <header className="collection-shelf-hero">
       <div className="collection-shelf-copy">
-        <Link href="/collections" className="collection-shelf-back"><ArrowLeft size={15} aria-hidden="true" />All collections</Link>
+        <Link prefetch={false} href="/collections" className="collection-shelf-back"><ArrowLeft size={15} aria-hidden="true" />All collections</Link>
         <p className="collection-shelf-kicker">{kicker}</p>
         <h1>{title}</h1>
         <p className="collection-shelf-description">{description}</p>
@@ -32,7 +32,7 @@ export default function CollectionHero({ title, kicker, description, count, unit
         <ul className="collection-shelf" aria-label={`Titles in ${title.replaceAll("\n", " ")}`}>
           {items.map(item => (
             <li key={titleKey(item)}>
-              <Link href={`/${item.media_type === "movie" ? "films" : "series"}/${item.id}`}>
+              <Link prefetch={false} href={`/${item.media_type === "movie" ? "films" : "series"}/${item.id}`}>
                 <BlurImage src={`https://image.tmdb.org/t/p/w342${item.poster_path}`} alt="" width={342} height={513} lazy={false} />
                 <span className="collection-shelf-spine" aria-hidden="true">{item.title}</span>
                 <span className="collection-shelf-cover">

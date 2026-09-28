@@ -1,92 +1,95 @@
-.intro {
-  --intro-ink: #ededed;
-  --intro-muted: #969696;
-  --intro-line: #252525;
+/* Two fixed layers, deliberately not wrapped in a shared stacking context:
+   the matte must blend with the page itself, not with an isolated group. */
+.matte,
+.layer {
   position: fixed;
   inset: 0;
+}
+
+/* Black card with the wordmark punched through it. Darken keeps black as
+   black and lets white pass the page straight through. (Multiply leaks a
+   faint ghost of bright artwork through the black in Chrome.) */
+.matte {
   z-index: 120;
-  isolation: isolate;
-  overflow: hidden;
+  background: #010101;
+  mix-blend-mode: darken;
+  will-change: transform, opacity;
+}
+
+.layer {
+  --intro-ink: #ededed;
+  --intro-muted: #8a8a8a;
+  z-index: 121;
   color: var(--intro-ink);
   font-family: var(--font-ibm-mono), monospace;
 }
-
-/* Two physical mattes: their shared edge opens to reveal the live page. */
-.shutter {
-  position: absolute;
-  left: 0;
-  right: 0;
-  height: calc(50% + 1px);
-  z-index: -1;
-  background: var(--background);
-}
-.shutterTop { top: 0; transform-origin: center top; }
-.shutterBottom { bottom: 0; transform-origin: center bottom; }
 
 .stage {
   position: absolute;
   left: 50%;
   top: 47%;
-  width: min(88vw, 1440px);
-  aspect-ratio: 2.7;
   transform: translate(-50%, -50%);
-  display: flex;
-  align-items: center;
-  justify-content: center;
 }
-.frame { position: absolute; inset: 0; border: 1px solid #ffffff08; }
-.corner { position: absolute; width: 18px; height: 18px; border-color: #747474; border-style: solid; }
-.corner:nth-child(1) { top: -1px; left: -1px; border-width: 1px 0 0 1px; }
-.corner:nth-child(2) { top: -1px; right: -1px; border-width: 1px 1px 0 0; }
-.corner:nth-child(3) { bottom: -1px; right: -1px; border-width: 0 1px 1px 0; }
-.corner:nth-child(4) { bottom: -1px; left: -1px; border-width: 0 0 1px 1px; }
 
+/* A sign, not a poster: ~40% of a wide screen. One kerned run of text (split
+   letters lose the face's kerning pairs), tracked a touch tight the way
+   display type is at this size. */
 .word {
   position: relative;
-  display: inline-flex;
-  font-size: clamp(2.75rem, 17vw, 17rem);
+  display: block;
+  font-family: var(--font-mdnichrome);
+  font-size: clamp(3.5rem, 10.5vw, 11.5rem);
   font-weight: 800;
   line-height: 1;
-  letter-spacing: -0.025em;
+  letter-spacing: -0.01em;
+  font-kerning: normal;
+  text-rendering: optimizeLegibility;
+  white-space: nowrap;
   user-select: none;
 }
-.mask { display: inline-block; overflow: hidden; }
-.mask > span { display: inline-block; }
 
-.loading {
-  position: absolute;
-  top: 79%;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 172px;
-  text-align: center;
-}
-.loading p { margin-top: 18px; color: var(--intro-muted); font-size: 10px; letter-spacing: 0.1em; }
-.transport { position: relative; height: 24px; overflow: hidden; }
-.film {
-  position: absolute;
-  inset: 0 -24px;
-  border-top: 1px solid var(--intro-line);
-  border-bottom: 1px solid var(--intro-line);
-  background: repeating-linear-gradient(90deg, transparent 0 18px, #626262 18px 24px) top / 100% 3px no-repeat,
-    repeating-linear-gradient(90deg, transparent 0 18px, #626262 18px 24px) bottom / 100% 3px no-repeat;
-  animation: film-advance 700ms linear infinite;
-}
-.playhead { position: absolute; left: 50%; top: 0; width: 2px; height: 100%; background: var(--color-brand); }
-.playhead::after { content: ""; position: absolute; left: -3px; top: 0; width: 8px; height: 4px; background: var(--color-brand); }
-.intro[data-ready="true"] .film { animation-duration: 1100ms; }
-.intro[data-exiting="true"] .film { animation-play-state: paused; }
+/* The windows are pure white so darken shows the page at full strength.
+   Hidden until the power cut: no film bleeds round the unlit glass. */
+.windows { color: #fff; opacity: 0; }
 
-.bottomline {
-  position: absolute;
-  right: max(32px, env(safe-area-inset-right));
-  bottom: max(20px, env(safe-area-inset-bottom));
+/* Flat and hard, like the rest of the app: no glow, no halo, no fades.
+   Unlit, the sign is a dark slab; lit, it is solid brand red, switched on in
+   two hard blinks. The entrance fade is CSS (backwards fill only) so a
+   throttled tab can't stall it, and the exit's inline opacity still wins. */
+.sign {
+  animation: intro-fade 400ms ease-out backwards;
+  color: #1a1a1a;
 }
+.sign[data-lit="true"] {
+  color: var(--color-brand);
+  animation: intro-strike 460ms step-end both;
+}
+
+/* The exit shutter. --shutter runs 1 → 0: each band of red, one period tall,
+   keeps that fraction of its height. Hard stops, so the slats stay crisp. */
+.layer[data-exiting="true"] .sign {
+  --period: max(4px, 0.05em);
+  --slat: calc(var(--shutter, 1) * var(--period));
+  mask-image: repeating-linear-gradient(to bottom, #000 0 var(--slat), transparent var(--slat) var(--period));
+}
+
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
 .skip {
+  position: absolute;
+  right: max(var(--gutter), env(safe-area-inset-right));
+  bottom: max(20px, env(safe-area-inset-bottom));
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 20px;
+  gap: 16px;
   min-width: 100px;
   min-height: 44px;
   color: var(--intro-muted);
@@ -94,31 +97,34 @@
   border: 0;
   cursor: pointer;
   font: inherit;
-  font-size: 11px;
+  font-size: 12px;
+  letter-spacing: 0.08em;
   transition: color 150ms;
 }
-.skip > span { font-size: 18px; }
+.skip { animation: intro-fade 500ms 600ms backwards; }
 .skip:hover { color: var(--intro-ink); }
 .skip:focus-visible { outline: 1px solid var(--intro-ink); outline-offset: 4px; }
 
-@keyframes film-advance { to { transform: translateX(-24px); } }
+@keyframes intro-fade { from { opacity: 0; } }
+@keyframes intro-strike {
+  0% { color: var(--color-brand); }
+  16% { color: #1a1a1a; }
+  30% { color: var(--color-brand); }
+  40% { color: #1a1a1a; }
+  56%, 100% { color: var(--color-brand); }
+}
 
 @media (max-width: 600px) {
-  .stage { width: 90vw; aspect-ratio: 1.85; }
-  .word { font-size: 18.8vw; }
-  .loading { top: 72%; width: 140px; }
-  .bottomline { right: max(20px, env(safe-area-inset-right)); }
+  .stage { top: 46%; }
+  .word { font-size: 16vw; }
 }
 
 @media (max-height: 500px) {
-  .stage { width: min(76vw, 880px); height: 48%; aspect-ratio: auto; top: 43%; }
-  .word { font-size: min(16vw, 32vh); }
-  .loading { top: 76%; width: 120px; }
-  .loading p { margin-top: 8px; font-size: 9px; }
-  .bottomline { bottom: max(8px, env(safe-area-inset-bottom)); }
+  .stage { top: 45%; }
+  .word { font-size: min(11vw, 24vh); }
+  .skip { bottom: max(8px, env(safe-area-inset-bottom)); }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .intro { display: none; }
-  .film { animation: none; }
+  .matte, .layer { display: none; }
 }

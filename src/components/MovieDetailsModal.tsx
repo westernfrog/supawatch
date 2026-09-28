@@ -223,7 +223,7 @@ export default function MovieDetailsModal({ movie, providers = [], onClose }: Pr
                   Watch Now
                 </button>
 
-                <Link
+                <Link prefetch={false}
                   href={`/films/${movie.id}`}
                   onClick={onClose}
                   aria-label="More info"
@@ -319,7 +319,7 @@ export default function MovieDetailsModal({ movie, providers = [], onClose }: Pr
                   <span className="w-[76px] shrink-0 pt-[7px] font-manrope text-[10px] font-bold uppercase tracking-widest text-neutral-600">Starring</span>
                   <div className="flex flex-wrap items-center gap-x-4 gap-y-2.5">
                     {data.cast.slice(0, 4).map(c => (
-                      <Link
+                      <Link prefetch={false}
                         key={c.id}
                         href={`/person/${c.id}`}
                         onClick={onClose}
@@ -353,7 +353,7 @@ export default function MovieDetailsModal({ movie, providers = [], onClose }: Pr
                   <span className="w-[76px] shrink-0 pt-[5px] font-manrope text-[10px] font-bold uppercase tracking-widest text-neutral-600">Director</span>
                   <p className="leading-relaxed text-[15px] text-neutral-300">
                     {data.directorId
-                      ? <Link href={`/person/${data.directorId}`} onClick={onClose} className="transition-all duration-200 hover:text-white hover:underline hover:decoration-white/30 underline-offset-4">{data.director}</Link>
+                      ? <Link prefetch={false} href={`/person/${data.directorId}`} onClick={onClose} className="transition-all duration-200 hover:text-white hover:underline hover:decoration-white/30 underline-offset-4">{data.director}</Link>
                       : <span>{data.director}</span>
                     }
                   </p>
@@ -366,7 +366,7 @@ export default function MovieDetailsModal({ movie, providers = [], onClose }: Pr
                     {genres.map((g, i) => (
                       <span key={g.id}>
                         {i > 0 && <span className="text-neutral-700">, </span>}
-                        <Link href={`/films?genre=${g.id}`} onClick={onClose} className="underline decoration-neutral-600 decoration-1 underline-offset-[3px] transition-colors duration-200 hover:text-white hover:decoration-white/50">{g.name}</Link>
+                        <Link prefetch={false} href={`/films?genre=${g.id}`} onClick={onClose} className="underline decoration-neutral-600 decoration-1 underline-offset-[3px] transition-colors duration-200 hover:text-white hover:decoration-white/50">{g.name}</Link>
                       </span>
                     ))}
                   </p>

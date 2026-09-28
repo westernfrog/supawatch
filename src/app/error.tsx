@@ -8,6 +8,6 @@ export default function ErrorPage({ reset }: { error: Error & { digest?: string 
     <p className="eyebrow">A brief interruption</p>
     <h1>This page couldn’t load.</h1>
     <p>The catalogue is temporarily unavailable. Please try again.</p>
-    <div><Button onClick={reset}>Try again</Button><Button variant="outline" asChild><Link href="/">Back to home</Link></Button></div>
+    <div><Button onClick={reset}>Try again</Button><Button variant="outline" asChild><Link prefetch={false} href="/">Back to home</Link></Button></div>
   </div>;
 }

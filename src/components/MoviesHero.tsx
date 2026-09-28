@@ -1,5 +1,6 @@
 "use client";
 
+import HeroSlideIndicator, { ReelCueMark } from "@/components/HeroSlideIndicator";
 import { useTrailerLayout } from "@/lib/useTrailerLayout";
 import { youtubeEmbedUrl } from "@/lib/youtube";
 
@@ -296,6 +297,7 @@ export default function MoviesHero({ initialMovies, genreId }: Props) {
           swapping,
         )}
       >
+        <ReelCueMark key={idx} durationMs={SLIDE_MS} />
         {/* Backdrop — cinematic cross-dissolve: the new frame blooms in over
             the previous one as it eases back into a soft, dim blur */}
         <div className="absolute inset-0 overflow-hidden">
@@ -384,7 +386,7 @@ export default function MoviesHero({ initialMovies, genreId }: Props) {
 
         {/* Content block */}
         <div
-          className="absolute inset-x-(--gutter) bottom-0 z-20"
+          className="absolute inset-x-(--gutter) bottom-9 z-20"
           style={{
             animation: "fade-in-up 0.55s 0.1s cubic-bezier(0.16,1,0.3,1) both",
           }}
@@ -453,7 +455,7 @@ export default function MoviesHero({ initialMovies, genreId }: Props) {
                   {genres.map((g, i) => (
                     <span key={g.id}>
                       {i > 0 && <span className="text-neutral-500">, </span>}
-                      <Link
+                      <Link prefetch={false}
                         href={`/films?genre=${g.id}`}
                         className="underline decoration-neutral-500 decoration-1 underline-offset-[3px] transition-colors hover:text-white hover:decoration-white/50"
                       >
@@ -494,7 +496,7 @@ export default function MoviesHero({ initialMovies, genreId }: Props) {
               </span>
               <div className="flex items-center gap-3">
                 {cast.map((c, i) => (
-                  <Link
+                  <Link prefetch={false}
                     key={c.id}
                     href={`/person/${c.id}`}
                     className="group flex items-center gap-2"
@@ -540,7 +542,7 @@ export default function MoviesHero({ initialMovies, genreId }: Props) {
 
             <div className="h-4 w-px bg-white/[0.1]" />
 
-            <Link
+            <Link prefetch={false}
               href={`/films/${movie.id}`}
               className="flex items-center gap-1.5 font-manrope text-[11px] font-semibold uppercase tracking-[0.2em] text-neutral-500 transition-colors duration-150 hover:text-neutral-200"
             >
@@ -628,7 +630,7 @@ export default function MoviesHero({ initialMovies, genreId }: Props) {
                   Created by
                 </span>
                 {(info as Enriched).directorId ? (
-                  <Link
+                  <Link prefetch={false}
                     href={`/person/${(info as Enriched).directorId}`}
                     className="font-manrope text-[13px] text-neutral-400 transition-colors duration-150 hover:text-white"
                   >
@@ -654,7 +656,7 @@ export default function MoviesHero({ initialMovies, genreId }: Props) {
                 </span>
                 <div className="flex items-center gap-1.5">
                   {providers.slice(0, 5).map((p) => (
-                    <Link
+                    <Link prefetch={false}
                       key={p.provider_id}
                       href={
                         PROVIDER_URLS[p.provider_id]?.(movie.title) ??
@@ -679,41 +681,7 @@ export default function MoviesHero({ initialMovies, genreId }: Props) {
 
             <div className="flex-1" />
 
-            <div className="flex items-center gap-6">
-              {movies.map((m, i) => {
-                const active = i === idx;
-                return (
-                  <button
-                    key={m.id}
-                    onClick={() => goTo(i)}
-                    aria-label={m.title}
-                    className="group flex flex-col items-center gap-[3px]"
-                  >
-                    <span
-                      className={cn(
-                        "font-space text-[13px] font-medium tabular-nums tracking-[0.04em] transition-colors duration-300",
-                        active
-                          ? "text-white"
-                          : "text-neutral-500 group-hover:text-neutral-300",
-                      )}
-                    >
-                      {String(i + 1).padStart(2, "0")}
-                    </span>
-                    <span className="relative h-[1.5px] w-4 overflow-hidden rounded-full bg-white/15">
-                      {active && (
-                        <span
-                          className="absolute inset-0 rounded-full bg-white"
-                          style={{
-                            animation: `progressTrack ${SLIDE_MS}ms linear forwards`,
-                            transformOrigin: "left",
-                          }}
-                        />
-                      )}
-                    </span>
-                  </button>
-                );
-              })}
-            </div>
+            <HeroSlideIndicator labels={movies.map(m => m.title)} active={idx} durationMs={SLIDE_MS} onSelect={goTo} />
           </div>
         </div>
       </section>
@@ -816,7 +784,7 @@ export default function MoviesHero({ initialMovies, genreId }: Props) {
                 {genres.slice(0, 2).map((g, i) => (
                   <span key={g.id} className="flex items-center gap-2.5">
                     {i > 0 && <span className="text-white/25">·</span>}
-                    <Link
+                    <Link prefetch={false}
                       href={`/films?genre=${g.id}`}
                       className="font-manrope text-[9px] uppercase tracking-[0.18em] text-white/55 transition-colors hover:text-white"
                     >
@@ -859,7 +827,7 @@ export default function MoviesHero({ initialMovies, genreId }: Props) {
                 <Play className="h-3.5 w-3.5 fill-black" />
                 Watch Now
               </button>
-              <Link
+              <Link prefetch={false}
                 href={`/films/${movie.id}`}
                 className="flex items-center gap-2 rounded-full border border-white/[0.22] bg-black/30 px-4 py-2.5 font-manrope text-[15px] font-semibold text-white transition-colors hover:bg-black/50"
               >
@@ -913,7 +881,7 @@ export default function MoviesHero({ initialMovies, genreId }: Props) {
                 Created by
               </span>
               {(info as Enriched).directorId ? (
-                <Link
+                <Link prefetch={false}
                   href={`/person/${(info as Enriched).directorId}`}
                   className="font-manrope text-[12px] text-neutral-400 transition-colors hover:text-white"
                 >
@@ -935,7 +903,7 @@ export default function MoviesHero({ initialMovies, genreId }: Props) {
               </span>
               <div className="flex min-w-0 flex-wrap items-center gap-2.5">
                 {cast.map((c, i) => (
-                  <Link
+                  <Link prefetch={false}
                     key={c.id}
                     href={`/person/${c.id}`}
                     className="group flex items-center gap-1.5"
@@ -973,7 +941,7 @@ export default function MoviesHero({ initialMovies, genreId }: Props) {
               </span>
               <div className="flex items-center gap-1.5">
                 {providers.slice(0, 5).map((p) => (
-                  <Link
+                  <Link prefetch={false}
                     key={p.provider_id}
                     href={
                       PROVIDER_URLS[p.provider_id]?.(movie.title) ??

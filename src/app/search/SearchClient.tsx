@@ -329,7 +329,7 @@ export default function SearchClient() {
         </div>
         <figure className="hal-cameo" aria-label="HAL 9000 from 2001: A Space Odyssey">
           <div className="hal-cameo-model"><Hal9000Panel query={query} filtersStr={JSON.stringify(filters)} isActive={hasQuery} isTalking={emptyState} /></div>
-          <figcaption><span className="eyebrow">Stanley Kubrick / 1968</span><h2>HAL<br />9000.</h2><p>2001: A Space Odyssey</p><Link href="/films/62" className="text-link">Explore the film <span aria-hidden="true">↗</span></Link></figcaption>
+          <figcaption><span className="eyebrow">Stanley Kubrick / 1968</span><h2>HAL<br />9000.</h2><p>2001: A Space Odyssey</p><Link prefetch={false} href="/films/62" className="text-link">Explore the film <span aria-hidden="true">↗</span></Link></figcaption>
         </figure>
       </section>
       <section className="search-refine" aria-label="Refine your search">
@@ -416,9 +416,9 @@ export default function SearchClient() {
 }
 
 function ResultCard({ item, onOpen }: { item: Item; onOpen: (item: Item) => void; index: number }) {
-  if (item.media_type === "person") return <article className="media-card"><Link className="media-card-art" href={`/person/${item.id}`} aria-label={`Explore ${item.name}`}>
+  if (item.media_type === "person") return <article className="media-card"><Link prefetch={false} className="media-card-art" href={`/person/${item.id}`} aria-label={`Explore ${item.name}`}>
     {item.profile_path ? <BlurImage src={`https://image.tmdb.org/t/p/w342${item.profile_path}`} alt="" width={342} height={513} /> : <span className="media-card-fallback">{item.name}</span>}
-  </Link><div className="media-card-copy"><p className="media-card-meta">Person / {item.known_for_department || "Film & television"}</p><div className="media-card-heading"><h3><Link href={`/person/${item.id}`}>{item.name}</Link></h3></div></div></article>;
+  </Link><div className="media-card-copy"><p className="media-card-meta">Person / {item.known_for_department || "Film & television"}</p><div className="media-card-heading"><h3><Link prefetch={false} href={`/person/${item.id}`}>{item.name}</Link></h3></div></div></article>;
   return <TitleCard item={{ ...item, title: item.title || item.name || "Untitled", poster_path: item.poster_path ?? null, media_type: item.media_type || "movie", date: item.release_date || item.first_air_date || "" }} onOpen={() => onOpen(item)} />;
 }
 

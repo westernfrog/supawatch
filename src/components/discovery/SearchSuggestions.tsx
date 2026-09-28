@@ -37,7 +37,7 @@ export default function SearchSuggestions({ query, region, empty }: { query: str
   }, [query, region, key]);
   const current = selection?.key === key ? selection : null;
   return <section className="search-suggestions" aria-label="Suggested titles" aria-busy={!current}>
-    <div className="lane-heading"><div><h2>{empty ? "You might like these" : "More for you"}</h2><p>{current?.wider ? "These suggestions broaden your filters and keep your chosen format." : current?.saved ? "From our saved selection. Ratings may have changed." : "Suggestions based on your filters, region, and titles you’ve explored."}</p></div><Link href="/collections" className="text-link">Browse collections</Link></div>
+    <div className="lane-heading"><div><h2>{empty ? "You might like these" : "More for you"}</h2><p>{current?.wider ? "These suggestions broaden your filters and keep your chosen format." : current?.saved ? "From our saved selection. Ratings may have changed." : "Suggestions based on your filters, region, and titles you’ve explored."}</p></div><Link prefetch={false} href="/collections" className="text-link">Browse collections</Link></div>
     <div className="discovery-grid">{current ? current.items.map(item => <TitleCard key={titleKey(item)} item={item} />) : <p role="status">Finding suggestions…</p>}</div>
   </section>;
 }

@@ -27,9 +27,6 @@ import {
   ChevronDown,
   ChevronLeft,
   ChevronRight,
-  Globe2,
-  Maximize,
-  RotateCw,
   Check,
   X,
   Plus,
@@ -1251,14 +1248,42 @@ export default function LiveClient({
           {/* Clicking anywhere in the shell fired a key, so the emitter blinks
               from the container rather than from thirty separate handlers. */}
           <aside className="tv-remote" aria-label="TV remote" onClickCapture={pulseIr}>
-            <div className="remote-emitter" data-active={irFiring} aria-hidden="true" />
-            <div className="remote-shoulder"><button className="remote-key remote-power" onClick={togglePower} aria-label="Power" aria-pressed={tvPower}><Power size={19} /></button><span className="remote-brand">SUPAWATCH<span>TELEVISION</span></span><button className="remote-key" onClick={showCurrentInfo} aria-label="Channel info"><Info size={18} /></button></div>
-            <div className="remote-numberpad">{["1", "2", "3", "4", "5", "6", "7", "8", "9", "clear", "0", "enter"].map(key => <button className="remote-key" key={key} onClick={() => handleNumpad(key)} aria-label={key === "clear" ? "Clear channel number" : key === "enter" ? "Enter channel number" : `Channel ${key}`}>{key === "clear" ? <span>DEL</span> : key === "enter" ? <span>ENTER</span> : key}</button>)}</div>
-            <div className="remote-dial"><button className="dial-up" onClick={() => remoteNavigate(-1)} aria-label="Navigate up"><ChevronUp /></button><button className="dial-left" onClick={() => changeVolume(-10)} aria-label="Lower volume"><ChevronLeft /></button><button className="dial-ok" onClick={remoteOK} aria-label="Select or show channel info">OK</button><button className="dial-right" onClick={() => changeVolume(10)} aria-label="Raise volume"><ChevronRight /></button><button className="dial-down" onClick={() => remoteNavigate(1)} aria-label="Navigate down"><ChevronDown /></button></div>
-            <div className="remote-rockers"><div className="remote-rocker"><button onClick={() => changeVolume(10)} aria-label="Volume up"><Plus size={19} /></button><span>VOL</span><button onClick={() => changeVolume(-10)} aria-label="Volume down"><Minus size={19} /></button></div><div className="remote-center-keys"><button className="remote-key" onClick={toggleMute} aria-label="Mute" aria-pressed={muted}>{muted ? <VolumeX size={18} /> : <Volume2 size={18} />}</button><button className="remote-key" onClick={toggleCategoryMenu} aria-label="Channel menu" aria-expanded={isCategoryMenuOpen}><LayoutGrid size={17} /></button><span>MENU</span></div><div className="remote-rocker"><button onClick={() => changeChannelRelative(1)} aria-label="Channel up"><ChevronUp size={20} /></button><span>CH</span><button onClick={() => changeChannelRelative(-1)} aria-label="Channel down"><ChevronDown size={20} /></button></div></div>
-            <div className="remote-functions">{[{ label: "Previous", icon: ArrowLeftRight, action: jumpToPreviousChannel }, { label: fillScreen ? "Fill" : "Fit", icon: Crop, action: cyclePictureSize }, { label: "PiP", icon: PictureInPicture2, action: togglePip }].map(({ label, icon: Icon, action }) => <button className="remote-key" key={label} onClick={action}><Icon size={16} /><span>{label}</span></button>)}</div>
-            <div className="remote-colors">{[{ label: "Reload", icon: RotateCw, action: reloadCurrent }, { label: "Full", icon: Maximize, action: goFullscreen }, { label: "Region", icon: Globe2, action: toggleRegionMenu }, { label: "CRT", icon: Tv, action: toggleCrt }].map(({ label, icon: Icon, action }, index) => <button key={label} onClick={action} aria-label={label} aria-pressed={label === "CRT" ? crtOn : undefined} aria-expanded={label === "Region" ? isRegionMenuOpen : undefined}><span className={`remote-color remote-color-${index}`}><Icon size={14} /></span><span>{label}</span></button>)}</div>
-            <div className="remote-base" aria-hidden="true"><span />SW / 01</div>
+            {/* Smoked IR window at the tip; the LED behind it lights on send. */}
+            <div className="remote-ir" aria-hidden="true"><span className="remote-led" data-active={irFiring} /></div>
+            <div className="remote-shoulder">
+              <button className="remote-key remote-round remote-power" onClick={togglePower} aria-label="Power" aria-pressed={tvPower}><Power size={16} /></button>
+              <button className="remote-key remote-round" onClick={showCurrentInfo} aria-label="Channel info"><Info size={16} /></button>
+            </div>
+            <div className="remote-numberpad">{["1", "2", "3", "4", "5", "6", "7", "8", "9", "clear", "0", "enter"].map(key => <button className="remote-key" key={key} onClick={() => handleNumpad(key)} aria-label={key === "clear" ? "Clear channel number" : key === "enter" ? "Enter channel number" : `Channel ${key}`}>{key === "clear" ? <span className="remote-legend">Del</span> : key === "enter" ? <span className="remote-legend">Enter</span> : key}</button>)}</div>
+            {/* Click-pad: one moulded ring, four press zones, a convex OK. */}
+            <div className="remote-dpad">
+              <button className="dpad-up" onClick={() => remoteNavigate(-1)} aria-label="Navigate up"><ChevronUp size={16} /></button>
+              <button className="dpad-left" onClick={() => changeVolume(-10)} aria-label="Lower volume"><ChevronLeft size={16} /></button>
+              <button className="dpad-right" onClick={() => changeVolume(10)} aria-label="Raise volume"><ChevronRight size={16} /></button>
+              <button className="dpad-down" onClick={() => remoteNavigate(1)} aria-label="Navigate down"><ChevronDown size={16} /></button>
+              <button className="dpad-ok" onClick={remoteOK} aria-label="Select or show channel info">OK</button>
+            </div>
+            <div className="remote-controls">
+              <div className="remote-rocker">
+                <button onClick={() => changeVolume(10)} aria-label="Volume up"><Plus size={15} /></button>
+                <span aria-hidden="true">Vol</span>
+                <button onClick={() => changeVolume(-10)} aria-label="Volume down"><Minus size={15} /></button>
+              </div>
+              <div className="remote-middle">
+                <button className="remote-key remote-round" onClick={toggleMute} aria-label="Mute" aria-pressed={muted}>{muted ? <VolumeX size={15} /> : <Volume2 size={15} />}</button>
+                <button className="remote-key remote-round" onClick={toggleCategoryMenu} aria-label="Channel menu" aria-expanded={isCategoryMenuOpen}><LayoutGrid size={14} /></button>
+                <span className="remote-print" aria-hidden="true">Menu</span>
+              </div>
+              <div className="remote-rocker">
+                <button onClick={() => changeChannelRelative(1)} aria-label="Channel up"><ChevronUp size={16} /></button>
+                <span aria-hidden="true">Ch</span>
+                <button onClick={() => changeChannelRelative(-1)} aria-label="Channel down"><ChevronDown size={16} /></button>
+              </div>
+            </div>
+            {/* Function and teletext keys: the cap, with its legend printed on
+                the body beneath it, both inside one hit area. */}
+            <div className="remote-functions">{[{ label: "Previous", short: "Last", icon: ArrowLeftRight, action: jumpToPreviousChannel }, { label: fillScreen ? "Fill" : "Fit", short: fillScreen ? "Fill" : "Fit", icon: Crop, action: cyclePictureSize }, { label: "PiP", short: "PiP", icon: PictureInPicture2, action: togglePip }].map(({ label, short, icon: Icon, action }) => <button className="remote-labelled" key={label} onClick={action} aria-label={label}><span className="remote-key remote-cap"><Icon size={14} /></span><span className="remote-print">{short}</span></button>)}</div>
+            <div className="remote-colors">{[{ label: "Reload", action: reloadCurrent }, { label: "Full", action: goFullscreen }, { label: "Region", action: toggleRegionMenu }, { label: "CRT", action: toggleCrt }].map(({ label, action }, index) => <button className="remote-labelled" key={label} onClick={action} aria-label={label} aria-pressed={label === "CRT" ? crtOn : undefined} aria-expanded={label === "Region" ? isRegionMenuOpen : undefined}><span className={`remote-key remote-cap remote-color remote-color-${index}`} /><span className="remote-print">{label}</span></button>)}</div>
           </aside>
         </div>
       </section>

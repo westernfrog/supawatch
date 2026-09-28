@@ -19,7 +19,7 @@ export default function Watchlist() {
       {sections.map(({ value }) => {
         const items = list.filter(item => value === "all" || item.media_type === value);
         return <TabsContent key={value} value={value}>
-          {items.length ? <div className="discovery-grid">{items.map(item => <TitleCard key={titleKey(item)} item={item} savedList />)}</div> : <div className="watchlist-empty"><Bookmark className="empty-asterisk" aria-hidden="true" strokeWidth={1} /><h2>{list.length ? `No ${value === "movie" ? "films" : "series"} saved. Yet.` : "Your next favourite belongs here."}</h2><p>Bookmark something that catches your eye. We’ll keep a seat for it.</p><Link className="text-link" href="/#discover">Find something good <ArrowUpRight size={18} /></Link></div>}
+          {items.length ? <div className="discovery-grid">{items.map(item => <TitleCard key={titleKey(item)} item={item} savedList />)}</div> : <div className="watchlist-empty"><Bookmark className="empty-asterisk" aria-hidden="true" strokeWidth={1} /><h2>{list.length ? `No ${value === "movie" ? "films" : "series"} saved. Yet.` : "Your next favourite belongs here."}</h2><p>Bookmark something that catches your eye. We’ll keep a seat for it.</p><Link prefetch={false} className="text-link" href="/#discover">Find something good <ArrowUpRight size={18} /></Link></div>}
         </TabsContent>;
       })}
     </Tabs>

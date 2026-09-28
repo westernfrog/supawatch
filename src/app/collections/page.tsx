@@ -17,7 +17,7 @@ export default async function CollectionsPage() {
     <div id="collection-selection" className="collection-library-grid">{COLLECTIONS.map((collection, index) => {
       const selection = selections[index];
 
-      return <Link className="collection-edition" href={`/collections/${collection.slug}`} key={collection.slug}>
+      return <Link prefetch={false} className="collection-edition" href={`/collections/${collection.slug}`} key={collection.slug}>
         <div className="collection-poster-preview" aria-label="Titles in this collection">{selection.slice(0, 4).map(item => <figure key={item.id}><BlurImage src={`https://image.tmdb.org/t/p/w342${item.poster_path}`} alt="" width={342} height={513} lazy={index > 1} /><figcaption>{item.title}</figcaption></figure>)}</div>
         <div className="collection-edition-copy"><div className="collection-edition-meta"><p className="eyebrow">{collection.kicker}</p><span>{selection.length} {collection.type === "tv" ? "series" : "films"}</span></div><div><h2>{collection.title.replaceAll("\n", " ")}</h2><ArrowUpRight aria-hidden="true" size={22} /></div><p>{collection.description}</p><span className="collection-open">View the collection <ArrowUpRight size={14} aria-hidden="true" /></span></div>
       </Link>;

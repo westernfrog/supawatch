@@ -119,7 +119,7 @@ export function getMediaBundle(mediaType: MediaType, id: string) {
     append_to_response: "videos,credits,images",
     include_image_language: "en,null",
     include_video_language: "en,null",
-  }, { revalidate: CACHE.hour });
+  }, { revalidate: CACHE.day });
 }
 
 export const getCachedMediaDetails = cache(

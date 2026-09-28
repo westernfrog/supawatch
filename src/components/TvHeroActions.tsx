@@ -50,7 +50,7 @@ export default function TvHeroActions({
           </span>
           <div className="h-3 w-px bg-white/[0.1]" />
           {cast.map(c => (
-            <Link key={c.id} href={`/person/${c.id}`} className="group flex items-center gap-2.5">
+            <Link prefetch={false} key={c.id} href={`/person/${c.id}`} className="group flex items-center gap-2.5">
               <div className="h-[32px] w-[32px] shrink-0 overflow-hidden rounded-full bg-neutral-800 ring-1 ring-white/[0.12] transition-opacity duration-150 group-hover:opacity-75">
                 {c.profile_path ? (
                   <img

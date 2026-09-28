@@ -49,5 +49,5 @@ export default function BrowseSelection({ mediaType, genre }: { mediaType: "movi
 export function SavedBrowseShelf({ mediaType }: { mediaType: "movie" | "tv" }) {
   const titles = useWatchlist().filter(item => item.media_type === mediaType && item.poster_path).slice(0, 12);
   if (!titles.length) return null;
-  return <section className="poster-shelf" aria-label="Saved titles"><header className="poster-shelf-heading"><div><p className="eyebrow">My List</p><h2>{mediaType === "movie" ? "Waiting for you." : "Queued up and waiting."}</h2></div><Link className="text-link" href="/watchlist">View My List <ArrowUpRight size={16} /></Link></header><div className="poster-rail" tabIndex={0} role="region" aria-label="Your saved titles">{titles.map(item => <PosterCard key={titleKey(item)} item={item} story={false} />)}</div></section>;
+  return <section className="poster-shelf" aria-label="Saved titles"><header className="poster-shelf-heading"><div><p className="eyebrow">My List</p><h2>{mediaType === "movie" ? "Waiting for you." : "Queued up and waiting."}</h2></div><Link prefetch={false} className="text-link" href="/watchlist">View My List <ArrowUpRight size={16} /></Link></header><div className="poster-rail" tabIndex={0} role="region" aria-label="Your saved titles">{titles.map(item => <PosterCard key={titleKey(item)} item={item} story={false} />)}</div></section>;
 }
